@@ -29,7 +29,6 @@ public class HudConfig extends FileConfig {
     /**
      * Load config from file
      *
-     * @throws IOException
      */
     @Override
     protected void loadConfig() throws IOException {
@@ -40,7 +39,6 @@ public class HudConfig extends FileConfig {
     /**
      * Save config to file
      *
-     * @throws IOException
      */
     @Override
     protected void saveConfig() throws IOException {

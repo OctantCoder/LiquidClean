@@ -16,14 +16,18 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.block.BlockLiquid
 import net.minecraft.util.AxisAlignedBB
 
-@ModuleInfo(name = "ReverseStep", description = "Allows you to step down blocks faster.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "ReverseStep",
+    description = "Allows you to step down blocks faster.",
+    category = ModuleCategory.MOVEMENT
+)
 class ReverseStep : Module() {
 
     private val motionValue = FloatValue("Motion", 1f, 0.21f, 1f)
     private var jumped = false
 
     @EventTarget(ignoreCondition = true)
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
         val thePlayer = mc.thePlayer ?: return
 
         if (thePlayer.onGround)
@@ -36,7 +40,16 @@ class ReverseStep : Module() {
             return
 
         if (collideBlock(thePlayer.entityBoundingBox) { it is BlockLiquid } ||
-            collideBlock(AxisAlignedBB.fromBounds(thePlayer.entityBoundingBox.maxX, thePlayer.entityBoundingBox.maxY, thePlayer.entityBoundingBox.maxZ, thePlayer.entityBoundingBox.minX, thePlayer.entityBoundingBox.minY - 0.01, thePlayer.entityBoundingBox.minZ)) {
+            collideBlock(
+                AxisAlignedBB.fromBounds(
+                    thePlayer.entityBoundingBox.maxX,
+                    thePlayer.entityBoundingBox.maxY,
+                    thePlayer.entityBoundingBox.maxZ,
+                    thePlayer.entityBoundingBox.minX,
+                    thePlayer.entityBoundingBox.minY - 0.01,
+                    thePlayer.entityBoundingBox.minZ
+                )
+            ) {
                 it is BlockLiquid
             }) return
 
@@ -45,7 +58,7 @@ class ReverseStep : Module() {
     }
 
     @EventTarget(ignoreCondition = true)
-    fun onJump(event: JumpEvent?) {
+    fun onJump(@Suppress("UNUSED_PARAMETER") event: JumpEvent?) {
         jumped = true
     }
 

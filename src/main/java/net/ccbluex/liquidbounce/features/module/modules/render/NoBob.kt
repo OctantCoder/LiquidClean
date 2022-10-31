@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 class NoBob : Module() {
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         mc.thePlayer?.distanceWalkedModified = 0f
     }
 }

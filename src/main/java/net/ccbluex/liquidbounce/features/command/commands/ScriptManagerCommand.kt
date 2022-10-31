@@ -117,8 +117,8 @@ class ScriptManagerCommand : Command("scriptmanager", "scripts") {
                         LiquidBounce.commandManager.registerCommands()
                         LiquidBounce.isStarting = true
                         LiquidBounce.scriptManager.reloadScripts()
-                        for(module in LiquidBounce.moduleManager.modules)
-                        LiquidBounce.moduleManager.generateCommand(module)        
+                        for (module in LiquidBounce.moduleManager.modules)
+                            LiquidBounce.moduleManager.generateCommand(module)
                         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.modulesConfig)
                         LiquidBounce.isStarting = false
                         LiquidBounce.fileManager.loadConfig(LiquidBounce.fileManager.valuesConfig)
@@ -136,7 +136,8 @@ class ScriptManagerCommand : Command("scriptmanager", "scripts") {
                         Desktop.getDesktop().open(LiquidBounce.scriptManager.scriptsFolder)
                         chat("Successfully opened scripts folder.")
                     } catch (t: Throwable) {
-                        ClientUtils.getLogger().error("Something went wrong while trying to open your scripts folder.", t)
+                        ClientUtils.getLogger()
+                            .error("Something went wrong while trying to open your scripts folder.", t)
                         chat("${t.javaClass.name}: ${t.message}")
                     }
                 }
@@ -149,7 +150,15 @@ class ScriptManagerCommand : Command("scriptmanager", "scripts") {
 
         if (scriptManager.scripts.isNotEmpty()) {
             chat("§c§lScripts")
-            scriptManager.scripts.forEachIndexed { index, script -> chat("$index: §a§l${script.scriptName} §a§lv${script.scriptVersion} §3by §a§l${script.scriptAuthors.joinToString(", ")}") }
+            scriptManager.scripts.forEachIndexed { index, script ->
+                chat(
+                    "$index: §a§l${script.scriptName} §a§lv${script.scriptVersion} §3by §a§l${
+                        script.scriptAuthors.joinToString(
+                            ", "
+                        )
+                    }"
+                )
+            }
         }
 
         chatSyntax("scriptmanager <import/delete/reload/folder>")
@@ -161,6 +170,7 @@ class ScriptManagerCommand : Command("scriptmanager", "scripts") {
         return when (args.size) {
             1 -> listOf("delete", "import", "folder", "reload")
                 .filter { it.startsWith(args[0], true) }
+
             else -> emptyList()
         }
     }

@@ -31,9 +31,9 @@ import java.util.*
 abstract class Client : ClientListener, MinecraftInstance() {
 
     internal var channel: Channel? = null
-    var username = ""
-    var jwt = false
-    var loggedIn = false
+    var username: String = ""
+    var jwt: Boolean = false
+    var loggedIn: Boolean = false
 
     private val serializer = PacketSerializer()
     private val deserializer = PacketDeserializer()
@@ -66,40 +66,43 @@ abstract class Client : ClientListener, MinecraftInstance() {
         val uri = URI("wss://chat.liquidbounce.net:7886/ws")
 
         val ssl = uri.scheme.equals("wss", true)
-        val sslContext = if(ssl) SslContext.newClientContext(InsecureTrustManagerFactory.INSTANCE) else null
+        val sslContext = if (ssl) SslContext.newClientContext(InsecureTrustManagerFactory.INSTANCE) else null
 
         val group = NioEventLoopGroup()
-        val handler = ClientHandler(this, WebSocketClientHandshakerFactory.newHandshaker(
+        val handler = ClientHandler(
+            this, WebSocketClientHandshakerFactory.newHandshaker(
                 uri, WebSocketVersion.V13, null,
-                true, DefaultHttpHeaders()))
+                true, DefaultHttpHeaders()
+            )
+        )
 
         val bootstrap = Bootstrap()
 
         bootstrap.group(group)
-                .channel(NioSocketChannel::class.java)
-                .handler(object : ChannelInitializer<SocketChannel>() {
+            .channel(NioSocketChannel::class.java)
+            .handler(object : ChannelInitializer<SocketChannel>() {
 
-                    /**
-                     * This method will be called once the [Channel] was registered. After the method returns this instance
-                     * will be removed from the [ChannelPipeline] of the [Channel].
-                     *
-                     * @param ch            the [Channel] which was registered.
-                     * @throws Exception    is thrown if an error occurs. In that case the [Channel] will be closed.
-                     */
-                    override fun initChannel(ch: SocketChannel) {
-                        val pipeline = ch.pipeline()
+                /**
+                 * This method will be called once the [Channel] was registered. After the method returns this instance
+                 * will be removed from the [ChannelPipeline] of the [Channel].
+                 *
+                 * @param ch            the [Channel] which was registered.
+                 * @throws Exception    is thrown if an error occurs. In that case the [Channel] will be closed.
+                 */
+                override fun initChannel(ch: SocketChannel) {
+                    val pipeline = ch.pipeline()
 
-                        if(sslContext != null) pipeline.addLast(sslContext.newHandler(ch.alloc()))
+                    if (sslContext != null) pipeline.addLast(sslContext.newHandler(ch.alloc()))
 
-                        pipeline.addLast(HttpClientCodec(), HttpObjectAggregator(8192), handler)
-                    }
+                    pipeline.addLast(HttpClientCodec(), HttpObjectAggregator(8192), handler)
+                }
 
-                })
+            })
 
         channel = bootstrap.connect(uri.host, uri.port).sync().channel()
         handler.handshakeFuture.sync()
 
-        if(isConnected()) onConnected()
+        if (isConnected()) onConnected()
     }
 
     /**
@@ -115,7 +118,7 @@ abstract class Client : ClientListener, MinecraftInstance() {
     /**
      * Login to web socket
      */
-    fun loginMojang() = sendPacket(ServerRequestMojangInfoPacket())
+    fun loginMojang(): Unit = sendPacket(ServerRequestMojangInfoPacket())
 
     /**
      * Login to web socket
@@ -126,19 +129,19 @@ abstract class Client : ClientListener, MinecraftInstance() {
         jwt = true
     }
 
-    fun isConnected() = channel != null && channel!!.isOpen
+    fun isConnected(): Boolean = channel != null && channel!!.isOpen
 
     /**
      * Handle incoming message of websocket
      */
     internal fun onMessage(message: String) {
         val gson = GsonBuilder()
-                .registerTypeAdapter(Packet::class.java, deserializer)
-                .create()
+            .registerTypeAdapter(Packet::class.java, deserializer)
+            .create()
 
         val packet = gson.fromJson(message, Packet::class.java)
 
-        if(packet is ClientMojangInfoPacket) {
+        if (packet is ClientMojangInfoPacket) {
             onLogon()
 
             try {
@@ -149,7 +152,7 @@ abstract class Client : ClientListener, MinecraftInstance() {
                 jwt = false
 
                 sendPacket(ServerLoginMojangPacket(mc.session.username, mc.session.profile.id, allowMessages = true))
-            }catch (throwable: Throwable) {
+            } catch (throwable: Throwable) {
                 onError(throwable)
             }
             return
@@ -163,8 +166,8 @@ abstract class Client : ClientListener, MinecraftInstance() {
      */
     fun sendPacket(packet: Packet) {
         val gson = GsonBuilder()
-                .registerTypeAdapter(Packet::class.java, serializer)
-                .create()
+            .registerTypeAdapter(Packet::class.java, serializer)
+            .create()
 
         channel?.writeAndFlush(TextWebSocketFrame(gson.toJson(packet, Packet::class.java)))
     }
@@ -172,22 +175,23 @@ abstract class Client : ClientListener, MinecraftInstance() {
     /**
      * Send chat message to server
      */
-    fun sendMessage(message: String) = sendPacket(ServerMessagePacket(message))
+    fun sendMessage(message: String): Unit = sendPacket(ServerMessagePacket(message))
 
     /**
      * Send private chat message to server
      */
-    fun sendPrivateMessage(username: String, message: String) = sendPacket(ServerPrivateMessagePacket(username, message))
+    fun sendPrivateMessage(username: String, message: String): Unit =
+        sendPacket(ServerPrivateMessagePacket(username, message))
 
     /**
      * Ban user from server
      */
-    fun banUser(target: String) = sendPacket(ServerBanUserPacket(toUUID(target)))
+    fun banUser(target: String): Unit = sendPacket(ServerBanUserPacket(toUUID(target)))
 
     /**
      * Unban user from server
      */
-    fun unbanUser(target: String) = sendPacket(ServerUnbanUserPacket(toUUID(target)))
+    fun unbanUser(target: String): Unit = sendPacket(ServerUnbanUserPacket(toUUID(target)))
 
     /**
      * Convert username or uuid to UUID
@@ -197,16 +201,16 @@ abstract class Client : ClientListener, MinecraftInstance() {
             UUID.fromString(target)
 
             target
-        }catch (_: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             val incomingUUID = UserUtils.getUUID(target)
 
-            if(incomingUUID.isBlank()) return ""
+            if (incomingUUID.isBlank()) return ""
 
             val uuid = StringBuffer(incomingUUID)
-                    .insert(20, '-')
-                    .insert(16, '-')
-                    .insert(12, '-')
-                    .insert(8, '-')
+                .insert(20, '-')
+                .insert(16, '-')
+                .insert(12, '-')
+                .insert(8, '-')
 
             uuid.toString()
         }

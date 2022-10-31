@@ -12,15 +12,19 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.`fun`.Derp
-import net.ccbluex.liquidbounce.features.module.modules.combat.BowAimbot
+import net.ccbluex.liquidbounce.features.module.modules.combat.BowAimBot
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
+import net.ccbluex.liquidbounce.features.module.modules.`fun`.Derp
 import net.ccbluex.liquidbounce.features.module.modules.world.*
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
-@ModuleInfo(name = "Rotations", description = "Allows you to see server-sided head and body rotations.", category = ModuleCategory.RENDER)
+@ModuleInfo(
+    name = "Rotations",
+    description = "Allows you to see server-sided head and body rotations.",
+    category = ModuleCategory.RENDER
+)
 class Rotations : Module() {
 
     private val bodyValue = BoolValue("Body", true)
@@ -28,7 +32,7 @@ class Rotations : Module() {
     private var playerYaw: Float? = null
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent) {
         if (RotationUtils.serverRotation != null && !bodyValue.get())
             mc.thePlayer?.rotationYawHead = RotationUtils.serverRotation.yaw
     }
@@ -48,19 +52,19 @@ class Rotations : Module() {
             mc.thePlayer.rotationYawHead = packet.getYaw()
         } else {
             if (playerYaw != null)
-                thePlayer.renderYawOffset = this.playerYaw!!
+                thePlayer.renderYawOffset = (this.playerYaw ?: return)
 
             thePlayer.rotationYawHead = thePlayer.renderYawOffset
         }
     }
 
-    private fun getState(module: Class<*>) = LiquidBounce.moduleManager[module]!!.state
+    private fun getState(module: Class<*>) = LiquidBounce.moduleManager[module].state
 
     private fun shouldRotate(): Boolean {
         val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
         return getState(Scaffold::class.java) || getState(Tower::class.java) ||
                 (getState(KillAura::class.java) && killAura.target != null) ||
-                getState(Derp::class.java) || getState(BowAimbot::class.java) ||
+                getState(Derp::class.java) || getState(BowAimBot::class.java) ||
                 getState(Fucker::class.java) || getState(CivBreak::class.java) || getState(Nuker::class.java) ||
                 getState(ChestAura::class.java)
     }

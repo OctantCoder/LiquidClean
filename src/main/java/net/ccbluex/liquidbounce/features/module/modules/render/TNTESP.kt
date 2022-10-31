@@ -14,11 +14,16 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.entity.item.EntityTNTPrimed
 import java.awt.Color
 
-@ModuleInfo(name = "TNTESP", description = "Allows you to see ignited TNT blocks through walls.", category = ModuleCategory.RENDER)
+@ModuleInfo(
+    name = "TNTESP",
+    description = "Allows you to see ignited TNT blocks through walls.",
+    category = ModuleCategory.RENDER
+)
 class TNTESP : Module() {
 
     @EventTarget
-    fun onRender3D(event : Render3DEvent) {
-        mc.theWorld.loadedEntityList.filterIsInstance<EntityTNTPrimed>().forEach { RenderUtils.drawEntityBox(it, Color.RED, false) }
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent) {
+        mc.theWorld.loadedEntityList.filterIsInstance<EntityTNTPrimed>()
+            .forEach { RenderUtils.drawEntityBox(it, Color.RED, false) }
     }
 }

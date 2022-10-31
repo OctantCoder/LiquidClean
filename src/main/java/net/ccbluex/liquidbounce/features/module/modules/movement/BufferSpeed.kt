@@ -23,8 +23,14 @@ import net.minecraft.block.BlockStairs
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
+import java.util.*
+import kotlin.collections.ArrayList
 
-@ModuleInfo(name = "BufferSpeed", description = "Allows you to walk faster on slabs and stairs.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "BufferSpeed",
+    description = "Allows you to walk faster on slabs and stairs.",
+    category = ModuleCategory.MOVEMENT
+)
 class BufferSpeed : Module() {
     private val speedLimitValue = BoolValue("SpeedLimit", true)
     private val maxSpeedValue = FloatValue("MaxSpeed", 2.0f, 1.0f, 5f)
@@ -58,10 +64,10 @@ class BufferSpeed : Module() {
     private var legitHop = false
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
         val thePlayer = mc.thePlayer ?: return
 
-        if (LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state || noHurtValue.get() && thePlayer.hurtTime > 0) {
+        if (LiquidBounce.moduleManager.getModule(Speed::class.java).state || noHurtValue.get() && thePlayer.hurtTime > 0) {
             reset()
             return
         }
@@ -101,11 +107,12 @@ class BufferSpeed : Module() {
                 return
             }
             if (slabsValue.get() && getBlock(blockPos) is BlockSlab) {
-                when (slabsModeValue.get().toLowerCase()) {
+                when (slabsModeValue.get().lowercase(Locale.getDefault())) {
                     "old" -> {
                         boost(slabsBoostValue.get())
                         return
                     }
+
                     "new" -> {
                         fastHop = true
                         if (legitHop) {
@@ -125,11 +132,12 @@ class BufferSpeed : Module() {
                 }
             }
             if (stairsValue.get() && (getBlock(blockPos.down()) is BlockStairs || getBlock(blockPos) is BlockStairs)) {
-                when (stairsModeValue.get().toLowerCase()) {
+                when (stairsModeValue.get().lowercase(Locale.getDefault())) {
                     "old" -> {
                         boost(stairsBoostValue.get())
                         return
                     }
+
                     "new" -> {
                         fastHop = true
 
@@ -171,11 +179,19 @@ class BufferSpeed : Module() {
             }
 
             if (wallValue.get()) {
-                when (wallModeValue.get().toLowerCase()) {
-                    "old" -> if (thePlayer.isCollidedVertically && isNearBlock || getBlock(BlockPos(thePlayer.posX, thePlayer.posY + 2.0, thePlayer.posZ)) != Blocks.air) {
+                when (wallModeValue.get().lowercase(Locale.getDefault())) {
+                    "old" -> if (thePlayer.isCollidedVertically && isNearBlock || getBlock(
+                            BlockPos(
+                                thePlayer.posX,
+                                thePlayer.posY + 2.0,
+                                thePlayer.posZ
+                            )
+                        ) != Blocks.air
+                    ) {
                         boost(wallBoostValue.get())
                         return
                     }
+
                     "new" ->
                         if (isNearBlock && !thePlayer.movementInput.jump) {
                             thePlayer.jump()
@@ -230,8 +246,8 @@ class BufferSpeed : Module() {
         }
     }
 
-    private inline fun boost(boost: Float) {
-        val thePlayer = mc.thePlayer!!
+    private fun boost(boost: Float) {
+        val thePlayer = mc.thePlayer ?: return
 
         thePlayer.motionX = thePlayer.motionX * boost
         thePlayer.motionZ = thePlayer.motionX * boost
@@ -257,9 +273,10 @@ class BufferSpeed : Module() {
                 val collisionBoundingBox = blockState.block.getCollisionBoundingBox(theWorld, blockPos, blockState)
 
                 if ((collisionBoundingBox == null || collisionBoundingBox.maxX ==
-                                collisionBoundingBox.minY + 1) &&
-                        !blockState.block.isTranslucent && blockState.block == Blocks.water &&
-                        blockState.block !is BlockSlab || blockState.block == Blocks.barrier) return true
+                            collisionBoundingBox.minY + 1) &&
+                    !blockState.block.isTranslucent && blockState.block == Blocks.water &&
+                    blockState.block !is BlockSlab || blockState.block == Blocks.barrier
+                ) return true
             }
             return false
         }

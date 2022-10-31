@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.translateAlternateColorCodes
 import net.ccbluex.liquidbounce.value.*
 import org.lwjgl.input.Keyboard
+import java.util.*
 
 /*
  * LiquidBounce Hacked Client
@@ -36,15 +37,29 @@ object SettingsUtils {
             }
 
             when (args[0]) {
-                "chat" -> ClientUtils.displayChatMessage("§7[§3§lAutoSettings§7] §e${translateAlternateColorCodes(StringUtils.toCompleteString(args, 1))}")
-                "unchat" -> ClientUtils.displayChatMessage(translateAlternateColorCodes(StringUtils.toCompleteString(args, 1)))
+                "chat" -> ClientUtils.displayChatMessage(
+                    "§7[§3§lAutoSettings§7] §e${
+                        translateAlternateColorCodes(
+                            StringUtils.toCompleteString(args, 1)
+                        )
+                    }"
+                )
+
+                "unchat" -> ClientUtils.displayChatMessage(
+                    translateAlternateColorCodes(
+                        StringUtils.toCompleteString(
+                            args,
+                            1
+                        )
+                    )
+                )
 
                 "load" -> {
                     val urlRaw = StringUtils.toCompleteString(args, 1)
                     val url = if (urlRaw.startsWith("http"))
                         urlRaw
                     else
-                        "${LiquidBounce.CLIENT_CLOUD}/settings/${urlRaw.toLowerCase()}"
+                        "${LiquidBounce.CLIENT_CLOUD}/settings/${urlRaw.lowercase(Locale.getDefault())}"
 
                     try {
                         ClientUtils.displayChatMessage("§7[§3§lAutoSettings§7] §7Loading settings from §a§l$url§7...")
@@ -104,7 +119,13 @@ object SettingsUtils {
 
                     if (valueName.equals("bind", ignoreCase = true)) {
                         module.keyBind = Keyboard.getKeyIndex(value)
-                        ClientUtils.displayChatMessage("§7[§3§lAutoSettings§7] §a§l${module.name} §7was bound to §c§l${Keyboard.getKeyName(module.keyBind)}§7.")
+                        ClientUtils.displayChatMessage(
+                            "§7[§3§lAutoSettings§7] §a§l${module.name} §7was bound to §c§l${
+                                Keyboard.getKeyName(
+                                    module.keyBind
+                                )
+                            }§7."
+                        )
                         return@forEachIndexed
                     }
 
@@ -144,7 +165,10 @@ object SettingsUtils {
             it.category != ModuleCategory.RENDER && it !is NameProtect && it !is Spammer
         }.forEach {
             if (values)
-                it.values.forEach { value -> stringBuilder.append(it.name).append(" ").append(value.name).append(" ").append(value.get()).append("\n") }
+                it.values.forEach { value ->
+                    stringBuilder.append(it.name).append(" ").append(value.name).append(" ").append(value.get())
+                        .append("\n")
+                }
 
             if (states)
                 stringBuilder.append(it.name).append(" toggle ").append(it.state).append("\n")

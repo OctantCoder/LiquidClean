@@ -23,6 +23,7 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.sqrt
 
 /**
@@ -31,15 +32,17 @@ import kotlin.math.sqrt
  * Allows to draw custom text
  */
 @ElementInfo(name = "Text")
-class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
-           side: Side = Side.default()) : Element(x, y, scale, side) {
+class Text(
+    x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
+    side: Side = Side.default()
+) : Element(x, y, scale, side) {
 
     companion object {
 
-        val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd")
-        val HOUR_FORMAT = SimpleDateFormat("HH:mm")
+        val DATE_FORMAT: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val HOUR_FORMAT: SimpleDateFormat = SimpleDateFormat("HH:mm")
 
-        val DECIMAL_FORMAT = DecimalFormat("0.00")
+        val DECIMAL_FORMAT: DecimalFormat = DecimalFormat("0.00")
 
         /**
          * Create default element
@@ -88,7 +91,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
         val thePlayer = mc.thePlayer
 
         if (thePlayer != null) {
-            when (str.toLowerCase()) {
+            when (str.lowercase(Locale.getDefault())) {
                 "x" -> return DECIMAL_FORMAT.format(thePlayer.posX)
                 "y" -> return DECIMAL_FORMAT.format(thePlayer.posY)
                 "z" -> return DECIMAL_FORMAT.format(thePlayer.posZ)
@@ -103,7 +106,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
             }
         }
 
-        return when (str.toLowerCase()) {
+        return when (str.lowercase(Locale.getDefault())) {
             "username" -> mc.session.username
             "clientname" -> LiquidBounce.CLIENT_NAME
             "clientversion" -> LiquidBounce.CLIENT_VERSION
@@ -153,20 +156,29 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
     /**
      * Draw element
      */
-    override fun drawElement(): Border? {
+    override fun drawElement(): Border {
         val color = Color(redValue.get(), greenValue.get(), blueValue.get()).rgb
 
         val fontRenderer = fontValue.get()
 
         val rainbow = rainbow.get()
 
-        RainbowFontShader.begin(rainbow, if (rainbowX.get() == 0.0F) 0.0F else 1.0F / rainbowX.get(), if (rainbowY.get() == 0.0F) 0.0F else 1.0F / rainbowY.get(), System.currentTimeMillis() % 10000 / 10000F).use {
-            fontRenderer.drawString(displayText, 0F, 0F, if (rainbow)
-                0 else color, shadow.get())
+        RainbowFontShader.begin(
+            rainbow,
+            if (rainbowX.get() == 0.0F) 0.0F else 1.0F / rainbowX.get(),
+            if (rainbowY.get() == 0.0F) 0.0F else 1.0F / rainbowY.get(),
+            System.currentTimeMillis() % 10000 / 10000F
+        ).use {
+            fontRenderer.drawString(
+                displayText, 0F, 0F, if (rainbow)
+                    0 else color, shadow.get()
+            )
 
             if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40)
-                fontRenderer.drawString("_", fontRenderer.getStringWidth(displayText) + 2F,
-                        0F, if (rainbow) ColorUtils.rainbow(400000000L).rgb else color, shadow.get())
+                fontRenderer.drawString(
+                    "_", fontRenderer.getStringWidth(displayText) + 2F,
+                    0F, if (rainbow) ColorUtils.rainbow(400000000L).rgb else color, shadow.get()
+                )
         }
 
         if (editMode && mc.currentScreen !is GuiHudDesigner) {
@@ -175,10 +187,10 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
         }
 
         return Border(
-                -2F,
-                -2F,
-                fontRenderer.getStringWidth(displayText) + 2F,
-                fontRenderer.FONT_HEIGHT.toFloat()
+            -2F,
+            -2F,
+            fontRenderer.getStringWidth(displayText) + 2F,
+            fontRenderer.FONT_HEIGHT.toFloat()
         )
     }
 

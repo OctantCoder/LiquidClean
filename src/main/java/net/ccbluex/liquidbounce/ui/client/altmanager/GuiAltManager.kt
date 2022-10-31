@@ -15,7 +15,10 @@ import me.liuli.elixir.account.MojangAccount
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.LiquidBounce.fileManager
 import net.ccbluex.liquidbounce.event.SessionEvent
-import net.ccbluex.liquidbounce.ui.client.altmanager.menus.*
+import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiChangeName
+import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiDonatorCape
+import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiLoginIntoAccount
+import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiSessionLogin
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.altgenerator.GuiTheAltening
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
@@ -34,13 +37,12 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.util.*
 import java.util.function.Consumer
-import javax.swing.JOptionPane
 import kotlin.concurrent.thread
 
 
 class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
-    var status = "§7Idle..."
+    var status: String = "§7Idle..."
 
     private lateinit var loginButton: GuiButton
     private lateinit var randomButton: GuiButton
@@ -51,11 +53,12 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         val textFieldWidth = (width / 8).coerceAtLeast(70)
         searchField = GuiTextField(2, Fonts.font40, width - textFieldWidth - 10, 10, textFieldWidth, 20)
         searchField.maxStringLength = Int.MAX_VALUE
-        
+
         altsList = GuiList(this)
         altsList.registerScrollButtons(7, 8)
-        
-        val mightBeTheCurrentAccount = fileManager.accountsConfig.accounts.indexOfFirst { it.name == mc.session.username }
+
+        val mightBeTheCurrentAccount =
+            fileManager.accountsConfig.accounts.indexOfFirst { it.name == mc.session.username }
         altsList.elementClicked(mightBeTheCurrentAccount, false, 0, 0)
         altsList.scrollBy(mightBeTheCurrentAccount * altsList.getSlotHeight())
 
@@ -98,7 +101,14 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             6f,
             0xffffff
         )
-        Fonts.font35.drawStringWithShadow("§7Type: §a${if (altService.currentService == AltService.EnumAltService.THEALTENING) "TheAltening" else if (isValidTokenOffline(mc.getSession().token)) "Premium" else "Cracked"}", 6f, 15f, 0xffffff)
+        Fonts.font35.drawStringWithShadow(
+            "§7Type: §a${
+                if (altService.currentService == AltService.EnumAltService.THEALTENING) "TheAltening" else if (isValidTokenOffline(
+                        mc.getSession().token
+                    )
+                ) "Premium" else "Cracked"
+            }", 6f, 15f, 0xffffff
+        )
         searchField.drawTextBox()
         if (searchField.text.isEmpty() && !searchField.isFocused) Fonts.font40.drawStringWithShadow(
             "§7Search...",
@@ -134,9 +144,9 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
                     login(it, {
                         status = "§aLogged into ${mc.session.username}."
-                    },{ exception ->
+                    }, { exception ->
                         status = "§cLogin failed due to '${exception.message}'."
-                    },{
+                    }, {
                         loginButton.enabled = true
                         randomButton.enabled = true
                     })
@@ -152,9 +162,9 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
                     login(it, {
                         status = "§aLogged into ${mc.session.username}."
-                    },{ exception ->
+                    }, { exception ->
                         status = "§cLogin failed due to '${exception.message}'."
-                    },{
+                    }, {
                         loginButton.enabled = true
                         randomButton.enabled = true
                     })
@@ -162,9 +172,11 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     "§aLogging in..."
                 } ?: "§cYou do not have any accounts."
             }
+
             6 -> { // Direct login button
                 mc.displayGuiScreen(GuiLoginIntoAccount(this, directLogin = true))
             }
+
             7 -> { // Import button
                 val file = MiscUtils.openFileChooser() ?: return
 
@@ -182,7 +194,8 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 fileManager.saveConfig(fileManager.accountsConfig)
                 status = "§aThe accounts were imported successfully."
             }
-            12-> { // Export button
+
+            12 -> { // Export button
                 if (fileManager.accountsConfig.accounts.isEmpty()) {
                     status = "§cYou do not have any accounts to export."
                     return
@@ -212,6 +225,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     status = "§cUnable to export due to error: ${e.message}"
                 }
             }
+
             8 -> {
                 val currentAccount = altsList.selectedAccount
 
@@ -228,18 +242,22 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 }
 
                 // Copy to clipboard
-                Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(formattedData), null);
+                Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(formattedData), null)
                 status = "§aCopied account into your clipboard."
             }
+
             88 -> { // Gui Change Name Button
                 mc.displayGuiScreen(GuiChangeName(this))
             }
+
             9 -> { // Altening Button
                 mc.displayGuiScreen(GuiTheAltening(this))
             }
+
             10 -> { // Session Login Button
                 mc.displayGuiScreen(GuiSessionLogin(this))
             }
+
             11 -> { // Donator Cape Button
                 mc.displayGuiScreen(GuiDonatorCape(this))
             }
@@ -256,22 +274,27 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 mc.displayGuiScreen(prevGui)
                 return
             }
+
             Keyboard.KEY_UP -> { // Go one up in account list
                 var i = altsList.selectedSlot - 1
                 if (i < 0) i = 0
                 altsList.elementClicked(i, false, 0, 0)
             }
+
             Keyboard.KEY_DOWN -> { // Go one down in account list
                 var i = altsList.selectedSlot + 1
                 if (i >= altsList.size) i = altsList.size - 1
                 altsList.elementClicked(i, false, 0, 0)
             }
+
             Keyboard.KEY_RETURN -> { // Login into account
                 altsList.elementClicked(altsList.selectedSlot, true, 0, 0)
             }
+
             Keyboard.KEY_NEXT -> { // Scroll account list
                 altsList.scrollBy(height - 100)
             }
+
             Keyboard.KEY_PRIOR -> { // Scroll account list
                 altsList.scrollBy(-height + 100)
                 return
@@ -295,7 +318,8 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         searchField.updateCursorCounter()
     }
 
-    private inner class GuiList constructor(prevGui: GuiScreen) : GuiSlot(mc, prevGui.width, prevGui.height, 40, prevGui.height - 40, 30) {
+    private inner class GuiList constructor(prevGui: GuiScreen) :
+        GuiSlot(mc, prevGui.width, prevGui.height, 40, prevGui.height - 40, 30) {
 
         val accounts: List<MinecraftAccount>
             get() {
@@ -305,7 +329,12 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 }
                 search = search.lowercase(Locale.getDefault())
 
-                return fileManager.accountsConfig.accounts.filter { it.name.contains(search, ignoreCase = true) || (it is MojangAccount && it.email.contains(search, ignoreCase = true)) }
+                return fileManager.accountsConfig.accounts.filter {
+                    it.name.contains(
+                        search,
+                        ignoreCase = true
+                    ) || (it is MojangAccount && it.email.contains(search, ignoreCase = true))
+                }
             }
 
         var selectedSlot = 0
@@ -338,9 +367,9 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
                     login(it, {
                         status = "§aLogged into ${mc.session.username}."
-                    },{ exception ->
+                    }, { exception ->
                         status = "§cLogin failed due to '${exception.message}'."
-                    },{
+                    }, {
                         loginButton.enabled = true
                         randomButton.enabled = true
                     })
@@ -359,15 +388,21 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             }
 
             Fonts.font40.drawCenteredString(accountName, width / 2f, y + 2f, Color.WHITE.rgb, true)
-            Fonts.font40.drawCenteredString(if (minecraftAccount is CrackedAccount) "Cracked" else if (minecraftAccount is MicrosoftAccount) "Microsoft" else if (minecraftAccount is MojangAccount) "Mojang" else "Something else", width / 2f, y + 15f, if (minecraftAccount is CrackedAccount) Color.GRAY.rgb else Color(118, 255, 95).rgb, true)
+            Fonts.font40.drawCenteredString(
+                if (minecraftAccount is CrackedAccount) "Cracked" else if (minecraftAccount is MicrosoftAccount) "Microsoft" else if (minecraftAccount is MojangAccount) "Mojang" else "Something else",
+                width / 2f,
+                y + 15f,
+                if (minecraftAccount is CrackedAccount) Color.GRAY.rgb else Color(118, 255, 95).rgb,
+                true
+            )
         }
 
-        override fun drawBackground() { }
+        override fun drawBackground() {}
     }
 
     companion object {
 
-        val altService = AltService()
+        val altService: AltService = AltService()
         private val activeGenerators = mutableMapOf<String, Boolean>()
 
         fun loadActiveGenerators() {
@@ -389,7 +424,12 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             }
         }
 
-        fun login(minecraftAccount: MinecraftAccount, success: () -> Unit, error: (Exception) -> Unit, done: () -> Unit) = thread(name = "LoginTask") {
+        fun login(
+            minecraftAccount: MinecraftAccount,
+            success: () -> Unit,
+            error: (Exception) -> Unit,
+            done: () -> Unit
+        ): Thread = thread(name = "LoginTask") {
             if (altService.currentService != AltService.EnumAltService.MOJANG) {
                 try {
                     altService.switchService(AltService.EnumAltService.MOJANG)

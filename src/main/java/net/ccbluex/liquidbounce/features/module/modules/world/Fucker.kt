@@ -6,9 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.world
 
 import net.ccbluex.liquidbounce.LiquidBounce
-
-import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -29,10 +26,17 @@ import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C07PacketPlayerDigging
+import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.Vec3
 import java.awt.Color
+import java.util.*
 
-@ModuleInfo(name = "Fucker", description = "Destroys selected blocks around you. (aka.  IDNuker)", category = ModuleCategory.WORLD)
+@ModuleInfo(
+    name = "Fucker",
+    description = "Destroys selected blocks around you. (aka.  IDNuker)",
+    category = ModuleCategory.WORLD
+)
 object Fucker : Module() {
 
     /**
@@ -59,10 +63,10 @@ object Fucker : Module() {
     private var oldPos: BlockPos? = null
     private var blockHitDelay = 0
     private val switchTimer = MSTimer()
-    var currentDamage = 0F
+    var currentDamage: Float = 0F
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         if (noHitValue.get()) {
@@ -74,8 +78,9 @@ object Fucker : Module() {
 
         val targetId = blockValue.get()
 
-        if (pos == null || Block.getIdFromBlock(getBlock(pos!!)!!) != targetId ||
-                getCenterDistance(pos!!) > rangeValue.get())
+        if (pos == null || Block.getIdFromBlock(getBlock(pos ?: return) ?: return) != targetId ||
+            getCenterDistance(pos ?: return) > rangeValue.get()
+        )
             pos = find(targetId)
 
         // Reset current breaking when there is no target block
@@ -92,8 +97,10 @@ object Fucker : Module() {
 
         if (surroundingsValue.get()) {
             val eyes = thePlayer.getPositionEyes(1F)
-            val blockPos = mc.theWorld!!.rayTraceBlocks(eyes, rotations.vec, false,
-                    false, true)?.blockPos
+            val blockPos = (mc.theWorld ?: return).rayTraceBlocks(
+                eyes, rotations.vec, false,
+                false, true
+            )?.blockPos
 
             if (blockPos != null && blockPos.getBlock() != Blocks.air) {
                 if (currentPos.x != blockPos.x || currentPos.y != blockPos.y || currentPos.z != blockPos.z)
@@ -137,30 +144,43 @@ object Fucker : Module() {
                 // Break block
                 if (instantValue.get()) {
                     // CivBreak style block breaking
-                    mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK,
-                            currentPos, EnumFacing.DOWN))
+                    mc.netHandler.addToSendQueue(
+                        C07PacketPlayerDigging(
+                            C07PacketPlayerDigging.Action.START_DESTROY_BLOCK,
+                            currentPos, EnumFacing.DOWN
+                        )
+                    )
 
                     if (swingValue.get())
                         thePlayer.swingItem()
 
-                    mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
-                            currentPos, EnumFacing.DOWN))
+                    mc.netHandler.addToSendQueue(
+                        C07PacketPlayerDigging(
+                            C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
+                            currentPos, EnumFacing.DOWN
+                        )
+                    )
                     currentDamage = 0F
                     return
                 }
 
                 // Minecraft block breaking
-                val block = currentPos.getBlock() ?: return
+                val block = currentPos.getBlock()
 
                 if (currentDamage == 0F) {
-                    mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK,
-                            currentPos, EnumFacing.DOWN))
+                    mc.netHandler.addToSendQueue(
+                        C07PacketPlayerDigging(
+                            C07PacketPlayerDigging.Action.START_DESTROY_BLOCK,
+                            currentPos, EnumFacing.DOWN
+                        )
+                    )
 
                     if (thePlayer.capabilities.isCreativeMode ||
-                            block.getPlayerRelativeBlockHardness(thePlayer, mc.theWorld!!, pos!!) >= 1.0F) {
+                        (block ?: return).getPlayerRelativeBlockHardness(thePlayer, mc.theWorld ?: return, pos ?: return) >= 1.0F
+                    ) {
                         if (swingValue.get())
                             thePlayer.swingItem()
-                        mc.playerController.onPlayerDestroyBlock(pos!!, EnumFacing.DOWN)
+                        mc.playerController.onPlayerDestroyBlock(pos ?: return, EnumFacing.DOWN)
 
                         currentDamage = 0F
                         pos = null
@@ -171,13 +191,16 @@ object Fucker : Module() {
                 if (swingValue.get())
                     thePlayer.swingItem()
 
-                currentDamage += block.getPlayerRelativeBlockHardness(thePlayer, mc.theWorld!!, currentPos)
-                mc.theWorld!!.sendBlockBreakProgress(thePlayer.entityId, currentPos, (currentDamage * 10F).toInt() - 1)
+                currentDamage += (block ?: return).getPlayerRelativeBlockHardness(thePlayer, mc.theWorld ?: return, currentPos)
+                (mc.theWorld ?: return).sendBlockBreakProgress(thePlayer.entityId, currentPos, (currentDamage * 10F).toInt() - 1)
 
                 if (currentDamage >= 1F) {
-                    mc.netHandler.addToSendQueue(C07PacketPlayerDigging(
-                        C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
-                            currentPos, EnumFacing.DOWN))
+                    mc.netHandler.addToSendQueue(
+                        C07PacketPlayerDigging(
+                            C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
+                            currentPos, EnumFacing.DOWN
+                        )
+                    )
                     mc.playerController.onPlayerDestroyBlock(currentPos, EnumFacing.DOWN)
                     blockHitDelay = 4
                     currentDamage = 0F
@@ -187,8 +210,10 @@ object Fucker : Module() {
 
             // Use block
             actionValue.get().equals("use", true) -> if (mc.playerController.onPlayerRightClick(
-                            thePlayer, mc.theWorld!!, thePlayer.heldItem!!, pos!!, EnumFacing.DOWN,
-                            Vec3(currentPos.x.toDouble(), currentPos.y.toDouble(), currentPos.z.toDouble()))) {
+                    thePlayer, mc.theWorld ?: return, thePlayer.heldItem ?: return, pos ?: return, EnumFacing.DOWN,
+                    Vec3(currentPos.x.toDouble(), currentPos.y.toDouble(), currentPos.z.toDouble())
+                )
+            ) {
                 if (swingValue.get())
                     thePlayer.swingItem()
 
@@ -200,20 +225,10 @@ object Fucker : Module() {
     }
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent) {
         RenderUtils.drawBlockBox(pos ?: return, Color.RED, true)
     }
 
-    /**
-     * Find new target block by [targetID]
-     */
-    /*private fun find(targetID: Int) =
-        searchBlocks(rangeValue.get().toInt() + 1).filter {
-                    Block.getIdFromBlock(it.value) == targetID && getCenterDistance(it.key) <= rangeValue.get()
-                            && (isHitable(it.key) || surroundingsValue.get())
-                }.minBy { getCenterDistance(it.key) }?.key*/
-
-    //Removed triple iteration of blocks to improve speed
     /**
      * Find new target block by [targetID]
      */
@@ -228,8 +243,10 @@ object Fucker : Module() {
         for (x in radius downTo -radius + 1) {
             for (y in radius downTo -radius + 1) {
                 for (z in radius downTo -radius + 1) {
-                    val blockPos = BlockPos(thePlayer.posX.toInt() + x, thePlayer.posY.toInt() + y,
-                            thePlayer.posZ.toInt() + z)
+                    val blockPos = BlockPos(
+                        thePlayer.posX.toInt() + x, thePlayer.posY.toInt() + y,
+                        thePlayer.posZ.toInt() + z
+                    )
                     val block = getBlock(blockPos) ?: continue
 
                     if (Block.getIdFromBlock(block) != targetID) continue
@@ -254,17 +271,23 @@ object Fucker : Module() {
     private fun isHitable(blockPos: BlockPos): Boolean {
         val thePlayer = mc.thePlayer ?: return false
 
-        return when (throughWallsValue.get().toLowerCase()) {
+        return when (throughWallsValue.get().lowercase(Locale.getDefault())) {
             "raycast" -> {
-                val eyesPos = Vec3(thePlayer.posX, thePlayer.entityBoundingBox.minY +
-                        thePlayer.eyeHeight, thePlayer.posZ)
-                val movingObjectPosition = mc.theWorld!!.rayTraceBlocks(eyesPos,
-                        Vec3(blockPos.x + 0.5, blockPos.y + 0.5, blockPos.z + 0.5), false, true, false)
+                val eyesPos = Vec3(
+                    thePlayer.posX, thePlayer.entityBoundingBox.minY +
+                            thePlayer.eyeHeight, thePlayer.posZ
+                )
+                val movingObjectPosition = mc.theWorld!!.rayTraceBlocks(
+                    eyesPos,
+                    Vec3(blockPos.x + 0.5, blockPos.y + 0.5, blockPos.z + 0.5), false, true, false
+                )
 
                 movingObjectPosition != null && movingObjectPosition.blockPos == blockPos
             }
+
             "around" -> !isFullBlock(blockPos.down()) || !isFullBlock(blockPos.up()) || !isFullBlock(blockPos.north())
                     || !isFullBlock(blockPos.east()) || !isFullBlock(blockPos.south()) || !isFullBlock(blockPos.west())
+
             else -> true
         }
     }

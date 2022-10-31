@@ -22,9 +22,7 @@ import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiDonatorCape;
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.altgenerator.GuiTheAltening;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.value.Value;
-
 import java.io.*;
-import java.util.Iterator;
 import java.util.Map;
 
 public class ValuesConfig extends FileConfig {
@@ -41,21 +39,17 @@ public class ValuesConfig extends FileConfig {
     /**
      * Load config from file
      *
-     * @throws IOException
      */
     @Override
     protected void loadConfig() throws IOException {
         final JsonElement jsonElement = new JsonParser().parse(new BufferedReader(new FileReader(getFile())));
 
-        if(jsonElement instanceof JsonNull)
+        if (jsonElement instanceof JsonNull)
             return;
 
         final JsonObject jsonObject = (JsonObject) jsonElement;
 
-        final Iterator<Map.Entry<String, JsonElement>> iterator = jsonObject.entrySet().iterator();
-        while(iterator.hasNext()) {
-            final Map.Entry<String, JsonElement> entry = iterator.next();
-
+        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             if (entry.getKey().equalsIgnoreCase("CommandPrefix")) {
                 LiquidBounce.commandManager.setPrefix(entry.getValue().getAsCharacter());
             } else if (entry.getKey().equalsIgnoreCase("ShowRichPresence")) {
@@ -117,13 +111,13 @@ public class ValuesConfig extends FileConfig {
             } else {
                 final Module module = LiquidBounce.moduleManager.getModule(entry.getKey());
 
-                if(module != null) {
+                if (module != null) {
                     final JsonObject jsonModule = (JsonObject) entry.getValue();
 
-                    for(final Value moduleValue : module.getValues()) {
+                    for (final Value moduleValue : module.getValues()) {
                         final JsonElement element = jsonModule.get(moduleValue.getName());
 
-                        if(element != null) moduleValue.fromJson(element);
+                        if (element != null) moduleValue.fromJson(element);
                     }
                 }
             }
@@ -133,7 +127,6 @@ public class ValuesConfig extends FileConfig {
     /**
      * Save config to file
      *
-     * @throws IOException
      */
     @Override
     protected void saveConfig() throws IOException {

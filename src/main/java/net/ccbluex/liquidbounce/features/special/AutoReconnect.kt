@@ -7,12 +7,12 @@
 package net.ccbluex.liquidbounce.features.special
 
 object AutoReconnect {
-    const val MAX = 60000
-    const val MIN = 1000
+    const val MAX: Int = 60000
+    const val MIN: Int = 1000
 
-    var isEnabled = true
+    var isEnabled: Boolean = true
         private set
-    var delay = 5000
+    var delay: Int = 5000
         set(value) {
             isEnabled = value < MAX
 

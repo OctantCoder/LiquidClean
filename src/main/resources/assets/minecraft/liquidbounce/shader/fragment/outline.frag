@@ -9,7 +9,7 @@ uniform float radius;
 void main(void) {
     vec4 centerCol = texture2D(texture, gl_TexCoord[0].xy);
 
-    if(centerCol.a != 0) {
+    if (centerCol.a != 0) {
         gl_FragColor = vec4(0, 0, 0, 0);
     } else {
         for (float x = -radius; x <= radius; x++) {

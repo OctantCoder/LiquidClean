@@ -36,7 +36,8 @@ import java.util.stream.IntStream;
 public class AutoArmor extends Module {
 
     public static final ArmorComparator ARMOR_COMPARATOR = new ArmorComparator();
-    private final IntegerValue minDelayValue = new IntegerValue("MinDelay", 100, 0, 400) {
+    private final BoolValue invOpenValue = new BoolValue("InvOpen", false);
+    private final BoolValue simulateInventory = new BoolValue("SimulateInventory", true);    private final IntegerValue minDelayValue = new IntegerValue("MinDelay", 100, 0, 400) {
 
         @Override
         protected void onChanged(final Integer oldValue, final Integer newValue) {
@@ -45,7 +46,8 @@ public class AutoArmor extends Module {
             if (maxDelay < newValue) set(maxDelay);
         }
     };
-    private final IntegerValue maxDelayValue = new IntegerValue("MaxDelay", 200, 0, 400) {
+    private final BoolValue noMoveValue = new BoolValue("NoMove", false);
+    private final IntegerValue itemDelayValue = new IntegerValue("ItemDelay", 0, 0, 5000);    private final IntegerValue maxDelayValue = new IntegerValue("MaxDelay", 200, 0, 400) {
         @Override
         protected void onChanged(final Integer oldValue, final Integer newValue) {
             final int minDelay = minDelayValue.get();
@@ -53,18 +55,12 @@ public class AutoArmor extends Module {
             if (minDelay > newValue) set(minDelay);
         }
     };
-    private final BoolValue invOpenValue = new BoolValue("InvOpen", false);
-    private final BoolValue simulateInventory = new BoolValue("SimulateInventory", true);
-    private final BoolValue noMoveValue = new BoolValue("NoMove", false);
-    private final IntegerValue itemDelayValue = new IntegerValue("ItemDelay", 0, 0, 5000);
     private final BoolValue hotbarValue = new BoolValue("Hotbar", true);
-
     private long delay;
-
     private boolean locked = false;
 
     @EventTarget
-    public void onRender3D(final Render3DEvent event) {
+    public void onRender3D(@SuppressWarnings("unused") final Render3DEvent event) {
         if (!InventoryUtils.CLICK_TIMER.hasTimePassed(delay) || mc.thePlayer == null || (mc.thePlayer.openContainer != null && mc.thePlayer.openContainer.windowId != 0))
             return;
 
@@ -112,10 +108,10 @@ public class AutoArmor extends Module {
     }
 
     /**
-     * Shift+Left clicks the specified item
+     * Shift + Left-clicks the specified item
      *
      * @param item        Slot of the item to click
-     * @param isArmorSlot
+     * @param isArmorSlot if it is an armor slot
      * @return True if it is unable to move the item
      */
     private boolean move(int item, boolean isArmorSlot) {
@@ -130,7 +126,8 @@ public class AutoArmor extends Module {
         } else if (!(noMoveValue.get() && MovementUtils.isMoving()) && (!invOpenValue.get() || mc.currentScreen instanceof GuiInventory) && item != -1) {
             final boolean openInventory = simulateInventory.get() && !(mc.currentScreen instanceof GuiInventory);
 
-            if (openInventory) mc.getNetHandler().addToSendQueue(new C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT));
+            if (openInventory)
+                mc.getNetHandler().addToSendQueue(new C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT));
 
             boolean full = isArmorSlot;
 
@@ -159,5 +156,10 @@ public class AutoArmor extends Module {
 
         return false;
     }
+
+
+
+
+
 
 }

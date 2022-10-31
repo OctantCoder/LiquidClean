@@ -61,10 +61,12 @@ data class Rotation(var yaw: Float, var pitch: Float) : MinecraftInstance() {
      * @author bestnub
      */
     fun applyStrafeToPlayer(event: StrafeEvent) {
-        val player = mc.thePlayer!!
+        val player = mc.thePlayer ?: return
 
-        val dif = ((MathHelper.wrapAngleTo180_float(player.rotationYaw - this.yaw
-                - 23.5f - 135)
+        val dif = ((MathHelper.wrapAngleTo180_float(
+            player.rotationYaw - this.yaw
+                    - 23.5f - 135
+        )
                 + 180) / 45).toInt()
 
         val yaw = this.yaw
@@ -81,36 +83,43 @@ data class Rotation(var yaw: Float, var pitch: Float) : MinecraftInstance() {
                 calcForward = forward
                 calcStrafe = strafe
             }
+
             1 -> {
                 calcForward += forward
                 calcStrafe -= forward
                 calcForward += strafe
                 calcStrafe += strafe
             }
+
             2 -> {
                 calcForward = strafe
                 calcStrafe = -forward
             }
+
             3 -> {
                 calcForward -= forward
                 calcStrafe -= forward
                 calcForward += strafe
                 calcStrafe -= strafe
             }
+
             4 -> {
                 calcForward = -forward
                 calcStrafe = -strafe
             }
+
             5 -> {
                 calcForward -= forward
                 calcStrafe += forward
                 calcForward -= strafe
                 calcStrafe -= strafe
             }
+
             6 -> {
                 calcForward = -strafe
                 calcStrafe = forward
             }
+
             7 -> {
                 calcForward += forward
                 calcStrafe += forward

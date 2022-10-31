@@ -20,6 +20,7 @@ public abstract class MixinServerSelectionList extends GuiSlot {
 
     /**
      * @author CCBlueX
+     * @reason To get scroll bar x
      */
     @Overwrite
     protected int getScrollBarX() {

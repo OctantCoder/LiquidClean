@@ -18,28 +18,32 @@ import net.minecraft.client.gui.GuiIngameMenu
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.settings.GameSettings
 
-@ModuleInfo(name = "InventoryMove", description = "Allows you to walk while an inventory is opened.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "InventoryMove",
+    description = "Allows you to walk while an inventory is opened.",
+    category = ModuleCategory.MOVEMENT
+)
 class InventoryMove : Module() {
 
     private val undetectable = BoolValue("Undetectable", false)
-    val aacAdditionProValue = BoolValue("AACAdditionPro", false)
+    val aacAdditionProValue: BoolValue = BoolValue("AACAdditionPro", false)
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
 
     private val affectedBindings = arrayOf(
-            mc.gameSettings.keyBindForward,
-            mc.gameSettings.keyBindBack,
-            mc.gameSettings.keyBindRight,
-            mc.gameSettings.keyBindLeft,
-            mc.gameSettings.keyBindJump,
-            mc.gameSettings.keyBindSprint
+        mc.gameSettings.keyBindForward,
+        mc.gameSettings.keyBindBack,
+        mc.gameSettings.keyBindRight,
+        mc.gameSettings.keyBindLeft,
+        mc.gameSettings.keyBindJump,
+        mc.gameSettings.keyBindSprint
     )
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         tick()
     }
 
-    fun tick() {
+    private fun tick() {
         if (mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && (!undetectable.get() || mc.currentScreen !is GuiContainer)) {
             for (affectedBinding in affectedBindings) {
                 affectedBinding.pressed = GameSettings.isKeyDown(affectedBinding)
@@ -54,10 +58,10 @@ class InventoryMove : Module() {
     }
 
     override fun onDisable() {
-        val isIngame = mc.currentScreen != null
+        val isInGame = mc.currentScreen != null
 
         for (affectedBinding in affectedBindings) {
-            if (!GameSettings.isKeyDown(affectedBinding) || isIngame)
+            if (!GameSettings.isKeyDown(affectedBinding) || isInGame)
                 affectedBinding.pressed = false
         }
     }

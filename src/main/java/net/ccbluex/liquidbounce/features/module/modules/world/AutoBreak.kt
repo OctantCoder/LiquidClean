@@ -12,15 +12,20 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.init.Blocks
 
-@ModuleInfo(name = "AutoBreak", description = "Automatically breaks the block you are looking at.", category = ModuleCategory.WORLD)
+@ModuleInfo(
+    name = "AutoBreak",
+    description = "Automatically breaks the block you are looking at.",
+    category = ModuleCategory.WORLD
+)
 class AutoBreak : Module() {
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        if (mc.objectMouseOver == null || mc.objectMouseOver!!.blockPos == null || mc.theWorld == null)
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
+        if (mc.objectMouseOver == null || (mc.objectMouseOver ?: return).blockPos == null || mc.theWorld == null)
             return
 
-        mc.gameSettings.keyBindAttack.pressed = mc.theWorld.getBlockState(mc.objectMouseOver.blockPos).block != Blocks.air
+        mc.gameSettings.keyBindAttack.pressed =
+            mc.theWorld.getBlockState(mc.objectMouseOver.blockPos).block != Blocks.air
     }
 
     override fun onDisable() {

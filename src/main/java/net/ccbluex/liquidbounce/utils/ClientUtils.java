@@ -8,22 +8,17 @@ package net.ccbluex.liquidbounce.utils;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.login.client.C01PacketEncryptionResponse;
-import net.minecraft.network.login.server.S01PacketEncryptionRequest;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.crypto.SecretKey;
 import java.lang.reflect.Field;
-import java.security.PublicKey;
 
 @SideOnly(Side.CLIENT)
 public final class ClientUtils extends MinecraftInstance {
 
+    private static final Logger logger = LogManager.getLogger("LiquidBounce");
     private static Field fastRenderField = null;
 
     static {
@@ -35,10 +30,10 @@ public final class ClientUtils extends MinecraftInstance {
             }
 
             fastRenderField = declaredField;
-        } catch (NoSuchFieldException e) { }
+        } catch (NoSuchFieldException e) {
+            ClientUtils.logger.error("ClientUtils error " + e);
+        }
     }
-
-    private static final Logger logger = LogManager.getLogger("LiquidBounce");
 
     public static Logger getLogger() {
         return logger;
@@ -55,12 +50,6 @@ public final class ClientUtils extends MinecraftInstance {
             }
         } catch (IllegalAccessException ignored) {
         }
-    }
-
-    public static void sendEncryption(final NetworkManager networkManager, final SecretKey secretKey, final PublicKey publicKey, final S01PacketEncryptionRequest encryptionRequest) {
-        networkManager.sendPacket(new C01PacketEncryptionResponse(secretKey, publicKey, encryptionRequest.getVerifyToken()), future -> {
-            networkManager.enableEncryption(secretKey);
-        });
     }
 
     public static void displayChatMessage(final String message) {

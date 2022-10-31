@@ -11,10 +11,10 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 
 class SpectreLowHop : SpeedMode("SpectreLowHop") {
     override fun onMotion() {
-        if (!MovementUtils.isMoving || mc.thePlayer!!.movementInput.jump) return
-        if (mc.thePlayer!!.onGround) {
+        if (!MovementUtils.isMoving || (mc.thePlayer ?: return).movementInput.jump) return
+        if ((mc.thePlayer ?: return).onGround) {
             MovementUtils.strafe(1.1f)
-            mc.thePlayer!!.motionY = 0.15
+            (mc.thePlayer ?: return).motionY = 0.15
             return
         }
         MovementUtils.strafe()

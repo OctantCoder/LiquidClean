@@ -17,14 +17,16 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C0BPacketEntityAction
+import java.util.*
 
 @ModuleInfo(name = "Sneak", description = "Automatically sneaks all the time.", category = ModuleCategory.MOVEMENT)
 class Sneak : Module() {
 
     @JvmField
-    val modeValue = ListValue("Mode", arrayOf("Legit", "Vanilla", "Switch", "MineSecure"), "MineSecure")
+    val modeValue: ListValue = ListValue("Mode", arrayOf("Legit", "Vanilla", "Switch", "MineSecure"), "MineSecure")
+
     @JvmField
-    val stopMoveValue = BoolValue("StopMove", false)
+    val stopMoveValue: BoolValue = BoolValue("StopMove", false)
 
     private var sneaking = false
 
@@ -36,24 +38,50 @@ class Sneak : Module() {
             return
         }
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "legit" -> mc.gameSettings.keyBindSneak.pressed = true
             "vanilla" -> {
                 if (sneaking)
                     return
 
-                mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer!!, C0BPacketEntityAction.Action.START_SNEAKING))
+                mc.netHandler.addToSendQueue(
+                    C0BPacketEntityAction(
+                        mc.thePlayer ?: return,
+                        C0BPacketEntityAction.Action.START_SNEAKING
+                    )
+                )
             }
 
             "switch" -> {
                 when (event.eventState) {
                     EventState.PRE -> {
-                        mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer!!, C0BPacketEntityAction.Action.START_SNEAKING))
-                        mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer!!, C0BPacketEntityAction.Action.STOP_SNEAKING))
+                        mc.netHandler.addToSendQueue(
+                            C0BPacketEntityAction(
+                                mc.thePlayer ?: return,
+                                C0BPacketEntityAction.Action.START_SNEAKING
+                            )
+                        )
+                        mc.netHandler.addToSendQueue(
+                            C0BPacketEntityAction(
+                                mc.thePlayer ?: return,
+                                C0BPacketEntityAction.Action.STOP_SNEAKING
+                            )
+                        )
                     }
+
                     EventState.POST -> {
-                        mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer!!, C0BPacketEntityAction.Action.STOP_SNEAKING))
-                        mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer!!, C0BPacketEntityAction.Action.START_SNEAKING))
+                        mc.netHandler.addToSendQueue(
+                            C0BPacketEntityAction(
+                                mc.thePlayer ?: return,
+                                C0BPacketEntityAction.Action.STOP_SNEAKING
+                            )
+                        )
+                        mc.netHandler.addToSendQueue(
+                            C0BPacketEntityAction(
+                                mc.thePlayer ?: return,
+                                C0BPacketEntityAction.Action.START_SNEAKING
+                            )
+                        )
                     }
                 }
             }
@@ -62,26 +90,37 @@ class Sneak : Module() {
                 if (event.eventState == EventState.PRE)
                     return
 
-                mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer!!, C0BPacketEntityAction.Action.START_SNEAKING))
+                mc.netHandler.addToSendQueue(
+                    C0BPacketEntityAction(
+                        mc.thePlayer ?: return,
+                        C0BPacketEntityAction.Action.START_SNEAKING
+                    )
+                )
             }
         }
     }
 
     @EventTarget
-    fun onWorld(worldEvent: WorldEvent) {
+    fun onWorld(@Suppress("UNUSED_PARAMETER") worldEvent: WorldEvent) {
         sneaking = false
     }
 
     override fun onDisable() {
         val player = mc.thePlayer ?: return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "legit" -> {
                 if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
                     mc.gameSettings.keyBindSneak.pressed = false
                 }
             }
-            "vanilla", "switch", "minesecure" -> mc.netHandler.addToSendQueue(C0BPacketEntityAction(player, C0BPacketEntityAction.Action.STOP_SNEAKING))
+
+            "vanilla", "switch", "minesecure" -> mc.netHandler.addToSendQueue(
+                C0BPacketEntityAction(
+                    player,
+                    C0BPacketEntityAction.Action.STOP_SNEAKING
+                )
+            )
         }
         sneaking = false
     }

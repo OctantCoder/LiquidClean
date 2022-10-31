@@ -32,8 +32,10 @@ import java.awt.Color
  * Allows to move and customize minecraft scoreboard
  */
 @ElementInfo(name = "Scoreboard", force = true)
-class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
-                        side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)) : Element(x, y, scale, side) {
+class ScoreboardElement(
+    x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
+    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)
+) : Element(x, y, scale, side) {
 
     private val textRedValue = IntegerValue("Text-R", 255, 0, 255)
     private val textGreenValue = IntegerValue("Text-G", 255, 0, 255)
@@ -66,12 +68,14 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
         val backColor = backgroundColor().rgb
 
         val rectColorMode = rectColorModeValue.get()
-        val rectCustomColor = Color(rectColorRedValue.get(), rectColorGreenValue.get(), rectColorBlueValue.get(),
-                rectColorBlueAlpha.get()).rgb
+        val rectCustomColor = Color(
+            rectColorRedValue.get(), rectColorGreenValue.get(), rectColorBlueValue.get(),
+            rectColorBlueAlpha.get()
+        ).rgb
 
-        val worldScoreboard = mc.theWorld!!.scoreboard
+        val worldScoreboard = (mc.theWorld ?: return null).scoreboard
         var currObjective: ScoreObjective? = null
-        val playerTeam = worldScoreboard.getPlayersTeam(mc.thePlayer!!.name)
+        val playerTeam = worldScoreboard.getPlayersTeam((mc.thePlayer ?: return null).name)
 
         if (playerTeam != null) {
             val colorIndex = playerTeam.chatFormat.colorIndex
@@ -97,7 +101,12 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
 
         for (score in scoreCollection) {
             val scorePlayerTeam = scoreboard.getPlayersTeam(score.playerName)
-            val width = "${ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)}: ${EnumChatFormatting.RED}${score.scorePoints}"
+            val width = "${
+                ScorePlayerTeam.formatPlayerName(
+                    scorePlayerTeam,
+                    score.playerName
+                )
+            }: ${EnumChatFormatting.RED}${score.scorePoints}"
             maxWidth = maxWidth.coerceAtLeast(fontRenderer.getStringWidth(width))
         }
 
@@ -120,15 +129,23 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
 
             fontRenderer.drawString(name, l1.toFloat(), height, textColor, shadowValue.get())
-            fontRenderer.drawString(scorePoints, (width - fontRenderer.getStringWidth(scorePoints)).toFloat(), height, textColor, shadowValue.get())
+            fontRenderer.drawString(
+                scorePoints,
+                (width - fontRenderer.getStringWidth(scorePoints)).toFloat(),
+                height,
+                textColor,
+                shadowValue.get()
+            )
 
             if (index == scoreCollection.size - 1) {
                 val displayName = objective.displayName
 
                 GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
 
-                fontRenderer.drawString(displayName, (l1 + maxWidth / 2 - fontRenderer.getStringWidth(displayName) / 2).toFloat(), (height -
-                        fontRenderer.FONT_HEIGHT), textColor, shadowValue.get())
+                fontRenderer.drawString(
+                    displayName, (l1 + maxWidth / 2 - fontRenderer.getStringWidth(displayName) / 2).toFloat(), (height -
+                            fontRenderer.FONT_HEIGHT), textColor, shadowValue.get()
+                )
             }
 
             if (rectValue.get()) {
@@ -137,17 +154,32 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                     else -> rectCustomColor
                 }
 
-                RenderUtils.drawRect(2F, if (index == scoreCollection.size - 1) -2F else height, 5F, if (index == 0) fontRenderer.FONT_HEIGHT.toFloat() else height + fontRenderer.FONT_HEIGHT * 2F, rectColor)
+                RenderUtils.drawRect(
+                    2F,
+                    if (index == scoreCollection.size - 1) -2F else height,
+                    5F,
+                    if (index == 0) fontRenderer.FONT_HEIGHT.toFloat() else height + fontRenderer.FONT_HEIGHT * 2F,
+                    rectColor
+                )
             }
         }
 
-        return Border(-maxWidth.toFloat() - 5 - if (rectValue.get()) 3 else 0, -2F, 5F, maxHeight + fontRenderer.FONT_HEIGHT.toFloat())
+        return Border(
+            -maxWidth.toFloat() - 5 - if (rectValue.get()) 3 else 0,
+            -2F,
+            5F,
+            maxHeight + fontRenderer.FONT_HEIGHT.toFloat()
+        )
     }
 
-    private fun backgroundColor() = Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(),
-            backgroundColorBlueValue.get(), backgroundColorAlphaValue.get())
+    private fun backgroundColor() = Color(
+        backgroundColorRedValue.get(), backgroundColorGreenValue.get(),
+        backgroundColorBlueValue.get(), backgroundColorAlphaValue.get()
+    )
 
-    private fun textColor() = Color(textRedValue.get(), textGreenValue.get(),
-            textBlueValue.get())
+    private fun textColor() = Color(
+        textRedValue.get(), textGreenValue.get(),
+        textBlueValue.get()
+    )
 
 }

@@ -84,7 +84,7 @@ class InventoryCleaner : Module() {
     private var delay = 0L
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         if (!InventoryUtils.CLICK_TIMER.hasTimePassed(delay) || mc.currentScreen !is GuiInventory && invOpenValue.get() || noMoveValue.get() && MovementUtils.isMoving || thePlayer.openContainer != null && thePlayer.openContainer.windowId != 0 || (LiquidBounce.moduleManager[AutoArmor::class.java] as AutoArmor).isLocked) {

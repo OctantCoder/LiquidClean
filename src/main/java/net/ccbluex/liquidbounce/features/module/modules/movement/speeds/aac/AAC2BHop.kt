@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 class AAC2BHop : SpeedMode("AAC2BHop") {
 
     override fun onMotion() {
-        val thePlayer = mc.thePlayer!!
+        val thePlayer = mc.thePlayer ?: return
 
         if (thePlayer.isInWater)
             return

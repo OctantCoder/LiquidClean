@@ -23,8 +23,10 @@ import kotlin.math.sqrt
  * Allows to draw custom text
  */
 @ElementInfo(name = "SpeedGraph")
-class SpeedGraph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
-                 side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
+class SpeedGraph(
+    x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
+    side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)
+) : Element(x, y, scale, side) {
 
     private val yMultiplier = FloatValue("yMultiplier", 7F, 1F, 20F)
     private val height = IntegerValue("Height", 50, 30, 150)
@@ -35,7 +37,7 @@ class SpeedGraph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
     private val colorBlueValue = IntegerValue("B", 255, 0, 255)
 
     private val speedList = ArrayList<Double>()
-    private var lastTick = -1;
+    private var lastTick = -1
 
     override fun drawElement(): Border {
         val width = width.get()

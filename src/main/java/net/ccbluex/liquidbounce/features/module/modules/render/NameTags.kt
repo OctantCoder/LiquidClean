@@ -28,7 +28,11 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.roundToInt
 
-@ModuleInfo(name = "NameTags", description = "Changes the scale of the nametags so you can always read them.", category = ModuleCategory.RENDER)
+@ModuleInfo(
+    name = "NameTags",
+    description = "Changes the scale of the name tags so you can always read them.",
+    category = ModuleCategory.RENDER
+)
 class NameTags : Module() {
     private val healthValue = BoolValue("Health", true)
     private val pingValue = BoolValue("Ping", true)
@@ -41,7 +45,7 @@ class NameTags : Module() {
     private val botValue = BoolValue("Bots", true)
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent) {
         glPushAttrib(GL_ENABLE_BIT)
         glPushMatrix()
 
@@ -55,16 +59,17 @@ class NameTags : Module() {
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-        for (entity in mc.theWorld!!.loadedEntityList) {
+        for (entity in (mc.theWorld ?: return).loadedEntityList) {
             if (entity !is EntityLivingBase) continue
             if (!EntityUtils.isSelected(entity, false)) continue
             if (AntiBot.isBot(entity) && !botValue.get()) continue
 
-            renderNameTag(entity,
-                    if (clearNamesValue.get())
-                        ColorUtils.stripColor(entity.displayName?.unformattedText) ?: continue
-                    else
-                        (entity.displayName ?: continue).unformattedText
+            renderNameTag(
+                entity,
+                if (clearNamesValue.get())
+                    ColorUtils.stripColor(entity.displayName?.unformattedText) ?: continue
+                else
+                    (entity.displayName ?: continue).unformattedText
             )
         }
 
@@ -86,7 +91,8 @@ class NameTags : Module() {
         val ping = if (entity is EntityPlayer) entity.getPing() else 0
 
         val distanceText = if (distanceValue.get()) "§7${thePlayer.getDistanceToEntity(entity).roundToInt()}m " else ""
-        val pingText = if (pingValue.get() && entity is EntityPlayer) (if (ping > 200) "§c" else if (ping > 100) "§e" else "§a") + ping + "ms §7" else ""
+        val pingText =
+            if (pingValue.get() && entity is EntityPlayer) (if (ping > 200) "§c" else if (ping > 100) "§e" else "§a") + ping + "ms §7" else ""
         val healthText = if (healthValue.get()) "§7§c " + entity.health.toInt() + " HP" else ""
         val botText = if (bot) " §c§lBot" else ""
 
@@ -101,9 +107,9 @@ class NameTags : Module() {
 
 
         glTranslated( // Translate to player position with render pos and interpolate it
-                entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX,
-                entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + 0.55,
-                entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
+            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX,
+            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + 0.55,
+            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
         )
 
         glRotatef(-mc.renderManager.playerViewY, 0F, 1F, 0F)
@@ -129,14 +135,24 @@ class NameTags : Module() {
         glEnable(GL_BLEND)
 
         if (borderValue.get())
-            quickDrawBorderedRect(-width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F, 2F, Color(255, 255, 255, 90).rgb, Integer.MIN_VALUE)
+            quickDrawBorderedRect(
+                -width - 2F,
+                -2F,
+                width + 4F,
+                fontRenderer.FONT_HEIGHT + 2F,
+                2F,
+                Color(255, 255, 255, 90).rgb,
+                Integer.MIN_VALUE
+            )
         else
             quickDrawRect(-width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F, Integer.MIN_VALUE)
 
         glEnable(GL_TEXTURE_2D)
 
-        fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F,
-                0xFFFFFF, true)
+        fontRenderer.drawString(
+            text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F,
+            0xFFFFFF, true
+        )
 
         AWTFontRenderer.assumeNonVolatile = false
 

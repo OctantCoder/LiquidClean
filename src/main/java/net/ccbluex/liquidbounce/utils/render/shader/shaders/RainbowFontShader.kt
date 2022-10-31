@@ -10,12 +10,12 @@ import org.lwjgl.opengl.GL20
 import java.io.Closeable
 
 object RainbowFontShader : Shader("rainbow_font_shader.frag"), Closeable {
-    var isInUse = false
+    var isInUse: Boolean = false
         private set
 
-    var strengthX = 0f
-    var strengthY = 0f
-    var offset = 0f
+    var strengthX: Float = 0f
+    var strengthY: Float = 0f
+    var offset: Float = 0f
 
     override fun setupUniforms() {
         setupUniform("offset")

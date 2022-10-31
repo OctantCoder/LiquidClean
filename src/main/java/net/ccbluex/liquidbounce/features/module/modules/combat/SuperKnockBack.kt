@@ -14,8 +14,12 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C0BPacketEntityAction
 
-@ModuleInfo(name = "SuperKnockback", description = "Increases knockback dealt to other entities.", category = ModuleCategory.COMBAT)
-class SuperKnockback : Module() {
+@ModuleInfo(
+    name = "SuperKnockBack",
+    description = "Increases knockBack dealt to other entities.",
+    category = ModuleCategory.COMBAT
+)
+class SuperKnockBack : Module() {
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
 
@@ -26,11 +30,31 @@ class SuperKnockback : Module() {
                 return
 
             if (mc.thePlayer.isSprinting)
-                mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
+                mc.netHandler.addToSendQueue(
+                    C0BPacketEntityAction(
+                        mc.thePlayer,
+                        C0BPacketEntityAction.Action.STOP_SPRINTING
+                    )
+                )
 
-            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
-            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
-            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+            mc.netHandler.addToSendQueue(
+                C0BPacketEntityAction(
+                    mc.thePlayer,
+                    C0BPacketEntityAction.Action.START_SPRINTING
+                )
+            )
+            mc.netHandler.addToSendQueue(
+                C0BPacketEntityAction(
+                    mc.thePlayer,
+                    C0BPacketEntityAction.Action.STOP_SPRINTING
+                )
+            )
+            mc.netHandler.addToSendQueue(
+                C0BPacketEntityAction(
+                    mc.thePlayer,
+                    C0BPacketEntityAction.Action.START_SPRINTING
+                )
+            )
             mc.thePlayer.isSprinting = true
             mc.thePlayer.serverSprintState = true
         }

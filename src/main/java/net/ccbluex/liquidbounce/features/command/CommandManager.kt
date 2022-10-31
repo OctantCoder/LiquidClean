@@ -13,10 +13,10 @@ import net.ccbluex.liquidbounce.features.command.special.*
 import net.ccbluex.liquidbounce.utils.ClientUtils
 
 class CommandManager {
-    val commands = mutableListOf<Command>()
+    val commands: MutableList<Command> = mutableListOf()
     var latestAutoComplete: Array<String> = emptyArray()
 
-    var prefix = '.'
+    var prefix: Char = '.'
 
     /**
      * Register all default commands
@@ -111,7 +111,7 @@ class CommandManager {
                 commands
                     .filter {
                         it.command.startsWith(rawInput, true)
-                            || it.alias.any { alias -> alias.startsWith(rawInput, true) }
+                                || it.alias.any { alias -> alias.startsWith(rawInput, true) }
                     }
                     .map {
                         val alias: String = if (it.command.startsWith(rawInput, true))
@@ -134,14 +134,14 @@ class CommandManager {
     fun getCommand(name: String): Command? {
         return commands.find {
             it.command.equals(name, ignoreCase = true)
-                || it.alias.any { alias -> alias.equals(name, true) }
+                    || it.alias.any { alias -> alias.equals(name, true) }
         }
     }
 
     /**
      * Register [command] by just adding it to the commands registry
      */
-    fun registerCommand(command: Command) = commands.add(command)
+    fun registerCommand(command: Command): Boolean = commands.add(command)
 
     fun registerShortcut(name: String, script: String) {
         if (getCommand(name) == null) {
@@ -170,5 +170,5 @@ class CommandManager {
     /**
      * Unregister [command] by just removing it from the commands registry
      */
-    fun unregisterCommand(command: Command?) = commands.remove(command)
+    fun unregisterCommand(command: Command?): Boolean = commands.remove(command)
 }

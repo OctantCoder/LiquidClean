@@ -11,20 +11,25 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.ListValue
+import java.util.*
 
-@ModuleInfo(name = "NoWeb", description = "Prevents you from getting slowed down in webs.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "NoWeb",
+    description = "Prevents you from getting slowed down in webs.",
+    category = ModuleCategory.MOVEMENT
+)
 class NoWeb : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("None", "AAC", "LAAC", "Rewi"), "None")
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         if (!thePlayer.isInWeb)
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "none" -> thePlayer.isInWeb = false
             "aac" -> {
                 thePlayer.jumpMovementFactor = 0.59f
@@ -32,6 +37,7 @@ class NoWeb : Module() {
                 if (!mc.gameSettings.keyBindSneak.isKeyDown)
                     thePlayer.motionY = 0.0
             }
+
             "laac" -> {
                 thePlayer.jumpMovementFactor = if (thePlayer.movementInput.moveStrafe != 0f) 1.0f else 1.21f
 
@@ -41,6 +47,7 @@ class NoWeb : Module() {
                 if (thePlayer.onGround)
                     thePlayer.jump()
             }
+
             "rewi" -> {
                 thePlayer.jumpMovementFactor = 0.42f
 

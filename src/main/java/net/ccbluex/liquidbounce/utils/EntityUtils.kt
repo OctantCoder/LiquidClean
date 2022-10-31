@@ -19,23 +19,23 @@ import net.minecraft.entity.player.EntityPlayer
 object EntityUtils : MinecraftInstance() {
 
     @JvmField
-    var targetInvisible = false
+    var targetInvisible: Boolean = false
 
     @JvmField
-    var targetPlayer = true
+    var targetPlayer: Boolean = true
 
     @JvmField
-    var targetMobs = true
+    var targetMobs: Boolean = true
 
     @JvmField
-    var targetAnimals = false
+    var targetAnimals: Boolean = false
 
     @JvmField
-    var targetDead = false
+    var targetDead: Boolean = false
 
     @JvmStatic
     fun isSelected(entity: Entity?, canAttackCheck: Boolean): Boolean {
-        if (entity is EntityLivingBase && (targetDead || entity!!.isEntityAlive) && entity != mc.thePlayer) {
+        if (entity is EntityLivingBase && (targetDead || entity.isEntityAlive) && entity != mc.thePlayer) {
             if (targetInvisible || !entity.isInvisible) {
                 if (targetPlayer && entity is EntityPlayer) {
                     if (canAttackCheck) {

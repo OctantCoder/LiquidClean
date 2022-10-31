@@ -43,6 +43,7 @@ import net.minecraft.util.Vec3
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 import kotlin.math.truncate
 
 @ModuleInfo(
@@ -143,9 +144,10 @@ class Tower : Module() {
             timer.update()
 
             val update = if (!autoBlockValue.get().equals("Off", ignoreCase = true)) {
-                InventoryUtils.findAutoBlockBlock() != -1 || thePlayer.heldItem != null && thePlayer.heldItem!!.item is ItemBlock
+                InventoryUtils.findAutoBlockBlock() != -1 || thePlayer.heldItem != null && (thePlayer.heldItem
+                    ?: return).item is ItemBlock
             } else {
-                thePlayer.heldItem != null && thePlayer.heldItem!!.item is ItemBlock
+                thePlayer.heldItem != null && (thePlayer.heldItem ?: return).item is ItemBlock
             }
 
             if (update) {
@@ -163,7 +165,7 @@ class Tower : Module() {
                         val vecRotation = RotationUtils.faceBlock(blockPos)
                         if (vecRotation != null) {
                             RotationUtils.setTargetRotation(vecRotation.rotation)
-                            placeInfo!!.vec3 = vecRotation.vec
+                            (placeInfo ?: return).vec3 = vecRotation.vec
                         }
                     }
                 }
@@ -173,8 +175,8 @@ class Tower : Module() {
 
     //Send jump packets, bypasses Hypixel.
     private fun fakeJump() {
-        mc.thePlayer!!.isAirBorne = true
-        mc.thePlayer!!.triggerAchievement(StatList.jumpStat)
+        (mc.thePlayer ?: return).isAirBorne = true
+        (mc.thePlayer ?: return).triggerAchievement(StatList.jumpStat)
     }
 
     /**
@@ -183,24 +185,27 @@ class Tower : Module() {
     private fun move() {
         val thePlayer = mc.thePlayer ?: return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "jump" -> if (thePlayer.onGround && timer.hasTimePassed(jumpDelayValue.get())) {
                 fakeJump()
                 thePlayer.motionY = jumpMotionValue.get().toDouble()
                 timer.reset()
             }
+
             "motion" -> if (thePlayer.onGround) {
                 fakeJump()
                 thePlayer.motionY = 0.42
             } else if (thePlayer.motionY < 0.1) {
                 thePlayer.motionY = -0.3
             }
+
             "motiontp" -> if (thePlayer.onGround) {
                 fakeJump()
                 thePlayer.motionY = 0.42
             } else if (thePlayer.motionY < 0.23) {
                 thePlayer.setPosition(thePlayer.posX, truncate(thePlayer.posY), thePlayer.posZ)
             }
+
             "packet" -> if (thePlayer.onGround && timer.hasTimePassed(2)) {
                 fakeJump()
                 mc.netHandler.addToSendQueue(
@@ -216,6 +221,7 @@ class Tower : Module() {
                 thePlayer.setPosition(thePlayer.posX, thePlayer.posY + 1.0, thePlayer.posZ)
                 timer.reset()
             }
+
             "teleport" -> {
                 if (teleportNoMotionValue.get()) {
                     thePlayer.motionY = 0.0
@@ -228,6 +234,7 @@ class Tower : Module() {
                     timer.reset()
                 }
             }
+
             "constantmotion" -> {
                 if (thePlayer.onGround) {
                     fakeJump()
@@ -243,6 +250,7 @@ class Tower : Module() {
                     jumpGround = thePlayer.posY
                 }
             }
+
             "aac3.3.9" -> {
                 if (thePlayer.onGround) {
                     fakeJump()
@@ -254,6 +262,7 @@ class Tower : Module() {
                     mc.timer.timerSpeed = 1.6f
                 }
             }
+
             "aac3.6.4" -> if (thePlayer.ticksExisted % 4 == 1) {
                 thePlayer.motionY = 0.4195464
                 thePlayer.setPosition(thePlayer.posX - 0.035, thePlayer.posY, thePlayer.posZ)
@@ -281,14 +290,16 @@ class Tower : Module() {
             when (autoBlockValue.get()) {
                 "Off" -> return
                 "Pick" -> {
-                    mc.thePlayer!!.inventory.currentItem = blockSlot - 36
+                    (mc.thePlayer ?: return).inventory.currentItem = blockSlot - 36
                     mc.playerController.updateController()
                 }
+
                 "Spoof" -> {
                     if (blockSlot - 36 != slot) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(blockSlot - 36))
                     }
                 }
+
                 "Switch" -> {
                     if (blockSlot - 36 != slot) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(blockSlot - 36))
@@ -300,7 +311,10 @@ class Tower : Module() {
 
         // Place block
         if (mc.playerController.onPlayerRightClick(
-                thePlayer, mc.theWorld!!, itemStack!!, placeInfo!!.blockPos, placeInfo!!.enumFacing, placeInfo!!.vec3
+                thePlayer,
+                mc.theWorld ?: return,
+                itemStack ?: return, (placeInfo ?: return).blockPos, (placeInfo ?: return).enumFacing, (placeInfo
+                    ?: return).vec3
             )
         ) {
             if (swingValue.get()) {
@@ -310,9 +324,9 @@ class Tower : Module() {
             }
         }
         if (autoBlockValue.get().equals("Switch", true)) {
-            if (slot != mc.thePlayer!!.inventory.currentItem) mc.netHandler.addToSendQueue(
+            if (slot != (mc.thePlayer ?: return).inventory.currentItem) mc.netHandler.addToSendQueue(
                 C09PacketHeldItemChange(
-                    mc.thePlayer!!.inventory.currentItem
+                    (mc.thePlayer ?: return).inventory.currentItem
                 )
             )
         }
@@ -422,7 +436,7 @@ class Tower : Module() {
      * @param event
      */
     @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    fun onRender2D(@Suppress("UNUSED_PARAMETER") event: Render2DEvent) {
         if (counterDisplayValue.get()) {
             GL11.glPushMatrix()
             val blockOverlay = LiquidBounce.moduleManager.getModule(BlockOverlay::class.java) as BlockOverlay

@@ -28,9 +28,11 @@ class Step : Module() {
      * OPTIONS
      */
 
-    private val modeValue = ListValue("Mode", arrayOf(
+    private val modeValue = ListValue(
+        "Mode", arrayOf(
             "Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "AAC", "LAAC", "AAC3.3.4", "Spartan", "Rewinside"
-    ), "NCP")
+        ), "NCP"
+    )
 
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
     private val jumpHeightValue = FloatValue("JumpHeight", 0.42F, 0.37F, 0.42F)
@@ -59,7 +61,7 @@ class Step : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val mode = modeValue.get()
         val thePlayer = mc.thePlayer ?: return
 
@@ -72,7 +74,8 @@ class Step : Module() {
             }
 
             mode.equals("laac", true) -> if (thePlayer.isCollidedHorizontally && !thePlayer.isOnLadder
-                    && !thePlayer.isInWater && !thePlayer.isInLava && !thePlayer.isInWeb) {
+                && !thePlayer.isInWater && !thePlayer.isInLava && !thePlayer.isInWeb
+            ) {
                 if (thePlayer.onGround && timer.hasTimePassed(delayValue.get().toLong())) {
                     isStep = true
 
@@ -90,7 +93,8 @@ class Step : Module() {
                 isStep = false
 
             mode.equals("aac3.3.4", true) -> if (thePlayer.isCollidedHorizontally
-                    && MovementUtils.isMoving) {
+                && MovementUtils.isMoving
+            ) {
                 if (thePlayer.onGround && couldStep()) {
                     thePlayer.motionX *= 1.26
                     thePlayer.motionZ *= 1.26
@@ -116,7 +120,10 @@ class Step : Module() {
 
         // Motion steps
         when {
-            mode.equals("motionncp", true) && thePlayer.isCollidedHorizontally && !mc.gameSettings.keyBindJump.isKeyDown -> {
+            mode.equals(
+                "motionncp",
+                true
+            ) && thePlayer.isCollidedHorizontally && !mc.gameSettings.keyBindJump.isKeyDown -> {
                 when {
                     thePlayer.onGround && couldStep() -> {
                         fakeJump()
@@ -149,7 +156,7 @@ class Step : Module() {
         val thePlayer = mc.thePlayer ?: return
 
         // Phase should disable step
-        if (LiquidBounce.moduleManager[Phase::class.java]!!.state) {
+        if (LiquidBounce.moduleManager[Phase::class.java].state) {
             event.stepHeight = 0F
             return
         }
@@ -160,10 +167,11 @@ class Step : Module() {
             val flyMode = fly.modeValue.get()
 
             if (flyMode.equals("Hypixel", ignoreCase = true) ||
-                    flyMode.equals("OtherHypixel", ignoreCase = true) ||
-                    flyMode.equals("LatestHypixel", ignoreCase = true) ||
-                    flyMode.equals("Rewinside", ignoreCase = true) ||
-                    flyMode.equals("Mineplex", ignoreCase = true) && thePlayer.inventory.getCurrentItem() == null) {
+                flyMode.equals("OtherHypixel", ignoreCase = true) ||
+                flyMode.equals("LatestHypixel", ignoreCase = true) ||
+                flyMode.equals("Rewinside", ignoreCase = true) ||
+                flyMode.equals("Mineplex", ignoreCase = true) && thePlayer.inventory.getCurrentItem() == null
+            ) {
                 event.stepHeight = 0F
                 return
             }
@@ -173,8 +181,9 @@ class Step : Module() {
 
         // Set step to default in some cases
         if (!thePlayer.onGround || !timer.hasTimePassed(delayValue.get().toLong()) ||
-                mode.equals("Jump", ignoreCase = true) || mode.equals("MotionNCP", ignoreCase = true)
-                || mode.equals("LAAC", ignoreCase = true) || mode.equals("AAC3.3.4", ignoreCase = true)) {
+            mode.equals("Jump", ignoreCase = true) || mode.equals("MotionNCP", ignoreCase = true)
+            || mode.equals("LAAC", ignoreCase = true) || mode.equals("AAC3.3.4", ignoreCase = true)
+        ) {
             thePlayer.stepHeight = 0.5F
             event.stepHeight = 0.5F
             return
@@ -195,7 +204,7 @@ class Step : Module() {
     }
 
     @EventTarget(ignoreCondition = true)
-    fun onStepConfirm(event: StepConfirmEvent) {
+    fun onStepConfirm(@Suppress("UNUSED_PARAMETER") event: StepConfirmEvent) {
         val thePlayer = mc.thePlayer
 
         if (thePlayer == null || !isStep) // Check if step
@@ -255,7 +264,7 @@ class Step : Module() {
                             )
                         )
 
-                    // Spartan allows one unlegit step so just swap between legit and unlegit
+                    // Spartan allows one un legit step so just swap between legit and un legit
                     spartanSwitch = !spartanSwitch
 
                     // Reset timer
@@ -321,7 +330,7 @@ class Step : Module() {
         val z = cos(yaw) * 0.4
 
         return mc.theWorld!!.getCollisionBoxes(mc.thePlayer!!.entityBoundingBox.offset(x, 1.001335979112147, z))
-                .isEmpty()
+            .isEmpty()
     }
 
     override val tag: String

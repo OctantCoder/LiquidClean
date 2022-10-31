@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 import net.ccbluex.liquidbounce.chat.User
 
 /**
- * AXOCHAT PROTOCOL
+ * AxoChat PROTOCOL
  *
  * https://gitlab.com/frozo/axochat/blob/master/PROTOCOL.md
  *
@@ -25,8 +25,8 @@ import net.ccbluex.liquidbounce.chat.User
  */
 data class ClientMojangInfoPacket(
 
-        @SerializedName("session_hash")
-        val sessionHash: String
+    @SerializedName("session_hash")
+    val sessionHash: String
 
 ) : Packet
 
@@ -38,8 +38,8 @@ data class ClientMojangInfoPacket(
  */
 data class ClientNewJWTPacket(
 
-        @SerializedName("token")
-        val token: String
+    @SerializedName("token")
+    val token: String
 
 ) : Packet
 
@@ -47,41 +47,41 @@ data class ClientNewJWTPacket(
  * This packet will be sent to every authenticated client,
  * if another client successfully sent a message to the server.
  *
- * @param id author_id is an Id.
+ * @param id author_id is an ID.
  * @param user author_info is optional and described in detail in UserInfo.
  * @param content content is any message fitting the validation scheme of the server.
  */
 data class ClientMessagePacket(
 
-        @SerializedName("author_id")
-        val id: String,
+    @SerializedName("author_id")
+    val id: String,
 
-        @SerializedName("author_info")
-        val user: User,
+    @SerializedName("author_info")
+    val user: User,
 
-        @SerializedName("content")
-        val content: String
+    @SerializedName("content")
+    val content: String
 
 ) : Packet
 
 /**
- * This packet will be sent to a authenticated client with allow_messages turned on,
+ * This packet will be sent to an authenticated client with allow_messages turned on,
  * if another client successfully sent a private message to the server with the id.
  *
- * @param id author_id is an Id.
+ * @param id author_id is an ID.
  * @param user author_info is optional and described in detail in UserInfo.
  * @param content content is any message fitting the validation scheme of the server.
  */
 data class ClientPrivateMessagePacket(
 
-        @SerializedName("author_id")
-        val id: String,
+    @SerializedName("author_id")
+    val id: String,
 
-        @SerializedName("author_info")
-        val user: User,
+    @SerializedName("author_info")
+    val user: User,
 
-        @SerializedName("content")
-        val content: String
+    @SerializedName("content")
+    val content: String
 
 ) : Packet
 
@@ -92,8 +92,8 @@ data class ClientPrivateMessagePacket(
  */
 data class ClientSuccessPacket(
 
-        @SerializedName("reason")
-        val reason: String
+    @SerializedName("reason")
+    val reason: String
 
 ) : Packet
 
@@ -104,7 +104,7 @@ data class ClientSuccessPacket(
  */
 data class ClientErrorPacket(
 
-        @SerializedName("message")
-        val message: String
+    @SerializedName("message")
+    val message: String
 
 ) : Packet

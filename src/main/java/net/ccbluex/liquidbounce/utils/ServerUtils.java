@@ -18,19 +18,19 @@ public final class ServerUtils extends MinecraftInstance {
     public static ServerData serverData;
 
     public static void connectToLastServer() {
-        if(serverData == null)
+        if (serverData == null)
             return;
 
         mc.displayGuiScreen(new GuiConnecting(new GuiMultiplayer(new GuiMainMenu()), mc, serverData));
     }
 
     public static String getRemoteIp() {
-        String serverIp = "Singleplayer";
+        String serverIp = "SinglePlayer";
 
         if (mc.theWorld.isRemote) {
             final ServerData serverData = mc.getCurrentServerData();
 
-            if(serverData != null)
+            if (serverData != null)
                 serverIp = serverData.serverIP;
         }
 

@@ -31,16 +31,10 @@ public class XRayConfig extends FileConfig {
     /**
      * Load config from file
      *
-     * @throws IOException
      */
     @Override
     protected void loadConfig() throws IOException {
         final XRay xRay = (XRay) LiquidBounce.moduleManager.getModule(XRay.class);
-
-        if (xRay == null) {
-            ClientUtils.getLogger().error("[FileManager] Failed to find xray module.");
-            return;
-        }
 
         final JsonArray jsonArray = new JsonParser().parse(new BufferedReader(new FileReader(getFile()))).getAsJsonArray();
 
@@ -65,16 +59,10 @@ public class XRayConfig extends FileConfig {
     /**
      * Save config to file
      *
-     * @throws IOException
      */
     @Override
     protected void saveConfig() throws IOException {
         final XRay xRay = (XRay) LiquidBounce.moduleManager.getModule(XRay.class);
-
-        if (xRay == null) {
-            ClientUtils.getLogger().error("[FileManager] Failed to find xray module.");
-            return;
-        }
 
         final JsonArray jsonArray = new JsonArray();
 

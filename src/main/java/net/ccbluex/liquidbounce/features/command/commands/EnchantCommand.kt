@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.features.command.Command
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.network.play.client.C10PacketCreativeInventoryAction
+import java.util.*
 
 class EnchantCommand : Command("enchant") {
     /**
@@ -55,7 +56,12 @@ class EnchantCommand : Command("enchant") {
             }
 
             item.addEnchantment(enchantment, level)
-            mc.netHandler.addToSendQueue(C10PacketCreativeInventoryAction(36 + mc.thePlayer!!.inventory.currentItem, item))
+            mc.netHandler.addToSendQueue(
+                C10PacketCreativeInventoryAction(
+                    36 + (mc.thePlayer ?: return).inventory.currentItem,
+                    item
+                )
+            )
             chat("${enchantment.getTranslatedName(level)} added to ${item.displayName}.")
             return
         }
@@ -68,9 +74,10 @@ class EnchantCommand : Command("enchant") {
         return when (args.size) {
             1 -> {
                 return Enchantment.func_181077_c()
-                    .map { it.resourcePath.toLowerCase() }
+                    .map { it.resourcePath.lowercase(Locale.getDefault()) }
                     .filter { it.startsWith(args[0], true) }
             }
+
             else -> emptyList()
         }
     }

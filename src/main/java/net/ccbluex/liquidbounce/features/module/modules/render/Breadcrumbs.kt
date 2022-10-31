@@ -21,15 +21,19 @@ import java.util.*
 
 @ModuleInfo(name = "Breadcrumbs", description = "Leaves a trail behind you.", category = ModuleCategory.RENDER)
 class Breadcrumbs : Module() {
-    val colorRedValue = IntegerValue("R", 255, 0, 255)
-    val colorGreenValue = IntegerValue("G", 179, 0, 255)
-    val colorBlueValue = IntegerValue("B", 72, 0, 255)
-    val colorRainbow = BoolValue("Rainbow", false)
+    val colorRedValue: IntegerValue = IntegerValue("R", 255, 0, 255)
+    val colorGreenValue: IntegerValue = IntegerValue("G", 179, 0, 255)
+    val colorBlueValue: IntegerValue = IntegerValue("B", 72, 0, 255)
+    val colorRainbow: BoolValue = BoolValue("Rainbow", false)
     private val positions = LinkedList<DoubleArray>()
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent?) {
-        val color = if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent?) {
+        val color = if (colorRainbow.get()) rainbow() else Color(
+            colorRedValue.get(),
+            colorGreenValue.get(),
+            colorBlueValue.get()
+        )
 
         synchronized(positions) {
             GL11.glPushMatrix()
@@ -62,9 +66,15 @@ class Breadcrumbs : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
         synchronized(positions) {
-            positions.add(doubleArrayOf(mc.thePlayer!!.posX, mc.thePlayer!!.entityBoundingBox.minY, mc.thePlayer!!.posZ))
+            positions.add(
+                doubleArrayOf(
+                    mc.thePlayer!!.posX,
+                    mc.thePlayer!!.entityBoundingBox.minY,
+                    mc.thePlayer!!.posZ
+                )
+            )
         }
     }
 
@@ -72,9 +82,13 @@ class Breadcrumbs : Module() {
         val thePlayer = mc.thePlayer ?: return
 
         synchronized(positions) {
-            positions.add(doubleArrayOf(thePlayer.posX,
+            positions.add(
+                doubleArrayOf(
+                    thePlayer.posX,
                     thePlayer.entityBoundingBox.minY + thePlayer.eyeHeight * 0.5f,
-                    thePlayer.posZ))
+                    thePlayer.posZ
+                )
+            )
 
             positions.add(doubleArrayOf(thePlayer.posX, thePlayer.entityBoundingBox.minY, thePlayer.posZ))
         }

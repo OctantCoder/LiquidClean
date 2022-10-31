@@ -30,7 +30,7 @@ import kotlin.concurrent.thread
 import kotlin.math.sin
 
 class GuiContributors(private val prevGui: GuiScreen) : GuiScreen() {
-    private val DECIMAL_FORMAT = NumberFormat.getInstance(Locale.US) as DecimalFormat
+    private val decimalFormat = NumberFormat.getInstance(Locale.US) as DecimalFormat
     private lateinit var list: GuiList
 
     private var credits: List<Credit> = Collections.emptyList()
@@ -71,7 +71,12 @@ class GuiContributors(private val prevGui: GuiScreen) : GuiScreen() {
 
                 GlStateManager.enableAlpha()
                 GlStateManager.enableBlend()
-                GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
+                GlStateManager.tryBlendFuncSeparate(
+                    GL11.GL_SRC_ALPHA,
+                    GL11.GL_ONE_MINUS_SRC_ALPHA,
+                    GL11.GL_ONE,
+                    GL11.GL_ZERO
+                )
                 GlStateManager.enableTexture2D()
 
                 GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
@@ -104,10 +109,16 @@ class GuiContributors(private val prevGui: GuiScreen) : GuiScreen() {
             y += imageSize
 
             Fonts.font40.drawString("@" + credit.name, (x + infoOffset + 5).toFloat(), 48f, Color.WHITE.rgb, true)
-            Fonts.font40.drawString("${credit.commits} commits §a${DECIMAL_FORMAT.format(credit.additions)}++ §4${DECIMAL_FORMAT.format(credit.deletions)}--", (x + infoOffset + 5).toFloat(), (y - Fonts.font40.fontHeight).toFloat(), Color.WHITE.rgb, true)
+            Fonts.font40.drawString(
+                "${credit.commits} commits §a${decimalFormat.format(credit.additions)}++ §4${
+                    decimalFormat.format(
+                        credit.deletions
+                    )
+                }--", (x + infoOffset + 5).toFloat(), (y - Fonts.font40.fontHeight).toFloat(), Color.WHITE.rgb, true
+            )
 
             for (s in credit.contributions) {
-                y += Fonts.font40.fontHeight.toInt() + 2
+                y += Fonts.font40.fontHeight + 2
 
                 GlStateManager.disableTexture2D()
                 GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
@@ -162,8 +173,12 @@ class GuiContributors(private val prevGui: GuiScreen) : GuiScreen() {
             val gson = Gson()
             val jsonParser = JsonParser()
 
-            val gitHubContributors = gson.fromJson(HttpUtils.get("https://api.github.com/repos/CCBlueX/LiquidBounce/stats/contributors"), Array<GitHubContributor>::class.java)
-            val additionalInformation = jsonParser.parse(HttpUtils.get("https://raw.githubusercontent.com/CCBlueX/LiquidCloud/master/LiquidBounce/contributors.json")).asJsonObject
+            val gitHubContributors = gson.fromJson(
+                HttpUtils.get("https://api.github.com/repos/CCBlueX/LiquidBounce/stats/contributors"),
+                Array<GitHubContributor>::class.java
+            )
+            val additionalInformation =
+                jsonParser.parse(HttpUtils.get("https://raw.githubusercontent.com/CCBlueX/LiquidCloud/master/LiquidBounce/contributors.json")).asJsonObject
 
             val credits = ArrayList<Credit>(gitHubContributors.size)
 
@@ -185,8 +200,19 @@ class GuiContributors(private val prevGui: GuiScreen) : GuiScreen() {
                     commits += week.commits
                 }
 
-                credits.add(Credit(gitHubContributor.author.name, gitHubContributor.author.avatarUrl, null, additions, deletions, commits, contributorInformation?.teamMember
-                        ?: false, contributorInformation?.contributions ?: Collections.emptyList()))
+                credits.add(
+                    Credit(
+        gitHubContributor.author.name,
+        gitHubContributor.author.avatarUrl,
+        null,
+        additions,
+        deletions,
+        commits,
+        contributorInformation?.teamMember
+            ?: false,
+        contributorInformation?.contributions ?: Collections.emptyList()
+    )
+                )
             }
 
             credits.sortWith(object : Comparator<Credit> {
@@ -210,10 +236,10 @@ class GuiContributors(private val prevGui: GuiScreen) : GuiScreen() {
             for (credit in credits) {
                 try {
                     HttpUtils.requestStream("${credit.avatarUrl}?s=${fontRendererObj.FONT_HEIGHT * 4}", "GET")?.use {
-                        credit.avatar = CustomTexture(ImageIO.read(it)!!)
+                        credit.avatar = CustomTexture(ImageIO.read(it) ?: return@use)
                     }
                 } catch (e: Exception) {
-
+                    ClientUtils.getLogger().error("GuiContributors $e")
                 }
             }
         } catch (e: Exception) {
@@ -222,13 +248,39 @@ class GuiContributors(private val prevGui: GuiScreen) : GuiScreen() {
         }
     }
 
-    internal inner class ContributorInformation(val name: String, val teamMember: Boolean, val contributions: List<String>)
+    internal class ContributorInformation(
+        val name: String,
+        val teamMember: Boolean,
+        val contributions: List<String>
+    )
 
-    internal inner class GitHubContributor(@SerializedName("total") val totalContributions: Int, val weeks: List<GitHubWeek>, val author: GitHubAuthor)
-    internal inner class GitHubWeek(@SerializedName("w") val timestamp: Long, @SerializedName("a") val additions: Int, @SerializedName("d") val deletions: Int, @SerializedName("c") val commits: Int)
-    internal inner class GitHubAuthor(@SerializedName("login") val name: String, val id: Int, @SerializedName("avatar_url") val avatarUrl: String)
+    internal class GitHubContributor(
+        val weeks: List<GitHubWeek>,
+        val author: GitHubAuthor
+    )
 
-    internal inner class Credit(val name: String, val avatarUrl: String, var avatar: CustomTexture?, val additions: Int, val deletions: Int, val commits: Int, val isTeamMember: Boolean, val contributions: List<String>)
+    internal class GitHubWeek(
+        @SerializedName("a") val additions: Int,
+        @SerializedName("d") val deletions: Int,
+        @SerializedName("c") val commits: Int
+    )
+
+    internal class GitHubAuthor(
+        @SerializedName("login") val name: String,
+        val id: Int,
+        @SerializedName("avatar_url") val avatarUrl: String
+    )
+
+    internal class Credit(
+        val name: String,
+        val avatarUrl: String,
+        var avatar: CustomTexture?,
+        val additions: Int,
+        val deletions: Int,
+        val commits: Int,
+        val isTeamMember: Boolean,
+        val contributions: List<String>
+    )
 
     private inner class GuiList(gui: GuiScreen) : GuiSlot(mc, gui.width / 4, gui.height, 40, gui.height - 40, 15) {
 
@@ -245,13 +297,20 @@ class GuiContributors(private val prevGui: GuiScreen) : GuiScreen() {
 
         override fun getSize() = credits.size
 
-        internal fun getSelectedSlot() = if (selectedSlot > credits.size) -1 else selectedSlot
+        fun getSelectedSlot() = if (selectedSlot > credits.size) -1 else selectedSlot
 
         public override fun elementClicked(index: Int, doubleClick: Boolean, var3: Int, var4: Int) {
             selectedSlot = index
         }
 
-        override fun drawSlot(entryID: Int, p_180791_2_: Int, p_180791_3_: Int, p_180791_4_: Int, mouseXIn: Int, mouseYIn: Int) {
+        override fun drawSlot(
+            entryID: Int,
+            p_180791_2_: Int,
+            p_180791_3_: Int,
+            p_180791_4_: Int,
+            mouseXIn: Int,
+            mouseYIn: Int
+        ) {
             val credit = credits[entryID]
 
             Fonts.font40.drawCenteredString(credit.name, width / 2F, p_180791_3_ + 2F, Color.WHITE.rgb, true)

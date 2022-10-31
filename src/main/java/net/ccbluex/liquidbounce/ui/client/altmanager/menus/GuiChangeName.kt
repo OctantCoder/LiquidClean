@@ -25,9 +25,9 @@ class GuiChangeName(private val prevGui: GuiAltManager) : GuiScreen() {
         buttonList.add(GuiButton(1, width / 2 - 100, height / 4 + 96, "Change"))
         buttonList.add(GuiButton(0, width / 2 - 100, height / 4 + 120, "Back"))
         name = GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20)
-        name!!.isFocused = true
-        name!!.text = mc.getSession().username
-        name!!.maxStringLength = 16
+        (name ?: return).isFocused = true
+        (name ?: return).text = mc.getSession().username
+        (name ?: return).maxStringLength = 16
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -35,13 +35,13 @@ class GuiChangeName(private val prevGui: GuiAltManager) : GuiScreen() {
         RenderUtils.drawRect(30, 30, width - 30, height - 30, Int.MIN_VALUE)
         Fonts.font40.drawCenteredString("Change Name", width / 2.0f, 34f, 0xffffff)
         Fonts.font40.drawCenteredString(
-            (if (status == null) "" else status)!!,
+            (if (status == null) "" else status) ?: return,
             width / 2.0f,
             height / 4.0f + 84,
             0xffffff
         )
-        name!!.drawTextBox()
-        if (name!!.text.isEmpty() && !name!!.isFocused) Fonts.font40.drawCenteredString(
+        (name ?: return).drawTextBox()
+        if ((name ?: return).text.isEmpty() && !(name ?: return).isFocused) Fonts.font40.drawCenteredString(
             "§7Username",
             width / 2.0f - 74,
             66f,
@@ -55,22 +55,22 @@ class GuiChangeName(private val prevGui: GuiAltManager) : GuiScreen() {
         when (button.id) {
             0 -> mc.displayGuiScreen(prevGui)
             1 -> {
-                if (name!!.text.isEmpty()) {
+                if ((name ?: return).text.isEmpty()) {
                     status = "§cEnter a name!"
                     return
                 }
-                if (!name!!.text.equals(mc.getSession().username, ignoreCase = true)) {
+                if (!(name ?: return).text.equals(mc.getSession().username, ignoreCase = true)) {
                     status = "§cJust change the upper and lower case!"
                     return
                 }
                 mc.session = Session(
-                    name!!.text,
+                    (name ?: return).text,
                     mc.getSession().playerID,
                     mc.getSession().token,
                     mc.getSession().sessionType.name
                 )
                 LiquidBounce.eventManager.callEvent(SessionEvent())
-                status = "§aChanged name to §7" + name!!.text + "§c."
+                status = "§aChanged name to §7" + (name ?: return).text + "§c."
                 prevGui.status = status as String
                 mc.displayGuiScreen(prevGui)
             }
@@ -83,18 +83,18 @@ class GuiChangeName(private val prevGui: GuiAltManager) : GuiScreen() {
             mc.displayGuiScreen(prevGui)
             return
         }
-        if (name!!.isFocused) name!!.textboxKeyTyped(typedChar, keyCode)
+        if ((name ?: return).isFocused) (name ?: return).textboxKeyTyped(typedChar, keyCode)
         super.keyTyped(typedChar, keyCode)
     }
 
     @Throws(IOException::class)
     public override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        name!!.mouseClicked(mouseX, mouseY, mouseButton)
+        (name ?: return).mouseClicked(mouseX, mouseY, mouseButton)
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
     override fun updateScreen() {
-        name!!.updateCursorCounter()
+        (name ?: return).updateCursorCounter()
         super.updateScreen()
     }
 

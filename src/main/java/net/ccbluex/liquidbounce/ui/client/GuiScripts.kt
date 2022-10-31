@@ -118,25 +118,30 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
                 ClientUtils.getLogger().error("Something went wrong while deleting a script.", t)
                 MiscUtils.showErrorPopup(t.javaClass.name, t.message)
             }
+
             3 -> try {
                 LiquidBounce.scriptManager.reloadScripts()
             } catch (t: Throwable) {
                 ClientUtils.getLogger().error("Something went wrong while reloading all scripts.", t)
                 MiscUtils.showErrorPopup(t.javaClass.name, t.message)
             }
+
             4 -> try {
                 Desktop.getDesktop().open(LiquidBounce.scriptManager.scriptsFolder)
             } catch (t: Throwable) {
                 ClientUtils.getLogger().error("Something went wrong while trying to open your scripts folder.", t)
                 MiscUtils.showErrorPopup(t.javaClass.name, t.message)
             }
+
             5 -> try {
                 Desktop.getDesktop().browse(URL("https://liquidbounce.net/docs/ScriptAPI/Getting%20Started").toURI())
-            } catch (ignored: Exception) { }
+            } catch (ignored: Exception) {
+            }
 
             6 -> try {
                 Desktop.getDesktop().browse(URL("https://forum.ccbluex.net/viewforum.php?id=16").toURI())
-            } catch (ignored: Exception) { }
+            } catch (ignored: Exception) {
+            }
         }
     }
 
@@ -155,13 +160,14 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     private inner class GuiList(gui: GuiScreen) :
-            GuiSlot(mc, gui.width, gui.height, 40, gui.height - 40, 30) {
+        GuiSlot(mc, gui.width, gui.height, 40, gui.height - 40, 30) {
 
         private var selectedSlot = 0
 
         override fun isSelected(id: Int) = selectedSlot == id
 
-        internal fun getSelectedSlot() = if (selectedSlot > LiquidBounce.scriptManager.scripts.size) -1 else selectedSlot
+        fun getSelectedSlot() =
+            if (selectedSlot > LiquidBounce.scriptManager.scripts.size) -1 else selectedSlot
 
         override fun getSize() = LiquidBounce.scriptManager.scripts.size
 
@@ -172,10 +178,20 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
         override fun drawSlot(id: Int, x: Int, y: Int, var4: Int, var5: Int, var6: Int) {
             val script = LiquidBounce.scriptManager.scripts[id]
 
-            Fonts.font40.drawCenteredString("§9" + script.scriptName + " §7v" + script.scriptVersion, width / 2.0f, y + 2.0f, Color.LIGHT_GRAY.rgb)
-            Fonts.font40.drawCenteredString("by §c" + script.scriptAuthors.joinToString(", "), width / 2.0f, y + 15.0f, Color.LIGHT_GRAY.rgb).coerceAtLeast(x)
+            Fonts.font40.drawCenteredString(
+                "§9" + script.scriptName + " §7v" + script.scriptVersion,
+                width / 2.0f,
+                y + 2.0f,
+                Color.LIGHT_GRAY.rgb
+            )
+            Fonts.font40.drawCenteredString(
+                "by §c" + script.scriptAuthors.joinToString(", "),
+                width / 2.0f,
+                y + 15.0f,
+                Color.LIGHT_GRAY.rgb
+            ).coerceAtLeast(x)
         }
 
-        override fun drawBackground() { }
+        override fun drawBackground() {}
     }
 }

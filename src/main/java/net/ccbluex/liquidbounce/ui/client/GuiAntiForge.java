@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.ui.client;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.minecraft.client.gui.GuiButton;
@@ -77,7 +76,7 @@ public class GuiAntiForge extends GuiScreen {
 
     @Override
     public void keyTyped(char typedChar, int keyCode) throws IOException {
-        if(Keyboard.KEY_ESCAPE == keyCode) {
+        if (Keyboard.KEY_ESCAPE == keyCode) {
             mc.displayGuiScreen(prevGui);
             return;
         }

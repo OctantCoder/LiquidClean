@@ -21,14 +21,14 @@ open class Module : MinecraftInstance(), Listenable {
     var name: String
     var description: String
     var category: ModuleCategory
-    var keyBind = Keyboard.CHAR_NONE
+    var keyBind: Int = Keyboard.CHAR_NONE
         set(keyBind) {
             field = keyBind
 
             if (!LiquidBounce.isStarting)
                 LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.modulesConfig)
         }
-    var array = true
+    var array: Boolean = true
         set(array) {
             field = array
 
@@ -37,7 +37,7 @@ open class Module : MinecraftInstance(), Listenable {
         }
     private val canEnable: Boolean
 
-    var slideStep = 0F
+    var slideStep: Float = 0F
 
     init {
         val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
@@ -51,7 +51,7 @@ open class Module : MinecraftInstance(), Listenable {
     }
 
     // Current state of module
-    var state = false
+    var state: Boolean = false
         set(value) {
             if (field == value)
                 return
@@ -61,9 +61,12 @@ open class Module : MinecraftInstance(), Listenable {
 
             // Play sound and add notification
             if (!LiquidBounce.isStarting) {
-                mc.soundHandler.playSound(PositionedSoundRecord.create(
-                    ResourceLocation("random.click"),
-                    1F))
+                mc.soundHandler.playSound(
+                    PositionedSoundRecord.create(
+                        ResourceLocation("random.click"),
+                        1F
+                    )
+                )
                 LiquidBounce.hud.addNotification(Notification("${if (value) "Enabled " else "Disabled "}$name"))
             }
 
@@ -84,8 +87,8 @@ open class Module : MinecraftInstance(), Listenable {
 
 
     // HUD
-    val hue = Math.random().toFloat()
-    var slide = 0F
+    val hue: Float = Math.random().toFloat()
+    var slide: Float = 0F
 
     // Tag
     open val tag: String?
@@ -122,7 +125,7 @@ open class Module : MinecraftInstance(), Listenable {
     /**
      * Get module by [valueName]
      */
-    open fun getValue(valueName: String) = values.find { it.name.equals(valueName, ignoreCase = true) }
+    open fun getValue(valueName: String): Value<*>? = values.find { it.name.equals(valueName, ignoreCase = true) }
 
     /**
      * Get all values of module
@@ -136,5 +139,5 @@ open class Module : MinecraftInstance(), Listenable {
     /**
      * Events should be handled when module is enabled
      */
-    override fun handleEvents() = state
+    override fun handleEvents(): Boolean = state
 }

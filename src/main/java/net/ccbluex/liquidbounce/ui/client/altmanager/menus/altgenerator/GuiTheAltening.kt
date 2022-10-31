@@ -96,7 +96,12 @@ class GuiTheAltening(private val prevGui: GuiAltManager) : GuiScreen() {
         // Draw text
         Fonts.font40.drawCenteredString("§7Token:", width / 2.0f - 84, 40.0f, 0xffffff)
         Fonts.font40.drawCenteredString("§7API-Key:", width / 2.0f - 78, 105.0f, 0xffffff)
-        Fonts.font40.drawCenteredString("§7Use coupon code 'liquidbounce' for 20% off!", width / 2.0f, height - 65.0f, 0xffffff)
+        Fonts.font40.drawCenteredString(
+            "§7Use coupon code 'liquidbounce' for 20% off!",
+            width / 2.0f,
+            height - 65.0f,
+            0xffffff
+        )
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
@@ -129,19 +134,23 @@ class GuiTheAltening(private val prevGui: GuiAltManager) : GuiScreen() {
                         status = "§cLogging in..."
 
                         // Set token as username
-                        val yggdrasilUserAuthentication = YggdrasilUserAuthentication(YggdrasilAuthenticationService(NO_PROXY, ""), MINECRAFT)
+                        val yggdrasilUserAuthentication =
+                            YggdrasilUserAuthentication(YggdrasilAuthenticationService(NO_PROXY, ""), MINECRAFT)
                         yggdrasilUserAuthentication.setUsername(account.token)
                         yggdrasilUserAuthentication.setPassword(LiquidBounce.CLIENT_NAME)
 
                         status = try {
                             yggdrasilUserAuthentication.logIn()
 
-                            mc.session = Session(yggdrasilUserAuthentication.selectedProfile.name, yggdrasilUserAuthentication
+                            mc.session = Session(
+                                yggdrasilUserAuthentication.selectedProfile.name, yggdrasilUserAuthentication
                                     .selectedProfile.id.toString(),
-                                    yggdrasilUserAuthentication.authenticatedToken, "mojang")
+                                yggdrasilUserAuthentication.authenticatedToken, "mojang"
+                            )
                             LiquidBounce.eventManager.callEvent(SessionEvent())
 
-                            prevGui.status = "§aYour name is now §b§l${yggdrasilUserAuthentication.selectedProfile.name}§c."
+                            prevGui.status =
+                                "§aYour name is now §b§l${yggdrasilUserAuthentication.selectedProfile.name}§c."
                             mc.displayGuiScreen(prevGui)
                             ""
                         } catch (e: AuthenticationException) {
@@ -165,11 +174,12 @@ class GuiTheAltening(private val prevGui: GuiAltManager) : GuiScreen() {
                     generateButton.enabled = true
                 }
             }
+
             2 -> {
                 loginButton.enabled = false
                 generateButton.enabled = false
 
-                Thread(Runnable {
+                Thread {
                     try {
                         status = "§cSwitching Alt Service..."
 
@@ -178,19 +188,23 @@ class GuiTheAltening(private val prevGui: GuiAltManager) : GuiScreen() {
                         status = "§cLogging in..."
 
                         // Set token as username
-                        val yggdrasilUserAuthentication = YggdrasilUserAuthentication(YggdrasilAuthenticationService(NO_PROXY, ""), MINECRAFT)
+                        val yggdrasilUserAuthentication =
+                            YggdrasilUserAuthentication(YggdrasilAuthenticationService(NO_PROXY, ""), MINECRAFT)
                         yggdrasilUserAuthentication.setUsername(tokenField.text)
                         yggdrasilUserAuthentication.setPassword(LiquidBounce.CLIENT_NAME)
 
                         status = try {
                             yggdrasilUserAuthentication.logIn()
 
-                            mc.session = Session(yggdrasilUserAuthentication.selectedProfile.name, yggdrasilUserAuthentication
+                            mc.session = Session(
+                                yggdrasilUserAuthentication.selectedProfile.name, yggdrasilUserAuthentication
                                     .selectedProfile.id.toString(),
-                                    yggdrasilUserAuthentication.authenticatedToken, "mojang")
+                                yggdrasilUserAuthentication.authenticatedToken, "mojang"
+                            )
                             LiquidBounce.eventManager.callEvent(SessionEvent())
 
-                            prevGui.status = "§aYour name is now §b§l${yggdrasilUserAuthentication.selectedProfile.name}§c."
+                            prevGui.status =
+                                "§aYour name is now §b§l${yggdrasilUserAuthentication.selectedProfile.name}§c."
                             mc.displayGuiScreen(prevGui)
                             "§aYour name is now §b§l${yggdrasilUserAuthentication.selectedProfile.name}§c."
                         } catch (e: AuthenticationException) {
@@ -206,8 +220,9 @@ class GuiTheAltening(private val prevGui: GuiAltManager) : GuiScreen() {
 
                     loginButton.enabled = true
                     generateButton.enabled = true
-                }).start()
+                }.start()
             }
+
             3 -> MiscUtils.showURL("https://thealtening.com/?ref=liquidbounce")
         }
     }

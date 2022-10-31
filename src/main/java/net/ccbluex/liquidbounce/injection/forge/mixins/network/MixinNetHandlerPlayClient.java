@@ -40,17 +40,14 @@ import java.net.URISyntaxException;
 public abstract class MixinNetHandlerPlayClient {
 
     @Shadow
+    public int currentServerMaxPlayers;
+    @Shadow
     @Final
     private NetworkManager netManager;
-
     @Shadow
     private Minecraft gameController;
-
     @Shadow
     private WorldClient clientWorldController;
-
-    @Shadow
-    public int currentServerMaxPlayers;
 
     @Inject(method = "handleResourcePack", at = @At("HEAD"), cancellable = true)
     private void handleResourcePack(final S48PacketResourcePackSend p_handleResourcePack_1_, final CallbackInfo callbackInfo) {
@@ -61,12 +58,12 @@ public abstract class MixinNetHandlerPlayClient {
             final String scheme = new URI(url).getScheme();
             final boolean isLevelProtocol = "level".equals(scheme);
 
-            if(!"http".equals(scheme) && !"https".equals(scheme) && !isLevelProtocol)
+            if (!"http".equals(scheme) && !"https".equals(scheme) && !isLevelProtocol)
                 throw new URISyntaxException(url, "Wrong protocol");
 
-            if(isLevelProtocol && (url.contains("..") || !url.endsWith("/resources.zip")))
+            if (isLevelProtocol && (url.contains("..") || !url.endsWith("/resources.zip")))
                 throw new URISyntaxException(url, "Invalid levelstorage resourcepack path");
-        }catch(final URISyntaxException e) {
+        } catch (final URISyntaxException e) {
             ClientUtils.getLogger().error("Failed to handle resource pack", e);
             netManager.sendPacket(new C19PacketResourcePackStatus(hash, C19PacketResourcePackStatus.Action.FAILED_DOWNLOAD));
             callbackInfo.cancel();
@@ -75,7 +72,7 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Inject(method = "handleJoinGame", at = @At("HEAD"), cancellable = true)
     private void handleJoinGameWithAntiForge(S01PacketJoinGame packetIn, final CallbackInfo callbackInfo) {
-        if(!AntiForge.enabled || !AntiForge.blockFML || Minecraft.getMinecraft().isIntegratedServerRunning())
+        if (!AntiForge.enabled || !AntiForge.blockFML || Minecraft.getMinecraft().isIntegratedServerRunning())
             return;
 
         PacketThreadUtil.checkThreadAndEnqueue(packetIn, (NetHandlerPlayClient) (Object) this, gameController);
@@ -98,7 +95,7 @@ public abstract class MixinNetHandlerPlayClient {
     private void handleEntityMovementEvent(S14PacketEntity packetIn, final CallbackInfo callbackInfo) {
         final Entity entity = packetIn.getEntity(this.clientWorldController);
 
-        if(entity != null)
+        if (entity != null)
             LiquidBounce.eventManager.callEvent(new EntityMovementEvent(entity));
     }
 }

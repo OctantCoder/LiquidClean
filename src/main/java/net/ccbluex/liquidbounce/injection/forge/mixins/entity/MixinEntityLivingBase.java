@@ -34,6 +34,11 @@ import java.util.Objects;
 public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Shadow
+    protected boolean isJumping;
+    @Shadow
+    private int jumpTicks;
+
+    @Shadow
     protected abstract float getJumpUpwardsMotion();
 
     @Shadow
@@ -41,12 +46,6 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Shadow
     public abstract boolean isPotionActive(Potion potionIn);
-
-    @Shadow
-    private int jumpTicks;
-
-    @Shadow
-    protected boolean isJumping;
 
     @Shadow
     public void onLivingUpdate() {
@@ -61,24 +60,26 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Shadow
     public abstract ItemStack getHeldItem();
 
-    @Shadow protected abstract void updateAITick();
+    @Shadow
+    protected abstract void updateAITick();
 
     /**
      * @author CCBlueX
+     * @reason To call jump event
      */
     @Overwrite
     protected void jump() {
         final JumpEvent jumpEvent = new JumpEvent(this.getJumpUpwardsMotion());
         LiquidBounce.eventManager.callEvent(jumpEvent);
-        if(jumpEvent.isCancelled())
+        if (jumpEvent.isCancelled())
             return;
 
         this.motionY = jumpEvent.getMotion();
 
-        if(this.isPotionActive(Potion.jump))
+        if (this.isPotionActive(Potion.jump))
             this.motionY += (float) (this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F;
 
-        if(this.isSprinting()) {
+        if (this.isSprinting()) {
             float f = this.rotationYaw * 0.017453292F;
             this.motionX -= MathHelper.sin(f) * 0.2F;
             this.motionZ += MathHelper.cos(f) * 0.2F;
@@ -111,7 +112,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Inject(method = "getLook", at = @At("HEAD"), cancellable = true)
     private void getLook(CallbackInfoReturnable<Vec3> callbackInfoReturnable) {
         //noinspection ConstantConditions
-        if(((EntityLivingBase) (Object) this) instanceof EntityPlayerSP)
+        if (((EntityLivingBase) (Object) this) instanceof EntityPlayerSP)
             callbackInfoReturnable.setReturnValue(getVectorForRotation(this.rotationPitch, this.rotationYaw));
     }
 

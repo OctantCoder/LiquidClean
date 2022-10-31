@@ -16,17 +16,21 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.input.Mouse
 
-@ModuleInfo(name = "MidClick", description = "Allows you to add a player as a friend by right clicking him.", category = ModuleCategory.MISC)
+@ModuleInfo(
+    name = "MidClick",
+    description = "Allows you to add a player as a friend by right clicking him.",
+    category = ModuleCategory.MISC
+)
 class MidClick : Module() {
     private var wasDown = false
 
     @EventTarget
-    fun onRender(event: Render2DEvent?) {
+    fun onRender(@Suppress("UNUSED_PARAMETER") event: Render2DEvent?) {
         if (mc.currentScreen != null)
             return
 
         if (!wasDown && Mouse.isButtonDown(2)) {
-            val entity = mc.objectMouseOver!!.entityHit
+            val entity = (mc.objectMouseOver ?: return).entityHit
 
             if (entity is EntityPlayer) {
                 val playerName = stripColor(entity.name)

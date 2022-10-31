@@ -71,15 +71,12 @@ class ShortcutsConfig(file: File) : FileConfig(file) {
 
             val scriptArray = JsonArray()
 
-            for (pair in command.script) {
+            for ((first, _) in command.script) {
                 val pairObject = JsonObject()
 
-                pairObject.addProperty("name", pair.first.command)
+                pairObject.addProperty("name", first.command)
 
                 val argumentsObject = JsonArray()
-                for (argument in pair.second) {
-                    // argumentsObject.add(argument)
-                }
 
                 pairObject.add("arguments", argumentsObject)
 

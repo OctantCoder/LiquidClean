@@ -18,7 +18,11 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.client.C01PacketChatMessage
 import java.util.concurrent.LinkedBlockingQueue
 
-@ModuleInfo(name = "AtAllProvider", description = "Automatically mentions everyone on the server when using '@a' in your message.", category = ModuleCategory.MISC)
+@ModuleInfo(
+    name = "AtAllProvider",
+    description = "Automatically mentions everyone on the server when using '@a' in your message.",
+    category = ModuleCategory.MISC
+)
 class AtAllProvider : Module() {
     private val minDelayValue: IntegerValue = object : IntegerValue("MinDelay", 500, 0, 20000) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -51,7 +55,7 @@ class AtAllProvider : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
         if (!msTimer.hasTimePassed(delay))
             return
 
@@ -64,7 +68,7 @@ class AtAllProvider : Module() {
                         sendQueue.addAll(retryQueue)
                 }
 
-                mc.thePlayer!!.sendChatMessage(sendQueue.take())
+                (mc.thePlayer ?: return@synchronized).sendChatMessage(sendQueue.take())
                 msTimer.reset()
 
                 delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
@@ -84,7 +88,7 @@ class AtAllProvider : Module() {
                     for (playerInfo in mc.netHandler.playerInfoMap) {
                         val playerName = playerInfo.gameProfile.name
 
-                        if (playerName == mc.thePlayer!!.name)
+                        if (playerName == (mc.thePlayer ?: return@synchronized).name)
                             continue
 
                         sendQueue.add(message.replace("@a", playerName))

@@ -21,7 +21,11 @@ import net.minecraft.item.ItemTool
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 
-@ModuleInfo(name = "AutoWeapon", description = "Automatically selects the best weapon in your hotbar.", category = ModuleCategory.COMBAT)
+@ModuleInfo(
+    name = "AutoWeapon",
+    description = "Automatically selects the best weapon in your hotbar.",
+    category = ModuleCategory.COMBAT
+)
 class AutoWeapon : Module() {
 
     private val silentValue = BoolValue("SpoofItem", false)
@@ -31,17 +35,18 @@ class AutoWeapon : Module() {
     private var spoofedSlot = 0
 
     @EventTarget
-    fun onAttack(event: AttackEvent) {
+    fun onAttack(@Suppress("UNUSED_PARAMETER") event: AttackEvent) {
         attackEnemy = true
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
         if (event.packet is C02PacketUseEntity && event.packet.action == C02PacketUseEntity.Action.ATTACK
-            && attackEnemy) {
+            && attackEnemy
+        ) {
             attackEnemy = false
 
-            // Find best weapon in hotbar (#Kotlin Style)
+            // Find the best weapon in hotbar (#Kotlin Style)
             val (slot, _) = (0..8)
                 .map { Pair(it, mc.thePlayer.inventory.getStackInSlot(it)) }
                 .filter { it.second != null && (it.second.item is ItemSword || it.second.item is ItemTool) }
@@ -69,7 +74,7 @@ class AutoWeapon : Module() {
     }
 
     @EventTarget
-    fun onUpdate(update: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") update: UpdateEvent) {
         // Switch back to old item after some time
         if (spoofedSlot > 0) {
             if (spoofedSlot == 1)

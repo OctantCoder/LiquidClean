@@ -137,7 +137,7 @@ var _AdaptedModule = function (module) {
 }
 
 Object.defineProperty(_AdaptedModule.prototype, "state", {
-    get: function() {
+    get: function () {
         return this.module.getState();
     },
     set: function (newState) {
@@ -146,7 +146,7 @@ Object.defineProperty(_AdaptedModule.prototype, "state", {
 });
 
 Object.defineProperty(_AdaptedModule.prototype, "bind", {
-    get: function() {
+    get: function () {
         return this.module.keyBind;
     },
     set: function (newBind) {

@@ -21,7 +21,8 @@ class AACHop3313 : SpeedMode("AACHop3.3.13") {
         val thePlayer = mc.thePlayer ?: return
 
         if (!MovementUtils.isMoving || thePlayer.isInWater || thePlayer.isInLava ||
-                thePlayer.isOnLadder || thePlayer.isRiding || thePlayer.hurtTime > 0) return
+            thePlayer.isOnLadder || thePlayer.isRiding || thePlayer.hurtTime > 0
+        ) return
         if (thePlayer.onGround && thePlayer.isCollidedVertically) {
             // MotionXYZ
             val yawRad = thePlayer.rotationYaw * 0.017453292f
@@ -46,6 +47,6 @@ class AACHop3313 : SpeedMode("AACHop3.3.13") {
 
     override fun onMove(event: MoveEvent) {}
     override fun onDisable() {
-        mc.thePlayer!!.jumpMovementFactor = 0.02f
+        (mc.thePlayer ?: return).jumpMovementFactor = 0.02f
     }
 }

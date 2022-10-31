@@ -23,14 +23,10 @@ import java.util.Random;
 public final class RotationUtils extends MinecraftInstance implements Listenable {
 
     private static final Random random = new Random();
-
-    private static int keepLength;
-
     public static Rotation targetRotation;
     public static Rotation serverRotation = new Rotation(0F, 0F);
-
     public static boolean keepCurrentRotation = false;
-
+    private static int keepLength;
     private static double x = random.nextDouble();
     private static double y = random.nextDouble();
     private static double z = random.nextDouble();
@@ -155,15 +151,15 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
      * Search good center
      *
      * @param bb           enemy box
-     * @param outborder    outborder option
+     * @param outBorder    outBorder option
      * @param random       random option
      * @param predict      predict option
      * @param throughWalls throughWalls option
      * @return center
      */
-    public static VecRotation searchCenter(final AxisAlignedBB bb, final boolean outborder, final boolean random,
+    public static VecRotation searchCenter(final AxisAlignedBB bb, final boolean outBorder, final boolean random,
                                            final boolean predict, final boolean throughWalls, final float distance) {
-        if (outborder) {
+        if (outBorder) {
             final Vec3 vec3 = new Vec3(bb.minX + (bb.maxX - bb.minX) * (x * 0.3 + 1.0), bb.minY + (bb.maxY - bb.minY) * (y * 0.3 + 1.0), bb.minZ + (bb.maxZ - bb.minZ) * (z * 0.3 + 1.0));
             return new VecRotation(vec3, toRotation(vec3, predict));
         }
@@ -175,7 +171,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
 
         VecRotation vecRotation = null;
 
-        for(double xSearch = 0.15D; xSearch < 0.85D; xSearch += 0.1D) {
+        for (double xSearch = 0.15D; xSearch < 0.85D; xSearch += 0.1D) {
             for (double ySearch = 0.15D; ySearch < 1D; ySearch += 0.1D) {
                 for (double zSearch = 0.15D; zSearch < 0.85D; zSearch += 0.1D) {
                     final Vec3 vec3 = new Vec3(bb.minX + (bb.maxX - bb.minX) * xSearch,
@@ -236,8 +232,8 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
      * Limit your rotation using a turn speed
      *
      * @param currentRotation your current rotation
-     * @param targetRotation your goal rotation
-     * @param turnSpeed your turn speed
+     * @param targetRotation  your goal rotation
+     * @param turnSpeed       your turn speed
      * @return limited rotation
      */
     @NotNull
@@ -248,7 +244,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         return new Rotation(
                 currentRotation.getYaw() + (yawDifference > turnSpeed ? turnSpeed : Math.max(yawDifference, -turnSpeed)),
                 currentRotation.getPitch() + (pitchDifference > turnSpeed ? turnSpeed : Math.max(pitchDifference, -turnSpeed)
-        ));
+                ));
     }
 
     /**
@@ -284,7 +280,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
      * @return if crosshair is over target
      */
     public static boolean isFaced(final Entity targetEntity, double blockReachDistance) {
-        return RaycastUtils.raycastEntity(blockReachDistance, entity -> targetEntity != null && targetEntity.equals(entity)) != null;
+        return RayCastUtils.rayCastEntity(blockReachDistance, entity -> targetEntity != null && targetEntity.equals(entity)) != null;
     }
 
     /**
@@ -294,25 +290,6 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         final Vec3 eyesPos = new Vec3(mc.thePlayer.posX, mc.thePlayer.getEntityBoundingBox().minY + mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
 
         return mc.theWorld.rayTraceBlocks(eyesPos, vec3) == null;
-    }
-
-    /**
-     * Handle minecraft tick
-     *
-     * @param event Tick event
-     */
-    @EventTarget
-    public void onTick(final TickEvent event) {
-        if(targetRotation != null) {
-            keepLength--;
-
-            if (keepLength <= 0)
-                reset();
-        }
-
-        if(random.nextGaussian() > 0.8D) x = Math.random();
-        if(random.nextGaussian() > 0.8D) y = Math.random();
-        if(random.nextGaussian() > 0.8D) z = Math.random();
     }
 
     /**
@@ -340,13 +317,40 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     }
 
     /**
+     * Reset your target rotation
+     */
+    public static void reset() {
+        keepLength = 0;
+        targetRotation = null;
+    }
+
+    /**
+     * Handle minecraft tick
+     *
+     * @param event Tick event
+     */
+    @EventTarget
+    public void onTick(@SuppressWarnings("unused") final TickEvent event) {
+        if (targetRotation != null) {
+            keepLength--;
+
+            if (keepLength <= 0)
+                reset();
+        }
+
+        if (random.nextGaussian() > 0.8D) x = Math.random();
+        if (random.nextGaussian() > 0.8D) y = Math.random();
+        if (random.nextGaussian() > 0.8D) z = Math.random();
+    }
+
+    /**
      * Handle packet
      *
      * @param event Packet Event
      */
     @EventTarget
     public void onPacket(final PacketEvent event) {
-        final Packet packet = event.getPacket();
+        final Packet<?> packet = event.getPacket();
 
         if (packet instanceof C03PacketPlayer) {
             final C03PacketPlayer packetPlayer = (C03PacketPlayer) packet;
@@ -363,15 +367,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     }
 
     /**
-     * Reset your target rotation
-     */
-    public static void reset() {
-        keepLength = 0;
-        targetRotation = null;
-    }
-
-    /**
-     * @return YESSSS!!!
+     * @return YES!!!
      */
     @Override
     public boolean handleEvents() {

@@ -26,7 +26,11 @@ import java.net.URISyntaxException
 import java.util.regex.Pattern
 import kotlin.concurrent.thread
 
-@ModuleInfo(name = "LiquidChat", description = "Allows you to chat with other LiquidBounce users.", category = ModuleCategory.MISC)
+@ModuleInfo(
+    name = "LiquidChat",
+    description = "Allows you to chat with other LiquidBounce users.",
+    category = ModuleCategory.MISC
+)
 class LiquidChat : Module() {
 
     init {
@@ -34,7 +38,7 @@ class LiquidChat : Module() {
         array = false
     }
 
-    val jwtValue = object : BoolValue("JWT", false) {
+    val jwtValue: BoolValue = object : BoolValue("JWT", false) {
         override fun onChanged(oldValue: Boolean, newValue: Boolean) {
             if (state) {
                 state = false
@@ -44,10 +48,10 @@ class LiquidChat : Module() {
     }
 
     companion object {
-        var jwtToken = ""
+        var jwtToken: String = ""
     }
 
-    val client = object : Client() {
+    val client: Client = object : Client() {
 
         /**
          * Handle connect to web socket
@@ -101,6 +105,7 @@ class LiquidChat : Module() {
 
                     thePlayer.addChatMessage(chatComponent)
                 }
+
                 is ClientPrivateMessagePacket -> ClientUtils.displayChatMessage("§7[§a§lChat§7] §c(P)§9 ${packet.user.name}: §7${packet.content}")
                 is ClientErrorPacket -> {
                     val message = when (packet.message) {
@@ -124,6 +129,7 @@ class LiquidChat : Module() {
 
                     ClientUtils.displayChatMessage("§7[§a§lChat§7] §cError: §7$message")
                 }
+
                 is ClientSuccessPacket -> {
                     when (packet.reason) {
                         "Login" -> {
@@ -137,10 +143,12 @@ class LiquidChat : Module() {
 
                             loggedIn = true
                         }
+
                         "Ban" -> ClientUtils.displayChatMessage("§7[§a§lChat§7] §9Successfully banned user!")
                         "Unban" -> ClientUtils.displayChatMessage("§7[§a§lChat§7] §9Successfully unbanned user!")
                     }
                 }
+
                 is ClientNewJWTPacket -> {
                     jwtToken = packet.token
                     jwtValue.set(true)
@@ -171,14 +179,14 @@ class LiquidChat : Module() {
     }
 
     @EventTarget
-    fun onSession(sessionEvent: SessionEvent) {
+    fun onSession(@Suppress("UNUSED_PARAMETER") sessionEvent: SessionEvent) {
         client.disconnect()
         connect()
     }
 
     @EventTarget
-    fun onUpdate(updateEvent: UpdateEvent) {
-        if (client.isConnected() || (loginThread != null && loginThread!!.isAlive)) return
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") updateEvent: UpdateEvent) {
+        if (client.isConnected() || (loginThread != null && (loginThread ?: return).isAlive)) return
 
         if (connectTimer.hasTimePassed(5000)) {
             connect()
@@ -187,7 +195,7 @@ class LiquidChat : Module() {
     }
 
     private fun connect() {
-        if (client.isConnected() || (loginThread != null && loginThread!!.isAlive)) return
+        if (client.isConnected() || (loginThread != null && (loginThread ?: return).isAlive)) return
 
         if (jwtValue.get() && jwtToken.isEmpty()) {
             ClientUtils.displayChatMessage("§7[§a§lChat§7] §cError: §7No token provided!")
@@ -221,7 +229,10 @@ class LiquidChat : Module() {
      * @author Forge
      */
 
-    private val urlPattern = Pattern.compile("((?:[a-z0-9]{2,}:\\/\\/)?(?:(?:[0-9]{1,3}\\.){3}[0-9]{1,3}|(?:[-\\w_\\.]{1,}\\.[a-z]{2,}?))(?::[0-9]{1,5})?.*?(?=[!\"\u00A7 \n]|$))", Pattern.CASE_INSENSITIVE)
+    private val urlPattern = Pattern.compile(
+        "((?:[a-z0-9]{2,}://)?(?:(?:[0-9]{1,3}\\.){3}[0-9]{1,3}|[-\\w_.]+\\.[a-z]{2,}?)(?::[0-9]{1,5})?.*?(?=[!\"\u00A7 \n]|$))",
+        Pattern.CASE_INSENSITIVE
+    )
 
     private fun toChatComponent(string: String): IChatComponent {
         var component: IChatComponent? = null
@@ -232,7 +243,7 @@ class LiquidChat : Module() {
             val start = matcher.start()
             val end = matcher.end()
 
-            // Append the previous left overs.
+            // Append the previous leftovers.
             val part = string.substring(lastEnd, start)
             if (part.isNotEmpty()) {
                 if (component == null) {
@@ -262,6 +273,7 @@ class LiquidChat : Module() {
                     continue
                 }
             } catch (e: URISyntaxException) {
+                ClientUtils.getLogger().error("LiquidChat error $e")
             }
 
             if (component == null) {

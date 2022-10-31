@@ -36,19 +36,21 @@ import kotlin.concurrent.thread
 object LiquidBounce {
 
     // Client information
-    const val CLIENT_NAME = "LiquidBounce"
+    const val CLIENT_NAME: String = "LiquidBounce"
+
     @JvmField
     val CLIENT_VERSION: String = gitInfo["git.build.version"]?.toString() ?: "unknown"
-    var CLIENT_VERSION_INT = CLIENT_VERSION.substring(1).toIntOrNull() ?: 0 // version format: "b<VERSION>" on legacy
+    var CLIENT_VERSION_INT: Int = CLIENT_VERSION.substring(1).toIntOrNull() ?: 0 // version format: "b<VERSION>" on legacy
+
     @JvmField
     val CLIENT_COMMIT: String = gitInfo["git.commit.id.abbrev"]?.let { "git-$it" } ?: "unknown"
-    const val IN_DEV = false
-    const val CLIENT_CREATOR = "CCBlueX"
-    const val MINECRAFT_VERSION = "1.8.9"
-    const val CLIENT_CLOUD = "https://cloud.liquidbounce.net/LiquidBounce"
-    const val CLIENT_API = "https://api.liquidbounce.net/api/v1"
+    const val IN_DEV: Boolean = false
+    const val CLIENT_CREATOR: String = "CCBlueX"
+    const val MINECRAFT_VERSION: String = "1.8.9"
+    const val CLIENT_CLOUD: String = "https://cloud.liquidbounce.net/LiquidBounce"
+    const val CLIENT_API: String = "https://api.liquidbounce.net/api/v1"
 
-    var isStarting = false
+    var isStarting: Boolean = false
 
     // Managers
     lateinit var moduleManager: ModuleManager
@@ -118,8 +120,10 @@ object LiquidBounce {
         commandManager.registerCommands()
 
         // Load configs
-        fileManager.loadConfigs(fileManager.modulesConfig, fileManager.valuesConfig, fileManager.accountsConfig,
-                fileManager.friendsConfig, fileManager.xrayConfig, fileManager.shortcutsConfig)
+        fileManager.loadConfigs(
+            fileManager.modulesConfig, fileManager.valuesConfig, fileManager.accountsConfig,
+            fileManager.friendsConfig, fileManager.xrayConfig, fileManager.shortcutsConfig
+        )
 
         // ClickGUI
         clickGui = ClickGui()
@@ -155,7 +159,7 @@ object LiquidBounce {
 
         // Refresh cape service
         CapeService.refreshCapeCarriers {
-            ClientUtils.getLogger().info("Successfully loaded ${CapeService.capeCarriers.count()} cape carriers.")
+            ClientUtils.getLogger().info("Successfully loaded ${CapeService.capeCarriers.size} cape carriers.")
         }
 
         // Set is starting status

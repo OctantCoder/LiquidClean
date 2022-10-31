@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 import java.util.*
 
 /**
- * A axochat user
+ * An axoChat user
  *
  * @param name of user
  * @param uuid of user

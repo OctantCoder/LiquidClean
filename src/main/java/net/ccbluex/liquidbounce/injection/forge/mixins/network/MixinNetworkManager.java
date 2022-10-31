@@ -18,12 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(NetworkManager.class)
 public class MixinNetworkManager {
 
-    @Inject(method = "channelRead0", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "channelRead0*", at = @At("HEAD"), cancellable = true)
     private void read(ChannelHandlerContext context, Packet<?> packet, CallbackInfo callback) {
         final PacketEvent event = new PacketEvent(packet);
         LiquidBounce.eventManager.callEvent(event);
 
-        if(event.isCancelled())
+        if (event.isCancelled())
             callback.cancel();
     }
 
@@ -32,7 +32,7 @@ public class MixinNetworkManager {
         final PacketEvent event = new PacketEvent(packet);
         LiquidBounce.eventManager.callEvent(event);
 
-        if(event.isCancelled())
+        if (event.isCancelled())
             callback.cancel();
     }
 }

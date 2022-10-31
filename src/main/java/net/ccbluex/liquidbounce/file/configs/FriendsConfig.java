@@ -30,7 +30,6 @@ public class FriendsConfig extends FileConfig {
     /**
      * Load config from file
      *
-     * @throws IOException
      */
     @Override
     protected void loadConfig() throws IOException {
@@ -76,7 +75,6 @@ public class FriendsConfig extends FileConfig {
     /**
      * Save config to file
      *
-     * @throws IOException
      */
     @Override
     protected void saveConfig() throws IOException {
@@ -112,7 +110,7 @@ public class FriendsConfig extends FileConfig {
      * @return of successfully added friend
      */
     public boolean addFriend(final String playerName, final String alias) {
-        if(isFriend(playerName))
+        if (isFriend(playerName))
             return false;
 
         friends.add(new Friend(playerName, alias));
@@ -125,7 +123,7 @@ public class FriendsConfig extends FileConfig {
      * @param playerName of friend
      */
     public boolean removeFriend(final String playerName) {
-        if(!isFriend(playerName))
+        if (!isFriend(playerName))
             return false;
 
         friends.removeIf(friend -> friend.getPlayerName().equals(playerName));
@@ -139,8 +137,8 @@ public class FriendsConfig extends FileConfig {
      * @return is friend
      */
     public boolean isFriend(final String playerName) {
-        for(final Friend friend : friends)
-            if(friend.getPlayerName().equals(playerName))
+        for (final Friend friend : friends)
+            if (friend.getPlayerName().equals(playerName))
                 return true;
         return false;
     }
@@ -161,7 +159,7 @@ public class FriendsConfig extends FileConfig {
         return friends;
     }
 
-    public class Friend {
+    public static class Friend {
 
         private final String playerName;
         private final String alias;

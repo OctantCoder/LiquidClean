@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.ui.client.GuiUpdate;
 import net.ccbluex.liquidbounce.ui.client.GuiWelcome;
 import net.ccbluex.liquidbounce.update.UpdateInfo;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
+import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.render.IconUtils;
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -57,36 +58,27 @@ public abstract class MixinMinecraft {
 
     @Shadow
     public boolean skipRenderWorld;
-
-    @Shadow
-    private int leftClickCounter;
-
     @Shadow
     public MovingObjectPosition objectMouseOver;
-
     @Shadow
     public WorldClient theWorld;
-
     @Shadow
     public EntityPlayerSP thePlayer;
-
     @Shadow
     public EffectRenderer effectRenderer;
-
     @Shadow
     public PlayerControllerMP playerController;
-
     @Shadow
     public int displayWidth;
-
     @Shadow
     public int displayHeight;
-
     @Shadow
     public int rightClickDelayTimer;
-
     @Shadow
     public GameSettings gameSettings;
+    @Shadow
+    private int leftClickCounter;
+    private long lastFrame = getTime();
 
     @Shadow
     public abstract void displayGuiScreen(GuiScreen guiScreenIn);
@@ -129,7 +121,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {
-        Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_VERSION + " " +  LiquidBounce.CLIENT_COMMIT + "  | " + LiquidBounce.MINECRAFT_VERSION + (LiquidBounce.IN_DEV ? " | DEVELOPMENT BUILD" : ""));
+        Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_VERSION + " " + LiquidBounce.CLIENT_COMMIT + "  | " + LiquidBounce.MINECRAFT_VERSION + (LiquidBounce.IN_DEV ? " | DEVELOPMENT BUILD" : ""));
     }
 
     @Inject(method = "displayGuiScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", shift = At.Shift.AFTER))
@@ -144,8 +136,6 @@ public abstract class MixinMinecraft {
 
         LiquidBounce.eventManager.callEvent(new ScreenEvent(currentScreen));
     }
-
-    private long lastFrame = getTime();
 
     @Inject(method = "runGameLoop", at = @At("HEAD"))
     private void runGameLoop(final CallbackInfo callbackInfo) {
@@ -182,9 +172,13 @@ public abstract class MixinMinecraft {
     private void setWindowIcon(CallbackInfo callbackInfo) {
         if (Util.getOSType() != Util.EnumOS.OSX) {
             final ByteBuffer[] liquidBounceFavicon = IconUtils.getFavicon();
-            if (liquidBounceFavicon != null) {
-                Display.setIcon(liquidBounceFavicon);
-                callbackInfo.cancel();
+            try {
+                if (liquidBounceFavicon != null) {
+                    Display.setIcon(liquidBounceFavicon);
+                    callbackInfo.cancel();
+                }
+            } catch (NullPointerException e) {
+                ClientUtils.getLogger().error("Set window icon" + e);
             }
         }
     }
@@ -226,6 +220,7 @@ public abstract class MixinMinecraft {
 
     /**
      * @author CCBlueX
+     * @reason To register block clicks change block breaking state
      */
     @Overwrite
     private void sendClickBlockToController(boolean leftClick) {

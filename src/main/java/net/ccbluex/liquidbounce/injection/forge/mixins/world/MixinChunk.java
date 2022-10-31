@@ -32,7 +32,7 @@ public class MixinChunk {
     public int zPosition;
 
     @Inject(method = "setBlockState", at = @At("HEAD"))
-    private void setProphuntBlock(BlockPos pos, IBlockState state, final CallbackInfoReturnable callbackInfo) {
+    private void setProphuntBlock(BlockPos pos, IBlockState p_setBlockState_2_, CallbackInfoReturnable<IBlockState> cir) {
         //noinspection ConstantConditions
         MiniMapRegister.INSTANCE.updateChunk((Chunk) ((Object) this));
 

@@ -6,15 +6,16 @@
 package net.ccbluex.liquidbounce.utils.extensions
 
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
+import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 
 /**
  * Get block by position
  */
-fun BlockPos.getBlock() = BlockUtils.getBlock(this)
+fun BlockPos.getBlock(): Block? = BlockUtils.getBlock(this)
 
 /**
  * Get vector of block position
  */
-fun BlockPos.getVec() = Vec3(x + 0.5, y + 0.5, z + 0.5)
+fun BlockPos.getVec(): Vec3 = Vec3(x + 0.5, y + 0.5, z + 0.5)

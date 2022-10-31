@@ -21,8 +21,10 @@ import java.awt.Color
  * CustomHUD Notification element
  */
 @ElementInfo(name = "Notifications", single = true)
-class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
-                    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
+class Notifications(
+    x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
+    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
+) : Element(x, y, scale, side) {
 
     /**
      * Example notification for CustomHUD designer
@@ -52,12 +54,12 @@ class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
 }
 
 class Notification(private val message: String) {
-    var x = 0F
-    var textLength = 0
+    var x: Float = 0F
+    var textLength: Int = 0
 
     private var stay = 0F
     private var fadeStep = 0F
-    var fadeState = FadeState.IN
+    var fadeState: FadeState = FadeState.IN
 
     /**
      * Fade state for animation

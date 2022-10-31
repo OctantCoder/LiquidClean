@@ -13,9 +13,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
-
 import java.io.*;
-import java.util.Iterator;
 import java.util.Map;
 
 public class ModulesConfig extends FileConfig {
@@ -32,27 +30,24 @@ public class ModulesConfig extends FileConfig {
     /**
      * Load config from file
      *
-     * @throws IOException
      */
     @Override
     protected void loadConfig() throws IOException {
         final JsonElement jsonElement = new JsonParser().parse(new BufferedReader(new FileReader(getFile())));
 
-        if(jsonElement instanceof JsonNull)
+        if (jsonElement instanceof JsonNull)
             return;
 
-        final Iterator<Map.Entry<String, JsonElement>> entryIterator = jsonElement.getAsJsonObject().entrySet().iterator();
-        while(entryIterator.hasNext()) {
-            final Map.Entry<String, JsonElement> entry = entryIterator.next();
+        for (Map.Entry<String, JsonElement> entry : jsonElement.getAsJsonObject().entrySet()) {
             final Module module = LiquidBounce.moduleManager.getModule(entry.getKey());
 
-            if(module != null) {
+            if (module != null) {
                 final JsonObject jsonModule = (JsonObject) entry.getValue();
 
                 module.setState(jsonModule.get("State").getAsBoolean());
                 module.setKeyBind(jsonModule.get("KeyBind").getAsInt());
 
-                if(jsonModule.has("Array"))
+                if (jsonModule.has("Array"))
                     module.setArray(jsonModule.get("Array").getAsBoolean());
             }
         }
@@ -61,7 +56,6 @@ public class ModulesConfig extends FileConfig {
     /**
      * Save config to file
      *
-     * @throws IOException
      */
     @Override
     protected void saveConfig() throws IOException {

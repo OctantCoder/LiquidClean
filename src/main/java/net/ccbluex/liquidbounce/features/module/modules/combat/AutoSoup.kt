@@ -22,7 +22,11 @@ import net.minecraft.network.play.client.*
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "AutoSoup", description = "Makes you automatically eat soup whenever your health is low.", category = ModuleCategory.COMBAT)
+@ModuleInfo(
+    name = "AutoSoup",
+    description = "Makes you automatically eat soup whenever your health is low.",
+    category = ModuleCategory.COMBAT
+)
 class AutoSoup : Module() {
 
     private val healthValue = FloatValue("Health", 15f, 0f, 20f)
@@ -37,7 +41,7 @@ class AutoSoup : Module() {
         get() = healthValue.get().toString()
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
         if (!timer.hasTimePassed(delayValue.get().toLong()))
             return
 
@@ -50,8 +54,12 @@ class AutoSoup : Module() {
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(thePlayer.inventory.getStackInSlot(soupInHotbar)))
 
             if (bowlValue.get().equals("Drop", true))
-                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM,
-                    BlockPos.ORIGIN, EnumFacing.DOWN))
+                mc.netHandler.addToSendQueue(
+                    C07PacketPlayerDigging(
+                        C07PacketPlayerDigging.Action.DROP_ITEM,
+                        BlockPos.ORIGIN, EnumFacing.DOWN
+                    )
+                )
 
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
             timer.reset()

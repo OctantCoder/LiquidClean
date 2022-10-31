@@ -24,8 +24,14 @@ import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import java.awt.Color
+import java.util.*
+import kotlin.collections.ArrayList
 
-@ModuleInfo(name = "BlockESP", description = "Allows you to see a selected block through walls.", category = ModuleCategory.RENDER)
+@ModuleInfo(
+    name = "BlockESP",
+    description = "Allows you to see a selected block through walls.",
+    category = ModuleCategory.RENDER
+)
 class BlockESP : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Box", "2D"), "Box")
     private val blockValue = BlockValue("Block", 168)
@@ -40,21 +46,21 @@ class BlockESP : Module() {
     private var thread: Thread? = null
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
-        if (searchTimer.hasTimePassed(1000L) && (thread == null || !thread!!.isAlive)) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
+        if (searchTimer.hasTimePassed(1000L) && (thread == null || !(thread ?: return).isAlive)) {
             val radius = radiusValue.get()
-            val selectedBlock = Block.getBlockById(blockValue.get());
+            val selectedBlock = Block.getBlockById(blockValue.get())
 
             if (selectedBlock == null || selectedBlock == Blocks.air)
-                return;
+                return
 
-            thread = Thread(Runnable {
+            thread = Thread({
                 val blockList: MutableList<BlockPos> = ArrayList()
 
                 for (x in -radius until radius) {
                     for (y in radius downTo -radius + 1) {
                         for (z in -radius until radius) {
-                            val thePlayer = mc.thePlayer!!
+                            val thePlayer = mc.thePlayer ?: return@Thread
 
                             val xPos = thePlayer.posX.toInt() + x
                             val yPos = thePlayer.posY.toInt() + y
@@ -75,16 +81,20 @@ class BlockESP : Module() {
                 }
             }, "BlockESP-BlockFinder")
 
-            thread!!.start()
+            (thread ?: return).start()
         }
     }
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent?) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent?) {
         synchronized(posList) {
-            val color = if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+            val color = if (colorRainbow.get()) rainbow() else Color(
+                colorRedValue.get(),
+                colorGreenValue.get(),
+                colorBlueValue.get()
+            )
             for (blockPos in posList) {
-                when (modeValue.get().toLowerCase()) {
+                when (modeValue.get().lowercase(Locale.getDefault())) {
                     "box" -> RenderUtils.drawBlockBox(blockPos, color, true)
                     "2d" -> RenderUtils.draw2D(blockPos, color.rgb, Color.BLACK.rgb)
                 }

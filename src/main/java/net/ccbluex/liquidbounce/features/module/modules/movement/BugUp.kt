@@ -27,14 +27,20 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max
 
-@ModuleInfo(name = "BugUp", description = "Automatically setbacks you after falling a certain distance.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "BugUp",
+    description = "Automatically setbacks you after falling a certain distance.",
+    category = ModuleCategory.MOVEMENT
+)
 class BugUp : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("TeleportBack", "FlyFlag", "OnGroundSpoof", "MotionTeleport-Flag"), "FlyFlag")
+    private val modeValue =
+        ListValue("Mode", arrayOf("TeleportBack", "FlyFlag", "OnGroundSpoof", "MotionTeleport-Flag"), "FlyFlag")
     private val maxFallDistance = IntegerValue("MaxFallDistance", 10, 2, 255)
     private val maxDistanceWithoutGround = FloatValue("MaxDistanceToSetback", 2.5f, 1f, 30f)
     private val indicator = BoolValue("Indicator", true)
@@ -52,12 +58,19 @@ class BugUp : Module() {
     }
 
     @EventTarget
-    fun onUpdate(e: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         detectedLocation = null
 
         val thePlayer = mc.thePlayer ?: return
 
-        if (thePlayer.onGround && BlockUtils.getBlock(BlockPos(thePlayer.posX, thePlayer.posY - 1.0, thePlayer.posZ)) !is BlockAir) {
+        if (thePlayer.onGround && BlockUtils.getBlock(
+                BlockPos(
+                    thePlayer.posX,
+                    thePlayer.posY - 1.0,
+                    thePlayer.posZ
+                )
+            ) !is BlockAir
+        ) {
             prevX = thePlayer.prevPosX
             prevY = thePlayer.prevPosY
             prevZ = thePlayer.prevPosZ
@@ -65,42 +78,52 @@ class BugUp : Module() {
 
         if (!thePlayer.onGround && !thePlayer.isOnLadder && !thePlayer.isInWater) {
             val fallingPlayer = FallingPlayer(
-                    thePlayer.posX,
-                    thePlayer.posY,
-                    thePlayer.posZ,
-                    thePlayer.motionX,
-                    thePlayer.motionY,
-                    thePlayer.motionZ,
-                    thePlayer.rotationYaw,
-                    thePlayer.moveStrafing,
-                    thePlayer.moveForward
+                thePlayer.posX,
+                thePlayer.posY,
+                thePlayer.posZ,
+                thePlayer.motionX,
+                thePlayer.motionY,
+                thePlayer.motionZ,
+                thePlayer.rotationYaw,
+                thePlayer.moveStrafing,
+                thePlayer.moveForward
             )
 
             detectedLocation = fallingPlayer.findCollision(60)?.pos
 
-            if (detectedLocation != null && abs(thePlayer.posY - detectedLocation!!.y) +
-                    thePlayer.fallDistance <= maxFallDistance.get()) {
+            if (detectedLocation != null && abs(thePlayer.posY - (detectedLocation ?: return).y) +
+                thePlayer.fallDistance <= maxFallDistance.get()
+            ) {
                 lastFound = thePlayer.fallDistance
             }
 
             if (thePlayer.fallDistance - lastFound > maxDistanceWithoutGround.get()) {
                 val mode = modeValue.get()
 
-                when (mode.toLowerCase()) {
+                when (mode.lowercase(Locale.getDefault())) {
                     "teleportback" -> {
                         thePlayer.setPositionAndUpdate(prevX, prevY, prevZ)
                         thePlayer.fallDistance = 0F
                         thePlayer.motionY = 0.0
                     }
+
                     "flyflag" -> {
                         thePlayer.motionY += 0.1
                         thePlayer.fallDistance = 0F
                     }
+
                     "ongroundspoof" -> mc.netHandler.addToSendQueue(C03PacketPlayer(true))
 
                     "motionteleport-flag" -> {
                         thePlayer.setPositionAndUpdate(thePlayer.posX, thePlayer.posY + 1f, thePlayer.posZ)
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(thePlayer.posX, thePlayer.posY, thePlayer.posZ, true))
+                        mc.netHandler.addToSendQueue(
+                            C04PacketPlayerPosition(
+                                thePlayer.posX,
+                                thePlayer.posY,
+                                thePlayer.posZ,
+                                true
+                            )
+                        )
                         thePlayer.motionY = 0.1
 
                         MovementUtils.strafe()
@@ -112,16 +135,17 @@ class BugUp : Module() {
     }
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         if (detectedLocation == null || !indicator.get() ||
-                thePlayer.fallDistance + (thePlayer.posY - (detectedLocation!!.y + 1)) < 3)
+            thePlayer.fallDistance + (thePlayer.posY - ((detectedLocation ?: return).y + 1)) < 3
+        )
             return
 
-        val x = detectedLocation!!.x
-        val y = detectedLocation!!.y
-        val z = detectedLocation!!.z
+        val x = (detectedLocation ?: return).x
+        val y = (detectedLocation ?: return).y
+        val z = (detectedLocation ?: return).z
 
         val renderManager = mc.renderManager
 
@@ -140,7 +164,8 @@ class BugUp : Module() {
                 z - renderManager.renderPosZ,
                 x - renderManager.renderPosX + 1.0,
                 y + 1.2 - renderManager.renderPosY,
-                z - renderManager.renderPosZ + 1.0)
+                z - renderManager.renderPosZ + 1.0
+            )
         )
 
         GL11.glEnable(GL11.GL_TEXTURE_2D)

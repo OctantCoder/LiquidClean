@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import java.lang.Math.*
 
 class Mineplex : SpeedMode("Mineplex") {
 
@@ -18,24 +17,24 @@ class Mineplex : SpeedMode("Mineplex") {
     private var fallDistance = 0f
 
     override fun onUpdate() {
-        val x = mc.thePlayer!!.posX - mc.thePlayer!!.prevPosX
-        val z = mc.thePlayer!!.posZ - mc.thePlayer!!.prevPosZ
-        val distance = hypot(x, z)
-        if (MovementUtils.isMoving && mc.thePlayer!!.onGround) {
-            mc.thePlayer!!.motionY = 0.4052393
+        val x = (mc.thePlayer ?: return).posX - (mc.thePlayer ?: return).prevPosX
+        val z = (mc.thePlayer ?: return).posZ - (mc.thePlayer ?: return).prevPosZ
+        val distance = kotlin.math.hypot(x, z)
+        if (MovementUtils.isMoving && (mc.thePlayer ?: return).onGround) {
+            (mc.thePlayer ?: return).motionY = 0.4052393
             wfg = true
             speed2 = speed1
             speed1 = 0f
         } else {
-            if(wfg) {
-                speed1 = (speed2 + (0.46532f * min(fallDistance, 1f)))
+            if (wfg) {
+                speed1 = (speed2 + (0.46532f * fallDistance.coerceAtMost(1f)))
                 wfg = false
             } else speed1 = ((distance * 0.936f).toFloat())
-            fallDistance = mc.thePlayer!!.fallDistance
+            fallDistance = (mc.thePlayer ?: return).fallDistance
         }
         var minimum = 0f
-        if(!wfg) minimum = 0.399900111f
-        var strafe = max(min(speed1, 2f), minimum)
+        if (!wfg) minimum = 0.399900111f
+        val strafe = speed1.coerceAtMost(2f).coerceAtLeast(minimum)
         MovementUtils.strafe(strafe)
     }
 

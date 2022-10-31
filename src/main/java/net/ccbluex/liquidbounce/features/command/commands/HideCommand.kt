@@ -72,9 +72,10 @@ class HideCommand : Command("hide") {
 
         return when (args.size) {
             1 -> LiquidBounce.moduleManager.modules
-                    .map { it.name }
-                    .filter { it.startsWith(moduleName, true) }
-                    .toList()
+                .map { it.name }
+                .filter { it.startsWith(moduleName, true) }
+                .toList()
+
             else -> emptyList()
         }
     }

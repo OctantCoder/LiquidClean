@@ -16,28 +16,30 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.translateAlternateColorC
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.TextValue
 
-@ModuleInfo(name = "NameProtect", description = "Changes playernames clientside.", category = ModuleCategory.MISC)
+@ModuleInfo(name = "NameProtect", description = "Changes player names clientside.", category = ModuleCategory.MISC)
 class NameProtect : Module() {
     @JvmField
-    val allPlayersValue = BoolValue("AllPlayers", false)
+    val allPlayersValue: BoolValue = BoolValue("AllPlayers", false)
 
     @JvmField
-    val skinProtectValue = BoolValue("SkinProtect", true)
+    val skinProtectValue: BoolValue = BoolValue("SkinProtect", true)
     private val fakeNameValue = TextValue("FakeName", "&cMe")
 
     @EventTarget(ignoreCondition = true)
     fun onText(event: TextEvent) {
         val thePlayer = mc.thePlayer
 
-        if (thePlayer == null || event.text!!.contains("§8[§9§l" + LiquidBounce.CLIENT_NAME + "§8] §3"))
+        if (thePlayer == null || (event.text ?: return).contains("§8[§9§l" + LiquidBounce.CLIENT_NAME + "§8] §3"))
             return
 
         for (friend in LiquidBounce.fileManager.friendsConfig.friends)
-            event.text = StringUtils.replace(event.text, friend.playerName, translateAlternateColorCodes(friend.alias) + "§f")
+            event.text =
+                StringUtils.replace(event.text, friend.playerName, translateAlternateColorCodes(friend.alias) + "§f")
 
         if (!state)
             return
-        event.text = StringUtils.replace(event.text, thePlayer.name, translateAlternateColorCodes(fakeNameValue.get()) + "§f")
+        event.text =
+            StringUtils.replace(event.text, thePlayer.name, translateAlternateColorCodes(fakeNameValue.get()) + "§f")
 
         if (allPlayersValue.get()) {
             for (playerInfo in mc.netHandler.playerInfoMap)

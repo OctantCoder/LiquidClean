@@ -7,7 +7,9 @@
     "mcversion": "1.8.9",
     "url": "https://liquidbounce.net",
     "updateUrl": "",
-    "authorList": ["CCBlueX"],
+    "authorList": [
+      "CCBlueX"
+    ],
     "credits": "",
     "logoFile": "",
     "screenshots": [],

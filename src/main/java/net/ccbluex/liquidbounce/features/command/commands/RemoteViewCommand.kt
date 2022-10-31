@@ -24,7 +24,7 @@ class RemoteViewCommand : Command("remoteview", "rv") {
 
         val targetName = args[1]
 
-        for (entity in mc.theWorld!!.loadedEntityList) {
+        for (entity in (mc.theWorld ?: return).loadedEntityList) {
             if (targetName == entity.name) {
                 mc.renderViewEntity = entity
                 chat("Now viewing perspective of §8${entity.name}§3.")
@@ -39,8 +39,9 @@ class RemoteViewCommand : Command("remoteview", "rv") {
 
         return when (args.size) {
             1 -> return mc.theWorld!!.playerEntities
-                    .filter { it.name != null && it.name!!.startsWith(args[0], true) }
-                    .map { it.name!! }
+                .filter { it.name != null && it.name!!.startsWith(args[0], true) }
+                .map { it.name!! }
+
             else -> emptyList()
         }
     }

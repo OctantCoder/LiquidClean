@@ -44,45 +44,59 @@ class Target : Element() {
 
         if (target is EntityPlayer) {
             if (target != lastTarget || easingHealth < 0 || easingHealth > target.maxHealth ||
-                    abs(easingHealth - target.health) < 0.01) {
+                abs(easingHealth - target.health) < 0.01
+            ) {
                 easingHealth = target.health
             }
 
             val width = (38 + (target.name?.let(Fonts.font40::getStringWidth) ?: 0))
-                    .coerceAtLeast(118)
-                    .toFloat()
+                .coerceAtLeast(118)
+                .toFloat()
 
             // Draw rect box
             RenderUtils.drawBorderedRect(0F, 0F, width, 36F, 3F, Color.BLACK.rgb, Color.BLACK.rgb)
 
             // Damage animation
             if (easingHealth > target.health)
-                RenderUtils.drawRect(0F, 34F, (easingHealth / target.maxHealth) * width,
-                        36F, Color(252, 185, 65).rgb)
+                RenderUtils.drawRect(
+                    0F, 34F, (easingHealth / target.maxHealth) * width,
+                    36F, Color(252, 185, 65).rgb
+                )
 
             // Health bar
-            RenderUtils.drawRect(0F, 34F, (target.health / target.maxHealth) * width,
-                    36F, Color(252, 96, 66).rgb)
+            RenderUtils.drawRect(
+                0F, 34F, (target.health / target.maxHealth) * width,
+                36F, Color(252, 96, 66).rgb
+            )
 
             // Heal animation
             if (easingHealth < target.health)
-                RenderUtils.drawRect((easingHealth / target.maxHealth) * width, 34F,
-                        (target.health / target.maxHealth) * width, 36F, Color(44, 201, 144).rgb)
+                RenderUtils.drawRect(
+                    (easingHealth / target.maxHealth) * width, 34F,
+                    (target.health / target.maxHealth) * width, 36F, Color(44, 201, 144).rgb
+                )
 
             easingHealth += ((target.health - easingHealth) / 2.0F.pow(10.0F - fadeSpeed.get())) * RenderUtils.deltaTime
 
             target.name?.let { Fonts.font40.drawString(it, 36, 3, 0xffffff) }
-            Fonts.font35.drawString("Distance: ${decimalFormat.format(mc.thePlayer!!.getDistanceToEntityBox(target))}", 36, 15, 0xffffff)
+            Fonts.font35.drawString(
+                "Distance: ${decimalFormat.format(mc.thePlayer!!.getDistanceToEntityBox(target))}",
+                36,
+                15,
+                0xffffff
+            )
 
             // Draw info
             val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
             if (playerInfo != null) {
-                Fonts.font35.drawString("Ping: ${playerInfo.responseTime.coerceAtLeast(0)}",
-                        36, 24, 0xffffff)
+                Fonts.font35.drawString(
+                    "Ping: ${playerInfo.responseTime.coerceAtLeast(0)}",
+                    36, 24, 0xffffff
+                )
 
                 // Draw head
                 val locationSkin = playerInfo.locationSkin
-                drawHead(locationSkin, 30, 30)
+                drawHead(locationSkin)
             }
         }
 
@@ -90,11 +104,13 @@ class Target : Element() {
         return Border(0F, 0F, 120F, 36F)
     }
 
-    private fun drawHead(skin: ResourceLocation, width: Int, height: Int) {
+    private fun drawHead(skin: ResourceLocation) {
         GL11.glColor4f(1F, 1F, 1F, 1F)
         mc.textureManager.bindTexture(skin)
-        RenderUtils.drawScaledCustomSizeModalRect(2, 2, 8F, 8F, 8, 8, width, height,
-                64F, 64F)
+        RenderUtils.drawScaledCustomSizeModalRect(
+            2, 2, 8F, 8F, 8, 8, 30, 30,
+            64F, 64F
+        )
     }
 
 }

@@ -58,27 +58,42 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     @Shadow
     public boolean serverSprintState;
+    @Shadow
+    public int sprintingTicksLeft;
+    @Shadow
+    public float timeInPortal;
+    @Shadow
+    public float prevTimeInPortal;
+    @Shadow
+    public MovementInput movementInput;
+    @Shadow
+    public float horseJumpPower;
+    @Shadow
+    public int horseJumpPowerCounter;
+    @Shadow
+    @Final
+    public NetHandlerPlayClient sendQueue;
+    @Shadow
+    protected int sprintToggleTimer;
+    @Shadow
+    protected Minecraft mc;
+    @Shadow
+    private boolean serverSneakState;
+    @Shadow
+    private double lastReportedPosX;
+    @Shadow
+    private int positionUpdateTicks;
+    @Shadow
+    private double lastReportedPosY;
+    @Shadow
+    private double lastReportedPosZ;
+    @Shadow
+    private float lastReportedYaw;
+    @Shadow
+    private float lastReportedPitch;
 
     @Shadow
     public abstract void playSound(String name, float volume, float pitch);
-
-    @Shadow
-    public int sprintingTicksLeft;
-
-    @Shadow
-    protected int sprintToggleTimer;
-
-    @Shadow
-    public float timeInPortal;
-
-    @Shadow
-    public float prevTimeInPortal;
-
-    @Shadow
-    protected Minecraft mc;
-
-    @Shadow
-    public MovementInput movementInput;
 
     @Shadow
     public abstract void setSprinting(boolean sprinting);
@@ -90,47 +105,16 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     public abstract void sendPlayerAbilities();
 
     @Shadow
-    public float horseJumpPower;
-
-    @Shadow
-    public int horseJumpPowerCounter;
-
-    @Shadow
     protected abstract void sendHorseJump();
 
     @Shadow
     public abstract boolean isRidingHorse();
 
     @Shadow
-    @Final
-    public NetHandlerPlayClient sendQueue;
-
-    @Shadow
-    private boolean serverSneakState;
-
-    @Shadow
     public abstract boolean isSneaking();
 
     @Shadow
     protected abstract boolean isCurrentViewEntity();
-
-    @Shadow
-    private double lastReportedPosX;
-
-    @Shadow
-    private int positionUpdateTicks;
-
-    @Shadow
-    private double lastReportedPosY;
-
-    @Shadow
-    private double lastReportedPosZ;
-
-    @Shadow
-    private float lastReportedYaw;
-
-    @Shadow
-    private float lastReportedPitch;
 
     /**
      * @author CCBlueX
@@ -254,6 +238,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     /**
      * @author CCBlueX
+     * @reason For noSlow and Sprint working
      */
     @Overwrite
     public void onLivingUpdate() {

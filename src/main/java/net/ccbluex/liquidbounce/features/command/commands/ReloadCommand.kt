@@ -23,7 +23,7 @@ class ReloadCommand : Command("reload", "configreload") {
         LiquidBounce.isStarting = true
         LiquidBounce.scriptManager.disableScripts()
         LiquidBounce.scriptManager.unloadScripts()
-        for(module in LiquidBounce.moduleManager.modules)
+        for (module in LiquidBounce.moduleManager.modules)
             LiquidBounce.moduleManager.generateCommand(module)
         chat("§c§lReloading scripts...")
         LiquidBounce.scriptManager.reloadScripts()

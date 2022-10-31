@@ -11,7 +11,9 @@ object RandomUtils {
 
     @JvmStatic
     fun nextInt(startInclusive: Int, endExclusive: Int): Int {
-        return if (endExclusive - startInclusive <= 0) startInclusive else startInclusive + Random().nextInt(endExclusive - startInclusive)
+        return if (endExclusive - startInclusive <= 0) startInclusive else startInclusive + Random().nextInt(
+            endExclusive - startInclusive
+        )
     }
 
     fun nextDouble(startInclusive: Double, endInclusive: Double): Double {

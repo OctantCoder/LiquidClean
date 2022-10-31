@@ -33,7 +33,6 @@ public final class ItemUtils extends MinecraftInstance {
         try {
             itemArguments = itemArguments.replace('&', '§');
             Item item = new Item();
-            Item itemInstance = item;
             String[] args = null;
             int i = 1;
             int j = 0;

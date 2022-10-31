@@ -40,18 +40,14 @@ import java.util.List;
 public abstract class MixinGuiScreen {
     @Shadow
     public Minecraft mc;
-
-    @Shadow
-    protected List<GuiButton> buttonList;
-
     @Shadow
     public int width;
-
     @Shadow
     public int height;
-
     @Shadow
-    protected FontRenderer fontRendererObj;
+    public List<GuiButton> buttonList;
+    @Shadow
+    public FontRenderer fontRendererObj;
 
     @Shadow
     public void updateScreen() {
@@ -67,7 +63,7 @@ public abstract class MixinGuiScreen {
     private void drawWorldBackground(final CallbackInfo callbackInfo) {
         final HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
 
-        if(hud.getInventoryParticle().get() && mc.thePlayer != null) {
+        if (hud.getInventoryParticle().get() && mc.thePlayer != null) {
             final ScaledResolution scaledResolution = new ScaledResolution(mc);
             final int width = scaledResolution.getScaledWidth();
             final int height = scaledResolution.getScaledHeight();
@@ -83,7 +79,7 @@ public abstract class MixinGuiScreen {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
 
-        if(GuiBackground.Companion.getEnabled()) {
+        if (GuiBackground.Companion.getEnabled()) {
             if (LiquidBounce.INSTANCE.getBackground() == null) {
                 BackgroundShader.BACKGROUND_SHADER.startShader();
 
@@ -97,7 +93,7 @@ public abstract class MixinGuiScreen {
                 instance.draw();
 
                 BackgroundShader.BACKGROUND_SHADER.stopShader();
-            }else{
+            } else {
                 final ScaledResolution scaledResolution = new ScaledResolution(mc);
                 final int width = scaledResolution.getScaledWidth();
                 final int height = scaledResolution.getScaledHeight();
@@ -115,7 +111,7 @@ public abstract class MixinGuiScreen {
 
     @Inject(method = "drawBackground", at = @At("RETURN"))
     private void drawParticles(final CallbackInfo callbackInfo) {
-        if(GuiBackground.Companion.getParticles())
+        if (GuiBackground.Companion.getParticles())
             ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
     }
 

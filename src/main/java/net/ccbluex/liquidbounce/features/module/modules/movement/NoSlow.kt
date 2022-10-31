@@ -23,8 +23,10 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "NoSlow", description = "Cancels slowness effects caused by soulsand and using items.",
-        category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "NoSlow", description = "Cancels slowness effects caused by soul sand and using items.",
+    category = ModuleCategory.MOVEMENT
+)
 class NoSlow : Module() {
 
     // Highly customizable values
@@ -42,8 +44,8 @@ class NoSlow : Module() {
     private val packet = BoolValue("Packet", true)
 
     // Blocks
-    val soulsandValue = BoolValue("Soulsand", true)
-    val liquidPushValue = BoolValue("LiquidPush", true)
+    val soulSandValue: BoolValue = BoolValue("SoulSand", true)
+    val liquidPushValue: BoolValue = BoolValue("LiquidPush", true)
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
@@ -60,11 +62,23 @@ class NoSlow : Module() {
         if (this.packet.get()) {
             when (event.eventState) {
                 EventState.PRE -> {
-                    val digging = C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(0, 0, 0), EnumFacing.DOWN)
+                    val digging = C07PacketPlayerDigging(
+                        C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                        BlockPos(0, 0, 0),
+                        EnumFacing.DOWN
+                    )
                     mc.netHandler.addToSendQueue(digging)
                 }
+
                 EventState.POST -> {
-                    val blockPlace = C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer!!.inventory.getCurrentItem(), 0.0F, 0.0F, 0.0F)
+                    val blockPlace = C08PacketPlayerBlockPlacement(
+                        BlockPos(-1, -1, -1),
+                        255,
+                        (mc.thePlayer ?: return).inventory.getCurrentItem(),
+                        0.0F,
+                        0.0F,
+                        0.0F
+                    )
                     mc.netHandler.addToSendQueue(blockPlace)
                 }
             }
@@ -73,23 +87,26 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onSlowDown(event: SlowDownEvent) {
-        val heldItem = mc.thePlayer!!.heldItem?.item
+        val heldItem = (mc.thePlayer ?: return).heldItem?.item
 
         event.forward = getMultiplier(heldItem, true)
         event.strafe = getMultiplier(heldItem, false)
     }
 
     private fun getMultiplier(item: Item?, isForward: Boolean): Float {
-        return when {
-            item is ItemFood || item is ItemPotion || item is ItemBucketMilk -> {
+        return when (item) {
+            is ItemFood, is ItemPotion, is ItemBucketMilk -> {
                 if (isForward) this.consumeForwardMultiplier.get() else this.consumeStrafeMultiplier.get()
             }
-            item is ItemSword -> {
+
+            is ItemSword -> {
                 if (isForward) this.blockForwardMultiplier.get() else this.blockStrafeMultiplier.get()
             }
-            item is ItemBow -> {
+
+            is ItemBow -> {
                 if (isForward) this.bowForwardMultiplier.get() else this.bowStrafeMultiplier.get()
             }
+
             else -> 0.2F
         }
     }

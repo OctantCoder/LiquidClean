@@ -21,18 +21,18 @@ class TacoCommand : Command("taco"), Listenable {
     private var image = 0
     private var running = 0f
     private val tacoTextures = arrayOf(
-        ResourceLocation("liquidbounce/taco/1.png"),
-        ResourceLocation("liquidbounce/taco/2.png"),
-        ResourceLocation("liquidbounce/taco/3.png"),
-        ResourceLocation("liquidbounce/taco/4.png"),
-        ResourceLocation("liquidbounce/taco/5.png"),
-        ResourceLocation("liquidbounce/taco/6.png"),
-        ResourceLocation("liquidbounce/taco/7.png"),
-        ResourceLocation("liquidbounce/taco/8.png"),
-        ResourceLocation("liquidbounce/taco/9.png"),
-        ResourceLocation("liquidbounce/taco/10.png"),
-        ResourceLocation("liquidbounce/taco/11.png"),
-        ResourceLocation("liquidbounce/taco/12.png")
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/1.png"),
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/2.png"),
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/3.png"),
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/4.png"),
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/5.png"),
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/6.png"),
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/7.png"),
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/8.png"),
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/9.png"),
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/10.png"),
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/11.png"),
+        ResourceLocation("${LiquidBounce.CLIENT_NAME.lowercase()}/taco/12.png")
     )
 
     init {
@@ -48,7 +48,7 @@ class TacoCommand : Command("taco"), Listenable {
     }
 
     @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    fun onRender2D(@Suppress("UNUSED_PARAMETER") event: Render2DEvent) {
         if (!toggle)
             return
 
@@ -60,7 +60,7 @@ class TacoCommand : Command("taco"), Listenable {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         if (!toggle) {
             image = 0
             return
@@ -70,7 +70,7 @@ class TacoCommand : Command("taco"), Listenable {
         if (image >= tacoTextures.size) image = 0
     }
 
-    override fun handleEvents() = true
+    override fun handleEvents(): Boolean = true
 
     override fun tabComplete(args: Array<String>): List<String> {
         return listOf("TACO")

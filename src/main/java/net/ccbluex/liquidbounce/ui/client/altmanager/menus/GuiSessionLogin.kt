@@ -99,17 +99,19 @@ class GuiSessionLogin(private val prevGui: GuiAltManager) : GuiScreen() {
                                 try {
                                     GuiAltManager.altService.switchService(AltService.EnumAltService.MOJANG)
                                 } catch (e: NoSuchFieldException) {
-                                    ClientUtils.getLogger().error("Something went wrong while trying to switch alt service.", e)
+                                    ClientUtils.getLogger()
+                                        .error("Something went wrong while trying to switch alt service.", e)
                                 } catch (e: IllegalAccessException) {
-                                    ClientUtils.getLogger().error("Something went wrong while trying to switch alt service.", e)
+                                    ClientUtils.getLogger()
+                                        .error("Something went wrong while trying to switch alt service.", e)
                                 }
                             }
 
                             "§cYour name is now §f§l${mc.session.username}§c"
                         }
+
                         LoginUtils.LoginResult.FAILED_PARSE_TOKEN -> "§cFailed to parse Session ID!"
                         LoginUtils.LoginResult.INVALID_ACCOUNT_DATA -> "§cInvalid Session ID!"
-                        else -> ""
                     }
 
                     loginButton.enabled = true

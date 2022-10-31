@@ -51,5 +51,5 @@ class ServerInfoCommand : Command("serverinfo"), Listenable {
         }
     }
 
-    override fun handleEvents() = true
+    override fun handleEvents(): Boolean = true
 }

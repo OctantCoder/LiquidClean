@@ -14,16 +14,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class FallingPlayer extends MinecraftInstance {
 
+    private final float yaw;
     private double x;
     private double y;
     private double z;
-
     private double motionX;
     private double motionY;
     private double motionZ;
-
-    private final float yaw;
-
     private float strafe;
     private float forward;
 
@@ -86,25 +83,25 @@ public class FallingPlayer extends MinecraftInstance {
 
             float w = mc.thePlayer.width / 2F;
 
-            if ((raytracedBlock = rayTrace(start, end)) != null) return new CollisionResult(raytracedBlock, i);
+            if ((raytracedBlock = rayTrace(start, end)) != null) return new CollisionResult(raytracedBlock);
 
             if ((raytracedBlock = rayTrace(start.addVector(w, 0, w), end)) != null)
-                return new CollisionResult(raytracedBlock, i);
+                return new CollisionResult(raytracedBlock);
             if ((raytracedBlock = rayTrace(start.addVector(-w, 0, w), end)) != null)
-                return new CollisionResult(raytracedBlock, i);
+                return new CollisionResult(raytracedBlock);
             if ((raytracedBlock = rayTrace(start.addVector(w, 0, -w), end)) != null)
-                return new CollisionResult(raytracedBlock, i);
+                return new CollisionResult(raytracedBlock);
             if ((raytracedBlock = rayTrace(start.addVector(-w, 0, -w), end)) != null)
-                return new CollisionResult(raytracedBlock, i);
+                return new CollisionResult(raytracedBlock);
 
             if ((raytracedBlock = rayTrace(start.addVector(w, 0, w / 2f), end)) != null)
-                return new CollisionResult(raytracedBlock, i);
+                return new CollisionResult(raytracedBlock);
             if ((raytracedBlock = rayTrace(start.addVector(-w, 0, w / 2f), end)) != null)
-                return new CollisionResult(raytracedBlock, i);
+                return new CollisionResult(raytracedBlock);
             if ((raytracedBlock = rayTrace(start.addVector(w / 2f, 0, w), end)) != null)
-                return new CollisionResult(raytracedBlock, i);
+                return new CollisionResult(raytracedBlock);
             if ((raytracedBlock = rayTrace(start.addVector(w / 2f, 0, -w), end)) != null)
-                return new CollisionResult(raytracedBlock, i);
+                return new CollisionResult(raytracedBlock);
 
         }
 
@@ -125,20 +122,15 @@ public class FallingPlayer extends MinecraftInstance {
 
     public static class CollisionResult {
         private final BlockPos pos;
-        private final int tick;
 
-        public CollisionResult(BlockPos pos, int tick) {
+        public CollisionResult(BlockPos pos) {
             this.pos = pos;
-            this.tick = tick;
         }
 
         public BlockPos getPos() {
             return pos;
         }
 
-        public int getTick() {
-            return tick;
-        }
     }
 
 }

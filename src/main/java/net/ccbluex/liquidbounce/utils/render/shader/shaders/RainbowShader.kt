@@ -10,12 +10,11 @@ import org.lwjgl.opengl.GL20
 import java.io.Closeable
 
 class RainbowShader : Shader("rainbow_shader.frag"), Closeable {
-    var isInUse = false
-        private set
+    private var isInUse: Boolean = false
 
-    var strengthX = 0f
-    var strengthY = 0f
-    var offset = 0f
+    var strengthX: Float = 0f
+    var strengthY: Float = 0f
+    var offset: Float = 0f
 
     override fun setupUniforms() {
         setupUniform("offset")
@@ -46,7 +45,7 @@ class RainbowShader : Shader("rainbow_shader.frag"), Closeable {
 
     companion object {
         @JvmField
-        val INSTANCE = RainbowShader()
+        val INSTANCE: RainbowShader = RainbowShader()
 
         @Suppress("NOTHING_TO_INLINE")
         inline fun begin(enable: Boolean, x: Float, y: Float, offset: Float): RainbowShader {

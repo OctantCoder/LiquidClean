@@ -8,12 +8,13 @@ package net.ccbluex.liquidbounce.features.module.modules.render
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 
 @ModuleInfo(name = "XRay", description = "Allows you to see ores through walls.", category = ModuleCategory.RENDER)
 class XRay : Module() {
 
-    val xrayBlocks = mutableListOf(
+    val xrayBlocks: MutableList<Block> = mutableListOf(
         Blocks.coal_ore,
         Blocks.iron_ore,
         Blocks.gold_ore,

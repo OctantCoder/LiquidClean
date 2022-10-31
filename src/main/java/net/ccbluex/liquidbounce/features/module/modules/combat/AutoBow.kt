@@ -17,21 +17,32 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "AutoBow", description = "Automatically shoots an arrow whenever your bow is fully loaded.", category = ModuleCategory.COMBAT)
+@ModuleInfo(
+    name = "AutoBow",
+    description = "Automatically shoots an arrow whenever your bow is fully loaded.",
+    category = ModuleCategory.COMBAT
+)
 class AutoBow : Module() {
 
-    private val waitForBowAimbot = BoolValue("WaitForBowAimbot", true)
+    private val waitForBowAimBot = BoolValue("WaitForBowAimBot", true)
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val bowAimbot = LiquidBounce.moduleManager[BowAimbot::class.java] as BowAimbot
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
+        val bowAimBot = LiquidBounce.moduleManager[BowAimBot::class.java] as BowAimBot
 
-        val thePlayer = mc.thePlayer!!
+        val thePlayer = mc.thePlayer ?: return
 
         if (thePlayer.isUsingItem && thePlayer.heldItem?.item is ItemBow &&
-                thePlayer.itemInUseDuration > 20 && (!waitForBowAimbot.get() || !bowAimbot.state || bowAimbot.hasTarget())) {
+            thePlayer.itemInUseDuration > 20 && (!waitForBowAimBot.get() || !bowAimBot.state || bowAimBot.hasTarget())
+        ) {
             thePlayer.stopUsingItem()
-            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+            mc.netHandler.addToSendQueue(
+                C07PacketPlayerDigging(
+                    C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                    BlockPos.ORIGIN,
+                    EnumFacing.DOWN
+                )
+            )
         }
     }
 }

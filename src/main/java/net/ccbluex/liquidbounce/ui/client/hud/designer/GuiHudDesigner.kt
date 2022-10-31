@@ -38,8 +38,11 @@ class GuiHudDesigner : GuiScreen() {
 
         if (wheel != 0) {
             for (element in LiquidBounce.hud.elements) {
-                if (element.isInBorder(mouseX / element.scale - element.renderX,
-                                mouseY / element.scale - element.renderY)) {
+                if (element.isInBorder(
+                        mouseX / element.scale - element.renderX,
+                        mouseY / element.scale - element.renderY
+                    )
+                ) {
                     element.scale = element.scale + if (wheel > 0) 0.05f else -0.05f
                     break
                 }
@@ -58,14 +61,19 @@ class GuiHudDesigner : GuiScreen() {
         LiquidBounce.hud.handleMouseClick(mouseX, mouseY, mouseButton)
 
         if (!(mouseX >= editorPanel.x && mouseX <= editorPanel.x + editorPanel.width && mouseY >= editorPanel.y &&
-                        mouseY <= editorPanel.y + min(editorPanel.realHeight, 200))) {
+                    mouseY <= editorPanel.y + min(editorPanel.realHeight, 200))
+        ) {
             selectedElement = null
             editorPanel.create = false
         }
 
         if (mouseButton == 0) {
             for (element in LiquidBounce.hud.elements) {
-                if (element.isInBorder(mouseX / element.scale - element.renderX, mouseY / element.scale - element.renderY)) {
+                if (element.isInBorder(
+                        mouseX / element.scale - element.renderX,
+                        mouseY / element.scale - element.renderY
+                    )
+                ) {
                     selectedElement = element
                     break
                 }
@@ -88,8 +96,8 @@ class GuiHudDesigner : GuiScreen() {
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         when (keyCode) {
-            Keyboard.KEY_DELETE -> if (Keyboard.KEY_DELETE == keyCode && selectedElement != null)
-                LiquidBounce.hud.removeElement(selectedElement!!)
+            Keyboard.KEY_DELETE -> if (selectedElement != null)
+                LiquidBounce.hud.removeElement(selectedElement ?: return)
 
             Keyboard.KEY_ESCAPE -> {
                 selectedElement = null

@@ -19,19 +19,24 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import java.util.*
 
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Packet", "NcpPacket", "NoGround", "Hop", "TPHop", "Jump", "LowJump", "Visual"), "Packet")
-    val delayValue = IntegerValue("Delay", 0, 0, 500)
+    val modeValue: ListValue = ListValue(
+        "Mode",
+        arrayOf("Packet", "NcpPacket", "NoGround", "Hop", "TPHop", "Jump", "LowJump", "Visual"),
+        "Packet"
+    )
+    val delayValue: IntegerValue = IntegerValue("Delay", 0, 0, 500)
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
 
-    val msTimer = MSTimer()
+    val msTimer: MSTimer = MSTimer()
 
     override fun onEnable() {
         if (modeValue.get().equals("NoGround", ignoreCase = true))
-            mc.thePlayer!!.jump()
+            (mc.thePlayer ?: return).jump()
     }
 
     @EventTarget
@@ -41,15 +46,16 @@ class Criticals : Module() {
             val entity = event.targetEntity
 
             if (!thePlayer.onGround || thePlayer.isOnLadder || thePlayer.isInWeb || thePlayer.isInWater ||
-                    thePlayer.isInLava || thePlayer.ridingEntity != null || entity.hurtTime > hurtTimeValue.get() ||
-                    LiquidBounce.moduleManager[Fly::class.java].state || !msTimer.hasTimePassed(delayValue.get().toLong()))
+                thePlayer.isInLava || thePlayer.ridingEntity != null || entity.hurtTime > hurtTimeValue.get() ||
+                LiquidBounce.moduleManager[Fly::class.java].state || !msTimer.hasTimePassed(delayValue.get().toLong())
+            )
                 return
 
             val x = thePlayer.posX
             val y = thePlayer.posY
             val z = thePlayer.posZ
 
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase(Locale.getDefault())) {
                 "packet" -> {
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0625, z, true))
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, false))
@@ -57,22 +63,26 @@ class Criticals : Module() {
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, false))
                     thePlayer.onCriticalHit(entity)
                 }
+
                 "ncppacket" -> {
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.11, z, false))
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.1100013579, z, false))
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.0000013579, z, false))
                     mc.thePlayer.onCriticalHit(entity)
                 }
+
                 "hop" -> {
                     thePlayer.motionY = 0.1
                     thePlayer.fallDistance = 0.1f
                     thePlayer.onGround = false
                 }
+
                 "tphop" -> {
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.02, z, false))
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.01, z, false))
                     thePlayer.setPosition(x, y + 0.01, z)
                 }
+
                 "jump" -> thePlayer.motionY = 0.42
                 "lowjump" -> thePlayer.motionY = 0.3425
                 "visual" -> thePlayer.onCriticalHit(entity)
@@ -90,6 +100,6 @@ class Criticals : Module() {
             packet.onGround = false
     }
 
-    override val tag: String?
+    override val tag: String
         get() = modeValue.get()
 }

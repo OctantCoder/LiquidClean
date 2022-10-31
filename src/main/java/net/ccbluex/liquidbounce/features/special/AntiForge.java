@@ -38,7 +38,7 @@ public class AntiForge extends MinecraftInstance implements Listenable {
                     else if (customPayload.getChannelName().equalsIgnoreCase("MC|Brand"))
                         customPayload.data = new PacketBuffer(Unpooled.buffer()).writeString("vanilla");
                 }
-            }catch(final Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
         }

@@ -4,10 +4,11 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.modules.render.XRay
 import net.minecraft.block.Block
+import java.util.*
 
 class XrayCommand : Command("xray") {
 
-    val xRay = LiquidBounce.moduleManager.getModule(XRay::class.java) as XRay
+    private val xRay: XRay = LiquidBounce.moduleManager.getModule(XRay::class.java) as XRay
 
     /**
      * Execute commands with provided [args]
@@ -101,28 +102,32 @@ class XrayCommand : Command("xray") {
         return when (args.size) {
             1 -> {
                 arrayOf("add", "remove", "list")
-                    .map { it.toLowerCase() }
+                    .map { it.lowercase(Locale.getDefault()) }
                     .filter { it.startsWith(args[0], true) }
             }
+
             2 -> {
-                when (args[0].toLowerCase()) {
+                when (args[0].lowercase(Locale.getDefault())) {
                     "add" -> {
                         return Block.blockRegistry.keys
-                            .map { it.resourcePath.toLowerCase() }
-                            .filter { Block.getBlockFromName(it.toLowerCase()) != null }
-                            .filter { !xRay.xrayBlocks.contains(Block.getBlockFromName(it.toLowerCase())) }
+                            .map { it.resourcePath.lowercase(Locale.getDefault()) }
+                            .filter { Block.getBlockFromName(it.lowercase(Locale.getDefault())) != null }
+                            .filter { !xRay.xrayBlocks.contains(Block.getBlockFromName(it.lowercase(Locale.getDefault()))) }
                             .filter { it.startsWith(args[1], true) }
                     }
+
                     "remove" -> {
                         return Block.blockRegistry.keys
-                            .map { it.resourcePath.toLowerCase() }
+                            .map { it.resourcePath.lowercase(Locale.getDefault()) }
                             .filter { xRay.xrayBlocks.contains(Block.getBlockFromName(it)) }
                             .filter { it.startsWith(args[1], true) }
                     }
+
                     else -> emptyList()
                 }
 
             }
+
             else -> emptyList()
         }
     }

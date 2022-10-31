@@ -19,8 +19,12 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import java.util.*
 
-@ModuleInfo(name = "Aimbot", description = "Automatically faces selected entities around you.", category = ModuleCategory.COMBAT)
-class Aimbot : Module() {
+@ModuleInfo(
+    name = "AimBot",
+    description = "Automatically faces selected entities around you.",
+    category = ModuleCategory.COMBAT
+)
+class AimBot : Module() {
 
     private val rangeValue = FloatValue("Range", 4.4F, 1F, 8F)
     private val turnSpeedValue = FloatValue("TurnSpeed", 10f, 1F, 180F)
@@ -34,7 +38,7 @@ class Aimbot : Module() {
     private val clickTimer = MSTimer()
 
     @EventTarget
-    fun onStrafe(event: StrafeEvent) {
+    fun onStrafe(@Suppress("UNUSED_PARAMETER") event: StrafeEvent) {
         // Clicking delay
         if (mc.gameSettings.keyBindAttack.isKeyDown)
             clickTimer.reset()
@@ -46,11 +50,11 @@ class Aimbot : Module() {
 
         val range = rangeValue.get()
         val entity = mc.theWorld.loadedEntityList
-                .filter {
-                    EntityUtils.isSelected(it, true) && mc.thePlayer.canEntityBeSeen(it) &&
-                            mc.thePlayer.getDistanceToEntityBox(it) <= range && RotationUtils.getRotationDifference(it) <= fovValue.get()
-                }
-                .minByOrNull { RotationUtils.getRotationDifference(it) } ?: return
+            .filter {
+                EntityUtils.isSelected(it, true) && mc.thePlayer.canEntityBeSeen(it) &&
+                        mc.thePlayer.getDistanceToEntityBox(it) <= range && RotationUtils.getRotationDifference(it) <= fovValue.get()
+            }
+            .minByOrNull { RotationUtils.getRotationDifference(it) } ?: return
 
         // Should it always keep trying to lock on the enemy or just try to assist you?
         if (!lockValue.get() && RotationUtils.isFaced(entity, range.toDouble()))
@@ -81,7 +85,8 @@ class Aimbot : Module() {
         val gaussian = random.nextGaussian()
 
         val realisticTurnSpeed = rotationDiff * ((supposedTurnSpeed + (gaussian - 0.5)) / 180)
-        val rotation = RotationUtils.limitAngleChange(mc.thePlayer.rotation, destinationRotation, realisticTurnSpeed.toFloat())
+        val rotation =
+            RotationUtils.limitAngleChange(mc.thePlayer.rotation, destinationRotation, realisticTurnSpeed.toFloat())
 
         rotation.toPlayer(mc.thePlayer)
 

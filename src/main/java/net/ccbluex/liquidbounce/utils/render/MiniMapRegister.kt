@@ -60,10 +60,6 @@ object MiniMapRegister : MinecraftInstance() {
         }
     }
 
-    fun getLoadedChunkCount(): Int {
-        return chunkTextureMap.size
-    }
-
     fun unloadChunk(x: Int, z: Int) {
         synchronized(queuedChunkDeletions) {
             queuedChunkDeletions.add(ChunkLocation(x, z))
@@ -75,8 +71,8 @@ object MiniMapRegister : MinecraftInstance() {
     }
 
     class MiniMapTexture {
-        val texture = DynamicTexture(16, 16)
-        var deleted = false
+        val texture: DynamicTexture = DynamicTexture(16, 16)
+        private var deleted: Boolean = false
 
         fun updateChunkData(chunk: Chunk) {
             val rgbValues = texture.textureData
@@ -86,7 +82,8 @@ object MiniMapRegister : MinecraftInstance() {
                     val bp = BlockPos(x, chunk.getHeightValue(x, z) - 1, z)
                     val blockState = chunk.getBlockState(bp)
 
-                    rgbValues[rgbValues.size - (z * 16 + x + 1)] = blockState.block.getMapColor(blockState).colorValue or (0xFF shl 24)
+                    rgbValues[rgbValues.size - (z * 16 + x + 1)] =
+                        blockState.block.getMapColor(blockState).colorValue or (0xFF shl 24)
                 }
             }
 

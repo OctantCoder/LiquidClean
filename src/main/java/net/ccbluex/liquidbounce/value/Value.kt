@@ -17,7 +17,7 @@ import java.util.*
 
 abstract class Value<T>(val name: String, protected var value: T) {
 
-    var isSupported = true
+    var isSupported: Boolean = true
 
     fun set(newValue: T) {
         if (newValue == value)
@@ -31,11 +31,12 @@ abstract class Value<T>(val name: String, protected var value: T) {
             onChanged(oldValue, newValue)
             LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.valuesConfig)
         } catch (e: Exception) {
-            ClientUtils.getLogger().error("[ValueSystem ($name)]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
+            ClientUtils.getLogger()
+                .error("[ValueSystem ($name)]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
         }
     }
 
-    fun get() = value
+    fun get(): T = value
 
     open fun changeValue(value: T) {
         this.value = value
@@ -54,7 +55,7 @@ abstract class Value<T>(val name: String, protected var value: T) {
  */
 open class BoolValue(name: String, value: Boolean) : Value<Boolean>(name, value) {
 
-    override fun toJson() = JsonPrimitive(value)
+    override fun toJson(): JsonPrimitive = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive)
@@ -66,14 +67,14 @@ open class BoolValue(name: String, value: Boolean) : Value<Boolean>(name, value)
 /**
  * Integer value represents a value with a integer
  */
-open class IntegerValue(name: String, value: Int, val minimum: Int = 0, val maximum: Int = Integer.MAX_VALUE)
-    : Value<Int>(name, value) {
+open class IntegerValue(name: String, value: Int, val minimum: Int = 0, val maximum: Int = Integer.MAX_VALUE) :
+    Value<Int>(name, value) {
 
     fun set(newValue: Number) {
         set(newValue.toInt())
     }
 
-    override fun toJson() = JsonPrimitive(value)
+    override fun toJson(): JsonPrimitive = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive)
@@ -85,14 +86,14 @@ open class IntegerValue(name: String, value: Int, val minimum: Int = 0, val maxi
 /**
  * Float value represents a value with a float
  */
-open class FloatValue(name: String, value: Float, val minimum: Float = 0F, val maximum: Float = Float.MAX_VALUE)
-    : Value<Float>(name, value) {
+open class FloatValue(name: String, value: Float, val minimum: Float = 0F, val maximum: Float = Float.MAX_VALUE) :
+    Value<Float>(name, value) {
 
     fun set(newValue: Number) {
         set(newValue.toFloat())
     }
 
-    override fun toJson() = JsonPrimitive(value)
+    override fun toJson(): JsonPrimitive = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive)
@@ -106,7 +107,7 @@ open class FloatValue(name: String, value: Float, val minimum: Float = 0F, val m
  */
 open class TextValue(name: String, value: String) : Value<String>(name, value) {
 
-    override fun toJson() = JsonPrimitive(value)
+    override fun toJson(): JsonPrimitive = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive)
@@ -145,7 +146,7 @@ class BlockValue(name: String, value: Int) : IntegerValue(name, value, 1, 197)
 open class ListValue(name: String, val values: Array<String>, value: String) : Value<String>(name, value) {
 
     @JvmField
-    var openList = false
+    var openList: Boolean = false
 
     init {
         this.value = value
@@ -164,7 +165,7 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
         }
     }
 
-    override fun toJson() = JsonPrimitive(value)
+    override fun toJson(): JsonPrimitive = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive) changeValue(element.asString)

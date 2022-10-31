@@ -27,14 +27,14 @@ object MovementUtils : MinecraftInstance() {
     fun strafe(speed: Float = this.speed) {
         if (!isMoving) return
         val yaw = direction
-        val thePlayer = mc.thePlayer!!
+        val thePlayer = mc.thePlayer ?: return
         thePlayer.motionX = -sin(yaw) * speed
         thePlayer.motionZ = cos(yaw) * speed
     }
 
     @JvmStatic
     fun forward(length: Double) {
-        val thePlayer = mc.thePlayer!!
+        val thePlayer = mc.thePlayer ?: return
         val yaw = Math.toRadians(thePlayer.rotationYaw.toDouble())
         thePlayer.setPosition(thePlayer.posX + -sin(yaw) * length, thePlayer.posY, thePlayer.posZ + cos(yaw) * length)
     }

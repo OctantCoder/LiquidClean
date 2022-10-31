@@ -15,20 +15,19 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 
 @SideOnly(Side.CLIENT)
 public class FileManager extends MinecraftInstance {
 
+    public static final Gson PRETTY_GSON = new GsonBuilder().setPrettyPrinting().create();
     public final File dir = new File(mc.mcDataDir, LiquidBounce.CLIENT_NAME + "-" + LiquidBounce.MINECRAFT_VERSION);
     public final File fontsDir = new File(dir, "fonts");
     public final File settingsDir = new File(dir, "settings");
-
     public final FileConfig modulesConfig = new ModulesConfig(new File(dir, "modules.json"));
     public final FileConfig valuesConfig = new ValuesConfig(new File(dir, "values.json"));
     public final FileConfig clickGuiConfig = new ClickGuiConfig(new File(dir, "clickgui.json"));
@@ -37,12 +36,8 @@ public class FileManager extends MinecraftInstance {
     public final FileConfig xrayConfig = new XRayConfig(new File(dir, "xray-blocks.json"));
     public final FileConfig hudConfig = new HudConfig(new File(dir, "hud.json"));
     public final FileConfig shortcutsConfig = new ShortcutsConfig(new File(dir, "shortcuts.json"));
-
     public final File backgroundFile = new File(dir, "userbackground.png");
-
-    public boolean firstStart =  false;
-
-    public static final Gson PRETTY_GSON = new GsonBuilder().setPrettyPrinting().create();
+    public boolean firstStart = false;
 
     /**
      * Constructor of file manager
@@ -57,35 +52,16 @@ public class FileManager extends MinecraftInstance {
      * Setup folder
      */
     public void setupFolder() {
-        if(!dir.exists()) {
+        if (!dir.exists()) {
             dir.mkdir();
             firstStart = true;
         }
 
-        if(!fontsDir.exists())
+        if (!fontsDir.exists())
             fontsDir.mkdir();
 
-        if(!settingsDir.exists())
+        if (!settingsDir.exists())
             settingsDir.mkdir();
-    }
-
-    /**
-     * Load all configs in file manager
-     */
-    public void loadAllConfigs() {
-        for(final Field field : getClass().getDeclaredFields()) {
-            if(field.getType() == FileConfig.class) {
-                try {
-                    if(!field.isAccessible())
-                        field.setAccessible(true);
-
-                    final FileConfig fileConfig = (FileConfig) field.get(this);
-                    loadConfig(fileConfig);
-                }catch(final IllegalAccessException e) {
-                    ClientUtils.getLogger().error("Failed to load config file of field " + field.getName() + ".", e);
-                }
-            }
-        }
     }
 
     /**
@@ -94,7 +70,7 @@ public class FileManager extends MinecraftInstance {
      * @param configs list
      */
     public void loadConfigs(final FileConfig... configs) {
-        for(final FileConfig fileConfig : configs)
+        for (final FileConfig fileConfig : configs)
             loadConfig(fileConfig);
     }
 
@@ -104,7 +80,7 @@ public class FileManager extends MinecraftInstance {
      * @param config to load
      */
     public void loadConfig(final FileConfig config) {
-        if(!config.hasConfig()) {
+        if (!config.hasConfig()) {
             ClientUtils.getLogger().info("[FileManager] Skipped loading config: " + config.getFile().getName() + ".");
 
             saveConfig(config, true);
@@ -114,7 +90,7 @@ public class FileManager extends MinecraftInstance {
         try {
             config.loadConfig();
             ClientUtils.getLogger().info("[FileManager] Loaded config: " + config.getFile().getName() + ".");
-        }catch(final Throwable t) {
+        } catch (final Throwable t) {
             ClientUtils.getLogger().error("[FileManager] Failed to load config file: " + config.getFile().getName() + ".", t);
         }
     }
@@ -123,30 +99,20 @@ public class FileManager extends MinecraftInstance {
      * Save all configs in file manager
      */
     public void saveAllConfigs() {
-        for(final Field field : getClass().getDeclaredFields()) {
-            if(field.getType() == FileConfig.class) {
+        for (final Field field : getClass().getDeclaredFields()) {
+            if (field.getType() == FileConfig.class) {
                 try {
-                    if(!field.isAccessible())
+                    if (!field.isAccessible())
                         field.setAccessible(true);
 
                     final FileConfig fileConfig = (FileConfig) field.get(this);
                     saveConfig(fileConfig);
-                }catch(final IllegalAccessException e) {
+                } catch (final IllegalAccessException e) {
                     ClientUtils.getLogger().error("[FileManager] Failed to save config file of field " +
                             field.getName() + ".", e);
                 }
             }
         }
-    }
-
-    /**
-     * Save a list of configs
-     *
-     * @param configs list
-     */
-    public void saveConfigs(final FileConfig... configs) {
-        for(final FileConfig fileConfig : configs)
-            saveConfig(fileConfig);
     }
 
     /**
@@ -169,12 +135,12 @@ public class FileManager extends MinecraftInstance {
             return;
 
         try {
-            if(!config.hasConfig())
+            if (!config.hasConfig())
                 config.createConfig();
 
             config.saveConfig();
             ClientUtils.getLogger().info("[FileManager] Saved config: " + config.getFile().getName() + ".");
-        }catch(final Throwable t) {
+        } catch (final Throwable t) {
             ClientUtils.getLogger().error("[FileManager] Failed to save config file: " +
                     config.getFile().getName() + ".", t);
         }
@@ -184,17 +150,17 @@ public class FileManager extends MinecraftInstance {
      * Load background for background
      */
     public void loadBackground() {
-        if(backgroundFile.exists()) {
+        if (backgroundFile.exists()) {
             try {
-                final BufferedImage bufferedImage = ImageIO.read(new FileInputStream(backgroundFile));
+                final BufferedImage bufferedImage = ImageIO.read(Files.newInputStream(backgroundFile.toPath()));
 
-                if(bufferedImage == null)
+                if (bufferedImage == null)
                     return;
 
                 LiquidBounce.INSTANCE.setBackground(new ResourceLocation(LiquidBounce.CLIENT_NAME.toLowerCase() + "/background.png"));
                 mc.getTextureManager().loadTexture(LiquidBounce.INSTANCE.getBackground(), new DynamicTexture(bufferedImage));
                 ClientUtils.getLogger().info("[FileManager] Loaded background.");
-            }catch(final Exception e) {
+            } catch (final Exception e) {
                 ClientUtils.getLogger().error("[FileManager] Failed to load background.", e);
             }
         }

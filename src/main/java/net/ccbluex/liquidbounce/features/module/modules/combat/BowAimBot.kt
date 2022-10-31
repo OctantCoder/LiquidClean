@@ -21,9 +21,14 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemBow
 import java.awt.Color
+import java.util.*
 
-@ModuleInfo(name = "BowAimbot", description = "Automatically aims at players when using a bow.", category = ModuleCategory.COMBAT)
-class BowAimbot : Module() {
+@ModuleInfo(
+    name = "BowAimBot",
+    description = "Automatically aims at players when using a bow.",
+    category = ModuleCategory.COMBAT
+)
+class BowAimBot : Module() {
 
     private val silentValue = BoolValue("Silent", true)
     private val predictValue = BoolValue("Predict", true)
@@ -39,7 +44,7 @@ class BowAimbot : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         target = null
 
         if (mc.thePlayer.itemInUse?.item is ItemBow) {
@@ -51,7 +56,7 @@ class BowAimbot : Module() {
     }
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent) {
         if (target != null && !priorityValue.get().equals("Multi", ignoreCase = true) && markValue.get())
             RenderUtils.drawPlatform(target, Color(37, 126, 255, 70))
     }
@@ -62,7 +67,7 @@ class BowAimbot : Module() {
                     (throughWalls || mc.thePlayer.canEntityBeSeen(it))
         }
 
-        return when (priorityMode.toUpperCase()) {
+        return when (priorityMode.uppercase(Locale.getDefault())) {
             "DISTANCE" -> targets.minByOrNull { mc.thePlayer.getDistanceToEntity(it) }
             "DIRECTION" -> targets.minByOrNull { RotationUtils.getRotationDifference(it) }
             "HEALTH" -> targets.minByOrNull { (it as EntityLivingBase).health }
@@ -70,5 +75,5 @@ class BowAimbot : Module() {
         }
     }
 
-    fun hasTarget() = target != null && mc.thePlayer!!.canEntityBeSeen(target!!)
+    fun hasTarget(): Boolean = target != null && mc.thePlayer!!.canEntityBeSeen(target!!)
 }

@@ -41,6 +41,7 @@ import net.minecraft.util.Vec3
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 import kotlin.math.*
 
 @ModuleInfo(
@@ -80,7 +81,7 @@ class Scaffold : Module() {
 
     // Basic stuff
     @JvmField
-    val sprintValue = BoolValue("Sprint", false)
+    val sprintValue: BoolValue = BoolValue("Sprint", false)
     private val swingValue = BoolValue("Swing", true)
     private val searchValue = BoolValue("Search", true)
     private val downValue = BoolValue("Down", true)
@@ -203,7 +204,7 @@ class Scaffold : Module() {
 
     // Events
     @EventTarget
-    private fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val player = mc.thePlayer ?: return
 
         mc.timer.timerSpeed = timerValue.get()
@@ -264,16 +265,17 @@ class Scaffold : Module() {
             }
         }
         if (player.onGround) {
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase(Locale.getDefault())) {
                 "rewinside" -> {
                     MovementUtils.strafe(0.2F)
                     player.motionY = 0.0
                 }
             }
-            when (zitterMode.get().toLowerCase()) {
+            when (zitterMode.get().lowercase(Locale.getDefault())) {
                 "off" -> {
                     return
                 }
+
                 "smooth" -> {
                     if (!GameSettings.isKeyDown(mc.gameSettings.keyBindRight)) {
                         mc.gameSettings.keyBindRight.pressed = false
@@ -293,6 +295,7 @@ class Scaffold : Module() {
                         mc.gameSettings.keyBindLeft.pressed = true
                     }
                 }
+
                 "teleport" -> {
                     MovementUtils.strafe(zitterSpeed.get())
                     val yaw = Math.toRadians(player.rotationYaw + if (zitterDirection) 90.0 else -90.0)
@@ -350,7 +353,7 @@ class Scaffold : Module() {
         if (rotationsValue.get() && (keepRotationValue.get() || !lockRotationTimer.hasTimePassed(keepLengthValue.get())) && lockRotation != null && strafeMode.get()
                 .equals("Off", true)
         ) {
-            setRotation(lockRotation!!)
+            setRotation(lockRotation ?: return)
             if (eventState == EventState.POST) {
                 lockRotationTimer.update()
             }
@@ -375,7 +378,7 @@ class Scaffold : Module() {
     fun update() {
         val player = mc.thePlayer ?: return
 
-        val holdingItem = player.heldItem != null && player.heldItem!!.item is ItemBlock
+        val holdingItem = player.heldItem != null && (player.heldItem ?: return).item is ItemBlock
         if (if (!autoBlockValue.get()
                     .equals("off", true)
             ) InventoryUtils.findAutoBlockBlock() == -1 && !holdingItem else !holdingItem
@@ -438,7 +441,7 @@ class Scaffold : Module() {
         }
     }
 
-    fun place() {
+    private fun place() {
         val player = mc.thePlayer ?: return
         val world = mc.theWorld ?: return
 
@@ -449,31 +452,35 @@ class Scaffold : Module() {
             return
         }
 
-        if (!delayTimer.hasTimePassed(delay) || sameYValue.get() && launchY - 1 != targetPlace!!.vec3.yCoord.toInt()) {
+        if (!delayTimer.hasTimePassed(delay) || sameYValue.get() && launchY - 1 != (targetPlace ?: return).vec3.yCoord.toInt()) {
             return
         }
 
         var itemStack = player.heldItem
-        if (itemStack == null || itemStack.item !is ItemBlock|| (itemStack.item!! as ItemBlock).block is BlockBush || player.heldItem!!.stackSize <= 0) {
+        if (itemStack == null || itemStack.item !is ItemBlock || ((itemStack.item
+                ?: return) as ItemBlock).block is BlockBush || (player.heldItem ?: return).stackSize <= 0) {
             val blockSlot = InventoryUtils.findAutoBlockBlock()
 
             if (blockSlot == -1) {
                 return
             }
 
-            when (autoBlockValue.get().toLowerCase()) {
+            when (autoBlockValue.get().lowercase(Locale.getDefault())) {
                 "off" -> {
                     return
                 }
+
                 "pick" -> {
                     player.inventory.currentItem = blockSlot - 36
                     mc.playerController.updateController()
                 }
+
                 "spoof" -> {
                     if (blockSlot - 36 != slot) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(blockSlot - 36))
                     }
                 }
+
                 "switch" -> {
                     if (blockSlot - 36 != slot) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(blockSlot - 36))
@@ -484,7 +491,8 @@ class Scaffold : Module() {
         }
 
         if (mc.playerController.onPlayerRightClick(
-                player, world, itemStack, targetPlace!!.blockPos, targetPlace!!.enumFacing, targetPlace!!.vec3
+                player, world, itemStack, (targetPlace ?: return).blockPos, (targetPlace
+                    ?: return).enumFacing, (targetPlace ?: return).vec3
             )
         ) {
             delayTimer.reset()
@@ -556,7 +564,7 @@ class Scaffold : Module() {
 
     // Scaffold visuals
     @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    fun onRender2D(@Suppress("UNUSED_PARAMETER") event: Render2DEvent) {
         if (counterDisplayValue.get()) {
             GL11.glPushMatrix()
             val blockOverlay = LiquidBounce.moduleManager.getModule(BlockOverlay::class.java) as BlockOverlay
@@ -590,7 +598,7 @@ class Scaffold : Module() {
 
     // Visuals
     @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent) {
         val player = mc.thePlayer ?: return
         if (!markValue.get()) {
             return
@@ -675,7 +683,8 @@ class Scaffold : Module() {
                         val diffZ = hitVec.zCoord - eyesPos.zCoord
                         val diffXZ = sqrt(diffX * diffX + diffZ * diffZ)
                         if (facingType != EnumFacing.UP && facingType != EnumFacing.DOWN) {
-                            val diff = abs(if (facingType == EnumFacing.NORTH || facingType == EnumFacing.SOUTH) diffZ else diffX)
+                            val diff =
+                                abs(if (facingType == EnumFacing.NORTH || facingType == EnumFacing.SOUTH) diffZ else diffX)
                             if (diff < minDistValue.get()) {
                                 zSearch += if (auto) 0.1 else xzSSV
                                 continue

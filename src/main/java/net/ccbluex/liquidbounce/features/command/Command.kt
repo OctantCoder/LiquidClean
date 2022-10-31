@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.util.ResourceLocation
+import java.util.*
 
 abstract class Command(val command: String, vararg val alias: String) : MinecraftInstance() {
     /**
@@ -32,12 +33,13 @@ abstract class Command(val command: String, vararg val alias: String) : Minecraf
     /**
      * Print [msg] to chat
      */
-    protected fun chat(msg: String) = ClientUtils.displayChatMessage("§8[§9§l${LiquidBounce.CLIENT_NAME}§8] §3$msg")
+    protected fun chat(msg: String): Unit = ClientUtils.displayChatMessage("§8[§9§l${LiquidBounce.CLIENT_NAME}§8] §3$msg")
 
     /**
      * Print [syntax] of command to chat
      */
-    protected fun chatSyntax(syntax: String) = ClientUtils.displayChatMessage("§8[§9§l${LiquidBounce.CLIENT_NAME}§8] §3Syntax: §7${LiquidBounce.commandManager.prefix}$syntax")
+    protected fun chatSyntax(syntax: String): Unit =
+        ClientUtils.displayChatMessage("§8[§9§l${LiquidBounce.CLIENT_NAME}§8] §3Syntax: §7${LiquidBounce.commandManager.prefix}$syntax")
 
     /**
      * Print [syntaxes] of command to chat
@@ -46,16 +48,20 @@ abstract class Command(val command: String, vararg val alias: String) : Minecraf
         ClientUtils.displayChatMessage("§8[§9§l${LiquidBounce.CLIENT_NAME}§8] §3Syntax:")
 
         for (syntax in syntaxes)
-            ClientUtils.displayChatMessage("§8> §7${LiquidBounce.commandManager.prefix}$command ${syntax.toLowerCase()}")
+            ClientUtils.displayChatMessage("§8> §7${LiquidBounce.commandManager.prefix}$command ${syntax.lowercase(
+                Locale.getDefault()
+            )}")
     }
 
     /**
      * Print a syntax error to chat
      */
-    protected fun chatSyntaxError() = ClientUtils.displayChatMessage("§8[§9§l${LiquidBounce.CLIENT_NAME}§8] §3Syntax error")
+    protected fun chatSyntaxError(): Unit =
+        ClientUtils.displayChatMessage("§8[§9§l${LiquidBounce.CLIENT_NAME}§8] §3Syntax error")
 
     /**
      * Play edit sound
      */
-    protected fun playEdit() = mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("random.anvil_use"), 1F))
+    protected fun playEdit(): Unit =
+        mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("random.anvil_use"), 1F))
 }

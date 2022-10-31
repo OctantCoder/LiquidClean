@@ -18,39 +18,39 @@ import kotlin.math.min
 
 open class HUD : MinecraftInstance() {
 
-    val elements = mutableListOf<Element>()
-    val notifications = mutableListOf<Notification>()
+    val elements: MutableList<Element> = mutableListOf()
+    val notifications: MutableList<Notification> = mutableListOf()
 
     companion object {
 
-        val elements = arrayOf(
-                Armor::class.java,
-                Arraylist::class.java,
-                Effects::class.java,
-                Image::class.java,
-                Model::class.java,
-                Notifications::class.java,
-                TabGUI::class.java,
-                Text::class.java,
-                ScoreboardElement::class.java,
-                Target::class.java,
-                Radar::class.java,
-                SpeedGraph::class.java
+        val elements: Array<Class<out Element>> = arrayOf(
+            Armor::class.java,
+            Arraylist::class.java,
+            Effects::class.java,
+            Image::class.java,
+            Model::class.java,
+            Notifications::class.java,
+            TabGUI::class.java,
+            Text::class.java,
+            ScoreboardElement::class.java,
+            Target::class.java,
+            Radar::class.java,
+            SpeedGraph::class.java
         )
 
         /**
          * Create default HUD
          */
         @JvmStatic
-        fun createDefault() = HUD()
-                .addElement(Text.defaultClient())
-                .addElement(TabGUI())
-                .addElement(Arraylist())
-                .addElement(ScoreboardElement())
-                .addElement(Armor())
-                .addElement(Effects())
-                .addElement(Notifications())
-                // .addElement(SpeedGraph()) / not as default pls
+        fun createDefault(): HUD = HUD()
+            .addElement(Text.defaultClient())
+            .addElement(TabGUI())
+            .addElement(Arraylist())
+            .addElement(ScoreboardElement())
+            .addElement(Armor())
+            .addElement(Effects())
+            .addElement(Notifications())
+        // .addElement(SpeedGraph()) / not as default pls
 
     }
 
@@ -59,26 +59,26 @@ open class HUD : MinecraftInstance() {
      */
     fun render(designer: Boolean) {
         elements.sortedBy { -it.info.priority }
-                .forEach {
-                    GL11.glPushMatrix()
+            .forEach {
+                GL11.glPushMatrix()
 
-                    if (!it.info.disableScale)
-                        GL11.glScalef(it.scale, it.scale, it.scale)
+                if (!it.info.disableScale)
+                    GL11.glScalef(it.scale, it.scale, it.scale)
 
-                    GL11.glTranslated(it.renderX, it.renderY, 0.0)
+                GL11.glTranslated(it.renderX, it.renderY, 0.0)
 
-                    try {
-                        it.border = it.drawElement()
+                try {
+                    it.border = it.drawElement()
 
-                        if (designer)
-                            it.border?.draw()
-                    } catch (ex: Exception) {
-                        ClientUtils.getLogger()
-                                .error("Something went wrong while drawing ${it.name} element in HUD.", ex)
-                    }
-
-                    GL11.glPopMatrix()
+                    if (designer)
+                        it.border?.draw()
+                } catch (ex: Exception) {
+                    ClientUtils.getLogger()
+                        .error("Something went wrong while drawing ${it.name} element in HUD.", ex)
                 }
+
+                GL11.glPopMatrix()
+            }
     }
 
     /**
@@ -94,13 +94,18 @@ open class HUD : MinecraftInstance() {
      */
     fun handleMouseClick(mouseX: Int, mouseY: Int, button: Int) {
         for (element in elements)
-            element.handleMouseClick((mouseX / element.scale) - element.renderX, (mouseY / element.scale)
-                    - element.renderY, button)
+            element.handleMouseClick(
+                (mouseX / element.scale) - element.renderX, (mouseY / element.scale)
+                        - element.renderY, button
+            )
 
         if (button == 0) {
             for (element in elements.reversed()) {
-                if (!element.isInBorder((mouseX / element.scale) - element.renderX,
-                                (mouseY / element.scale) - element.renderY))
+                if (!element.isInBorder(
+                        (mouseX / element.scale) - element.renderX,
+                        (mouseY / element.scale) - element.renderY
+                    )
+                )
                     continue
 
                 element.drag = true
@@ -202,11 +207,12 @@ open class HUD : MinecraftInstance() {
     /**
      * Add [notification]
      */
-    fun addNotification(notification: Notification) = elements.any { it is Notifications } && notifications.add(notification)
+    fun addNotification(notification: Notification): Boolean =
+        elements.any { it is Notifications } && notifications.add(notification)
 
     /**
      * Remove [notification]
      */
-    fun removeNotification(notification: Notification) = notifications.remove(notification)
+    fun removeNotification(notification: Notification): Boolean = notifications.remove(notification)
 
 }

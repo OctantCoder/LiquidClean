@@ -43,15 +43,15 @@ object ChestAura : Module() {
     private var currentBlock: BlockPos? = null
     private val timer = MSTimer()
 
-    val clickedBlocks = mutableListOf<BlockPos>()
+    val clickedBlocks: MutableList<BlockPos> = mutableListOf()
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if (LiquidBounce.moduleManager[Blink::class.java].state || (LiquidBounce.moduleManager[KillAura::class.java] as KillAura).isBlockingChestAura)
             return
 
-        val thePlayer = mc.thePlayer!!
-        val theWorld = mc.theWorld!!
+        val thePlayer = mc.thePlayer ?: return
+        val theWorld = mc.theWorld ?: return
 
         when (event.eventState) {
             EventState.PRE -> {
@@ -60,39 +60,47 @@ object ChestAura : Module() {
 
                 val radius = rangeValue.get() + 1
 
-                val eyesPos = Vec3(thePlayer.posX, thePlayer.entityBoundingBox.minY + thePlayer.eyeHeight,
-                        thePlayer.posZ)
+                val eyesPos = Vec3(
+                    thePlayer.posX, thePlayer.entityBoundingBox.minY + thePlayer.eyeHeight,
+                    thePlayer.posZ
+                )
 
                 currentBlock = BlockUtils.searchBlocks(radius.toInt())
-                        .filter {
-                            Block.getIdFromBlock(it.value) == chestValue.get() && !clickedBlocks.contains(it.key)
-                                    && BlockUtils.getCenterDistance(it.key) < rangeValue.get()
-                        }
-                        .filter {
-                            if (throughWallsValue.get())
-                                return@filter true
+                    .filter {
+                        Block.getIdFromBlock(it.value) == chestValue.get() && !clickedBlocks.contains(it.key)
+                                && BlockUtils.getCenterDistance(it.key) < rangeValue.get()
+                    }
+                    .filter {
+                        if (throughWallsValue.get())
+                            return@filter true
 
-                            val blockPos = it.key
-                            val movingObjectPosition = theWorld.rayTraceBlocks(eyesPos, blockPos.getVec(), false, true, false)
+                        val blockPos = it.key
+                        val movingObjectPosition =
+                            theWorld.rayTraceBlocks(eyesPos, blockPos.getVec(), false, true, false)
 
-                            movingObjectPosition != null && movingObjectPosition.blockPos == blockPos
-                        }
-                        .minByOrNull { BlockUtils.getCenterDistance(it.key) }?.key
+                        movingObjectPosition != null && movingObjectPosition.blockPos == blockPos
+                    }
+                    .minByOrNull { BlockUtils.getCenterDistance(it.key) }?.key
 
                 if (rotationsValue.get())
-                    RotationUtils.setTargetRotation((RotationUtils.faceBlock(currentBlock ?: return)
-                            ?: return).rotation)
+                    RotationUtils.setTargetRotation(
+                        (RotationUtils.faceBlock(currentBlock ?: return)
+                            ?: return).rotation
+                    )
             }
 
             EventState.POST -> if (currentBlock != null && timer.hasTimePassed(delayValue.get().toLong())) {
-                if (mc.playerController.onPlayerRightClick(thePlayer, mc.theWorld!!, thePlayer.heldItem, currentBlock!!,
-                                EnumFacing.DOWN, currentBlock!!.getVec())) {
+                if (mc.playerController.onPlayerRightClick(
+                        thePlayer, mc.theWorld ?: return, thePlayer.heldItem, currentBlock ?: return,
+                        EnumFacing.DOWN, (currentBlock ?: return).getVec()
+                    )
+                ) {
                     if (visualSwing.get())
                         thePlayer.swingItem()
                     else
                         mc.netHandler.addToSendQueue(C0APacketAnimation())
 
-                    clickedBlocks.add(currentBlock!!)
+                    clickedBlocks.add(currentBlock ?: return)
                     currentBlock = null
                     timer.reset()
                 }

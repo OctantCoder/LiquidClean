@@ -12,9 +12,9 @@ import java.io.FileFilter
 
 class ScriptManager {
 
-    val scripts = mutableListOf<Script>()
+    val scripts: MutableList<Script> = mutableListOf()
 
-    val scriptsFolder = File(LiquidBounce.fileManager.dir, "scripts")
+    val scriptsFolder: File = File(LiquidBounce.fileManager.dir, "scripts")
     private val scriptFileExtension = ".js"
 
     /**
@@ -24,7 +24,8 @@ class ScriptManager {
         if (!scriptsFolder.exists())
             scriptsFolder.mkdir()
 
-        scriptsFolder.listFiles(FileFilter { it.name.endsWith(scriptFileExtension) })?.forEach(this@ScriptManager::loadScript)
+        scriptsFolder.listFiles(FileFilter { it.name.endsWith(scriptFileExtension) })
+            ?.forEach(this@ScriptManager::loadScript)
     }
 
     /**

@@ -31,7 +31,7 @@ class PacketDeserializer : JsonDeserializer<Packet> {
      *
      * In the implementation of this call-back method, you should consider invoking
      * [JsonDeserializationContext.deserialize] method to create objects
-     * for any non-trivial field of the returned object. However, you should never invoke it on the
+     * for any non-trivial field of the returned object. However, you should never invoke it on
      * the same type passing `json` since that will cause an infinite loop (Gson will call your
      * call-back method again).
      *
@@ -46,9 +46,9 @@ class PacketDeserializer : JsonDeserializer<Packet> {
         val packetObject = json.asJsonObject
         val packetName = packetObject.get("m").asString
 
-        if(!packetRegistry.containsKey(packetName)) return null
+        if (!packetRegistry.containsKey(packetName)) return null
 
-        if(!packetObject.has("c")) packetObject.add("c", JsonObject())
+        if (!packetObject.has("c")) packetObject.add("c", JsonObject())
 
         return Gson().fromJson(packetObject.get("c"), packetRegistry[packetName])
 

@@ -15,7 +15,11 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.client.C03PacketPlayer.C05PacketPlayerLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-@ModuleInfo(name = "NoRotateSet", description = "Prevents the server from rotating your head.", category = ModuleCategory.MISC)
+@ModuleInfo(
+    name = "NoRotateSet",
+    description = "Prevents the server from rotating your head.",
+    category = ModuleCategory.MISC
+)
 class NoRotateSet : Module() {
     private val confirmValue = BoolValue("Confirm", true)
     private val illegalRotationValue = BoolValue("ConfirmIllegalRotation", false)
@@ -32,8 +36,9 @@ class NoRotateSet : Module() {
                 return
 
             if (illegalRotationValue.get() || packet.pitch <= 90 && packet.pitch >= -90 &&
-                    RotationUtils.serverRotation != null && packet.yaw != RotationUtils.serverRotation.yaw &&
-                    packet.pitch != RotationUtils.serverRotation.pitch) {
+                RotationUtils.serverRotation != null && packet.yaw != RotationUtils.serverRotation.yaw &&
+                packet.pitch != RotationUtils.serverRotation.pitch
+            ) {
 
                 if (confirmValue.get())
                     mc.netHandler.addToSendQueue(C05PacketPlayerLook(packet.yaw, packet.pitch, thePlayer.onGround))

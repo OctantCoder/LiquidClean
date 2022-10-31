@@ -17,13 +17,14 @@ import org.lwjgl.input.Keyboard
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Files
+import java.util.*
 import javax.imageio.ImageIO
 
 class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
 
     companion object {
-        var enabled = true
-        var particles = false
+        var enabled: Boolean = true
+        var particles: Boolean = false
     }
 
     private lateinit var enabledButton: GuiButton
@@ -32,7 +33,8 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
     override fun initGui() {
         enabledButton = GuiButton(1, width / 2 - 100, height / 4 + 35, "Enabled (${if (enabled) "On" else "Off"})")
         buttonList.add(enabledButton)
-        particlesButton = GuiButton(2, width / 2 - 100, height / 4 + 50 + 25, "Particles (${if (particles) "On" else "Off"})")
+        particlesButton =
+            GuiButton(2, width / 2 - 100, height / 4 + 50 + 25, "Particles (${if (particles) "On" else "Off"})")
         buttonList.add(particlesButton)
         buttonList.add(GuiButton(3, width / 2 - 100, height / 4 + 50 + 25 * 2, 98, 20, "Change wallpaper"))
         buttonList.add(GuiButton(4, width / 2 + 2, height / 4 + 50 + 25 * 2, 98, 20, "Reset wallpaper"))
@@ -46,10 +48,12 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
                 enabled = !enabled
                 enabledButton.displayString = "Enabled (${if (enabled) "On" else "Off"})"
             }
+
             2 -> {
                 particles = !particles
                 particlesButton.displayString = "Particles (${if (particles) "On" else "Off"})"
             }
+
             3 -> {
                 val file = MiscUtils.openFileChooser() ?: return
                 if (file.isDirectory) return
@@ -58,29 +62,36 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
                     Files.copy(file.toPath(), FileOutputStream(LiquidBounce.fileManager.backgroundFile))
 
                     val image = ImageIO.read(FileInputStream(LiquidBounce.fileManager.backgroundFile))
-                    val location = ResourceLocation(LiquidBounce.CLIENT_NAME.toLowerCase() + "/background.png")
+                    val location = ResourceLocation(LiquidBounce.CLIENT_NAME.lowercase(Locale.getDefault()) + "/background.png")
 
                     LiquidBounce.background = location
 
                     mc.textureManager.loadTexture(location, DynamicTexture(image))
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    MiscUtils.showErrorPopup("Error", "Exception class: " + e.javaClass.name + "\nMessage: " + e.message)
+                    MiscUtils.showErrorPopup(
+                        "Error",
+                        "Exception class: " + e.javaClass.name + "\nMessage: " + e.message
+                    )
                     LiquidBounce.fileManager.backgroundFile.delete()
                 }
             }
+
             4 -> {
                 LiquidBounce.background = null
                 LiquidBounce.fileManager.backgroundFile.delete()
             }
+
             0 -> mc.displayGuiScreen(prevGui)
         }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
-        Fonts.fontBold180.drawCenteredString("Background", this.width / 2F, height / 8F + 5F,
-                4673984, true)
+        Fonts.fontBold180.drawCenteredString(
+            "Background", this.width / 2F, height / 8F + 5F,
+            4673984, true
+        )
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

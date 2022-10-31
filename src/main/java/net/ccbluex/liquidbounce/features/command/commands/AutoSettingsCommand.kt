@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.utils.SettingsUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
+import java.util.*
 import kotlin.concurrent.thread
 
 class AutoSettingsCommand : Command("autosettings", "setting", "settings", "config", "autosetting") {
@@ -40,7 +41,7 @@ class AutoSettingsCommand : Command("autosettings", "setting", "settings", "conf
                 val url = if (args[2].startsWith("http"))
                     args[2]
                 else
-                    "${LiquidBounce.CLIENT_CLOUD}/settings/${args[2].toLowerCase()}"
+                    "${LiquidBounce.CLIENT_CLOUD}/settings/${args[2].lowercase(Locale.getDefault())}"
 
                 chat("Loading settings...")
 
@@ -74,19 +75,21 @@ class AutoSettingsCommand : Command("autosettings", "setting", "settings", "conf
     }
 
     private fun loadSettings(useCached: Boolean, join: Long? = null, callback: (List<String>) -> Unit) {
-        var thread = thread {
+        val thread = thread {
             // Prevent the settings from being loaded twice
             synchronized(loadingLock) {
                 if (useCached && autoSettingFiles != null) {
-                    callback(autoSettingFiles!!)
+                    callback(autoSettingFiles ?: return@synchronized)
                     return@thread
                 }
 
                 try {
-                    val json = JsonParser().parse(HttpUtils.get(
+                    val json = JsonParser().parse(
+                        HttpUtils.get(
                             // TODO: Add another way to get all settings
                             "https://api.github.com/repos/CCBlueX/LiquidCloud/contents/LiquidBounce/settings"
-                    ))
+                        )
+                    )
 
                     val autoSettings: MutableList<String> = mutableListOf()
 
@@ -126,6 +129,7 @@ class AutoSettingsCommand : Command("autosettings", "setting", "settings", "conf
                 }
                 return emptyList()
             }
+
             else -> emptyList()
         }
     }

@@ -98,13 +98,13 @@ public final class InventoryUtils extends MinecraftInstance implements Listenabl
     }
 
     @EventTarget
-    public void onClick(final ClickWindowEvent event) {
+    public void onClick(@SuppressWarnings("unused") final ClickWindowEvent event) {
         CLICK_TIMER.reset();
     }
 
     @EventTarget
     public void onPacket(final PacketEvent event) {
-        final Packet packet = event.getPacket();
+        final Packet<?> packet = event.getPacket();
 
         if (packet instanceof C08PacketPlayerBlockPlacement)
             CLICK_TIMER.reset();

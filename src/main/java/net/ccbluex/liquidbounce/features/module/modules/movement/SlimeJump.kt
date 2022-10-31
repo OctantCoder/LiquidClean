@@ -14,8 +14,13 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockSlime
+import java.util.*
 
-@ModuleInfo(name = "SlimeJump", description = "Allows you to to jump higher on slime blocks.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "SlimeJump",
+    description = "Allows you to to jump higher on slime blocks.",
+    category = ModuleCategory.MOVEMENT
+)
 class SlimeJump : Module() {
     private val motionValue = FloatValue("Motion", 0.42f, 0.2f, 1f)
     private val modeValue = ListValue("Mode", arrayOf("Set", "Add"), "Add")
@@ -27,7 +32,7 @@ class SlimeJump : Module() {
         if (mc.thePlayer != null && mc.theWorld != null && getBlock(thePlayer.position.down()) is BlockSlime) {
             event.cancelEvent()
 
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase(Locale.getDefault())) {
                 "set" -> thePlayer.motionY = motionValue.get().toDouble()
                 "add" -> thePlayer.motionY += motionValue.get()
             }

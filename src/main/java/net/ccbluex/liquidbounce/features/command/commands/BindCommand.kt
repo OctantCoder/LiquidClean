@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import org.lwjgl.input.Keyboard
+import java.util.*
 
 class BindCommand : Command("bind") {
     /**
@@ -24,7 +25,7 @@ class BindCommand : Command("bind") {
                 return
             }
             // Find key by name and change
-            val key = Keyboard.getKeyIndex(args[2].toUpperCase())
+            val key = Keyboard.getKeyIndex(args[2].uppercase(Locale.getDefault()))
             module.keyBind = key
 
             // Response to user
@@ -44,9 +45,10 @@ class BindCommand : Command("bind") {
 
         return when (args.size) {
             1 -> LiquidBounce.moduleManager.modules
-                    .map { it.name }
-                    .filter { it.startsWith(moduleName, true) }
-                    .toList()
+                .map { it.name }
+                .filter { it.startsWith(moduleName, true) }
+                .toList()
+
             else -> emptyList()
         }
     }

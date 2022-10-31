@@ -24,21 +24,18 @@ public abstract class FileConfig {
     /**
      * Load config from file
      *
-     * @throws IOException
      */
     protected abstract void loadConfig() throws IOException;
 
     /**
      * Save config to file
      *
-     * @throws IOException
      */
     protected abstract void saveConfig() throws IOException;
 
     /**
      * Create config
      *
-     * @throws IOException
      */
     public void createConfig() throws IOException {
         file.createNewFile();

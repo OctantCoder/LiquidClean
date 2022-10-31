@@ -18,7 +18,7 @@ object Chat {
      */
     @Suppress("unused")
     @JvmStatic
-    fun print(message : String) {
+    fun print(message: String) {
         ClientUtils.displayChatMessage(message)
     }
 }

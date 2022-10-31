@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
+import java.util.*
 
 class ToggleCommand : Command("toggle", "t") {
     /**
@@ -22,7 +23,7 @@ class ToggleCommand : Command("toggle", "t") {
             }
 
             if (args.size > 2) {
-                val newState = args[2].toLowerCase()
+                val newState = args[2].lowercase(Locale.getDefault())
 
                 if (newState == "on" || newState == "off") {
                     module.state = newState == "on"
@@ -48,9 +49,10 @@ class ToggleCommand : Command("toggle", "t") {
 
         return when (args.size) {
             1 -> LiquidBounce.moduleManager.modules
-                    .map { it.name }
-                    .filter { it.startsWith(moduleName, true) }
-                    .toList()
+                .map { it.name }
+                .filter { it.startsWith(moduleName, true) }
+                .toList()
+
             else -> emptyList()
         }
     }

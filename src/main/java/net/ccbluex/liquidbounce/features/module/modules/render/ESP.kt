@@ -33,23 +33,26 @@ import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 
 @ModuleInfo(name = "ESP", description = "Allows you to see targets through walls.", category = ModuleCategory.RENDER)
 class ESP : Module() {
     @JvmField
-    val modeValue = ListValue(
+    val modeValue: ListValue = ListValue(
         "Mode",
         arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline", "ShaderOutline", "ShaderGlow"),
         "Box"
     )
 
     @JvmField
-    val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f)
+    val outlineWidth: FloatValue = FloatValue("Outline-Width", 3f, 0.5f, 5f)
 
     @JvmField
-    val wireframeWidth = FloatValue("WireFrame-Width", 2f, 0.5f, 5f)
+    val wireframeWidth: FloatValue = FloatValue("WireFrame-Width", 2f, 0.5f, 5f)
     private val shaderOutlineRadius = FloatValue("ShaderOutline-Radius", 1.35f, 1f, 2f)
     private val shaderGlowRadius = FloatValue("ShaderGlow-Radius", 2.3f, 2f, 3f)
     private val colorRedValue = IntegerValue("R", 255, 0, 255)
@@ -60,7 +63,7 @@ class ESP : Module() {
     private val botValue = BoolValue("Bots", true)
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent?) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent?) {
         val mode = modeValue.get()
         val mvMatrix = WorldToScreen.getMatrix(GL11.GL_MODELVIEW_MATRIX)
         val projectionMatrix = WorldToScreen.getMatrix(GL11.GL_PROJECTION_MATRIX)
@@ -85,17 +88,18 @@ class ESP : Module() {
             GL11.glLineWidth(1.0f)
         }
 
-        for (entity in mc.theWorld!!.loadedEntityList) {
+        for (entity in (mc.theWorld ?: return).loadedEntityList) {
             if (entity !is EntityLivingBase || !botValue.get() && AntiBot.isBot(entity)) continue
             if (entity != mc.thePlayer && EntityUtils.isSelected(entity, false)) {
                 val color = getColor(entity)
 
-                when (mode.toLowerCase()) {
+                when (mode.lowercase(Locale.getDefault())) {
                     "box", "otherbox" -> RenderUtils.drawEntityBox(
                         entity,
                         color,
                         !mode.equals("otherbox", ignoreCase = true)
                     )
+
                     "2d" -> {
                         val renderManager = mc.renderManager
                         val timer = mc.timer
@@ -107,6 +111,7 @@ class ESP : Module() {
                             entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
                         RenderUtils.draw2D(entity, posX, posY, posZ, color.rgb, Color.BLACK.rgb)
                     }
+
                     "real2d" -> {
                         val renderManager = mc.renderManager
                         val timer = mc.timer
@@ -172,7 +177,7 @@ class ESP : Module() {
 
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
-        val mode = modeValue.get().toLowerCase()
+        val mode = modeValue.get().lowercase(Locale.getDefault())
         val partialTicks = event.partialTicks
         val shader = (if (mode.equals(
                 "shaderoutline",
@@ -198,15 +203,15 @@ class ESP : Module() {
         try {
             //search entities
             val entityMap = HashMap<Color, ArrayList<Entity>>()
-            for (entity in mc.theWorld!!.loadedEntityList) {
+            for (entity in (mc.theWorld ?: return).loadedEntityList) {
                 if (!EntityUtils.isSelected(entity, false) || entity !is EntityLivingBase) continue
                 if (AntiBot.isBot(entity) && !botValue.get()) continue
                 //can draw
                 val color = getColor(entity)
                 if (!entityMap.containsKey(color)) {
-                    entityMap.put(color, ArrayList())
+                    entityMap[color] = ArrayList()
                 }
-                entityMap[color]!!.add(entity)
+                (entityMap[color] ?: return).add(entity)
             }
             //then draw it
             for ((color, arr) in entityMap) {
@@ -259,6 +264,6 @@ class ESP : Module() {
 
     companion object {
         @JvmField
-        var renderNameTags = true
+        var renderNameTags: Boolean = true
     }
 }

@@ -23,7 +23,11 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S0BPacketAnimation
 import net.minecraft.network.play.server.S14PacketEntity
 
-@ModuleInfo(name = "AntiBot", description = "Prevents KillAura from attacking AntiCheat bots.", category = ModuleCategory.MISC)
+@ModuleInfo(
+    name = "AntiBot",
+    description = "Prevents KillAura from attacking AntiCheat bots.",
+    category = ModuleCategory.MISC
+)
 object AntiBot : Module() {
 
     private val tabValue = BoolValue("Tab", true)
@@ -96,7 +100,8 @@ object AntiBot : Module() {
 
         if (armorValue.get()) {
             if (entity.inventory.armorInventory[0] == null && entity.inventory.armorInventory[1] == null &&
-                    entity.inventory.armorInventory[2] == null && entity.inventory.armorInventory[3] == null)
+                entity.inventory.armorInventory[2] == null && entity.inventory.armorInventory[3] == null
+            )
                 return true
         }
 
@@ -128,11 +133,13 @@ object AntiBot : Module() {
         }
 
         if (duplicateInWorldValue.get() &&
-                mc.theWorld!!.loadedEntityList.filter { it is EntityPlayer && it.displayNameString == it.displayNameString }.count() > 1) // TODO: I'm 99% certain this doesn't make sense
+            mc.theWorld!!.loadedEntityList.count { it is EntityPlayer && it.displayNameString == it.displayNameString } > 1
+        ) // TODO: I'm 99% certain this doesn't make sense
             return true
 
         if (duplicateInTabValue.get() &&
-                mc.netHandler.playerInfoMap.filter { entity.name == stripColor(it.getFullName()) }.count() > 1)
+            mc.netHandler.playerInfoMap.filter { entity.name == stripColor(it.getFullName()) }.size > 1
+        )
             return true
 
         if (allwaysInRadiusValue.get() && !notAlwaysInRadius.contains(entity.entityId))
@@ -154,9 +161,9 @@ object AntiBot : Module() {
         val packet = event.packet
 
         if (packet is S14PacketEntity) {
-            val entity = packet.getEntity(mc.theWorld!!)
+            val entity = packet.getEntity(mc.theWorld ?: return)
 
-            if (entity is EntityPlayer && entity != null) {
+            if (entity is EntityPlayer) {
                 if (entity.onGround && !ground.contains(entity.entityId))
                     ground.add(entity.entityId)
 
@@ -177,30 +184,31 @@ object AntiBot : Module() {
                 if (entity.isInvisible && !invisible.contains(entity.entityId))
                     invisible.add(entity.entityId)
 
-                if (!notAlwaysInRadius.contains(entity.entityId) && mc.thePlayer!!.getDistanceToEntity(entity) > allwaysRadiusValue.get())
-                    notAlwaysInRadius.add(entity.entityId);
+                if (!notAlwaysInRadius.contains(entity.entityId) && (mc.thePlayer ?: return).getDistanceToEntity(entity) > allwaysRadiusValue.get())
+                    notAlwaysInRadius.add(entity.entityId)
             }
         }
 
         if (packet is S0BPacketAnimation) {
-            val entity = mc.theWorld!!.getEntityByID(packet.entityID)
+            val entity = (mc.theWorld ?: return).getEntityByID(packet.entityID)
 
             if (entity != null && entity is EntityLivingBase && packet.animationType == 0
-                    && !swing.contains(entity.entityId))
+                && !swing.contains(entity.entityId)
+            )
                 swing.add(entity.entityId)
         }
     }
 
     @EventTarget
-    fun onAttack(e: AttackEvent) {
-        val entity = e.targetEntity
+    fun onAttack(event: AttackEvent) {
+        val entity = event.targetEntity
 
         if (entity != null && entity is EntityLivingBase && !hitted.contains(entity.entityId))
             hitted.add(entity.entityId)
     }
 
     @EventTarget
-    fun onWorld(event: WorldEvent?) {
+    fun onWorld(@Suppress("UNUSED_PARAMETER") event: WorldEvent?) {
         clearAll()
     }
 
@@ -210,7 +218,7 @@ object AntiBot : Module() {
         ground.clear()
         invalidGround.clear()
         invisible.clear()
-        notAlwaysInRadius.clear();
+        notAlwaysInRadius.clear()
     }
 
 }

@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -27,11 +25,14 @@ import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.potion.Potion
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.Vec3
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.*
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
@@ -44,7 +45,7 @@ import kotlin.math.sqrt
     keyBind = Keyboard.KEY_F
 )
 class Fly : Module() {
-    val modeValue = ListValue(
+    val modeValue: ListValue = ListValue(
         "Mode", arrayOf(
             "Vanilla", "SmoothVanilla",
 
@@ -114,7 +115,6 @@ class Fly : Module() {
     private var moveSpeed = 0.0
     private var lastDistance = 0.0
     private var failedStart = false
-    private val cubecraft2TickTimer = TickTimer()
     private val cubecraftTeleportTickTimer = TickTimer()
     private val freeHypixelTimer = TickTimer()
     private var freeHypixelYaw = 0f
@@ -133,7 +133,7 @@ class Fly : Module() {
         val mode = modeValue.get()
 
         run {
-            when (mode.toLowerCase()) {
+            when (mode.lowercase(Locale.getDefault())) {
                 "ncp" -> {
                     if (!thePlayer.onGround) return@run
 
@@ -148,6 +148,7 @@ class Fly : Module() {
                     thePlayer.motionZ *= 0.1
                     thePlayer.swingItem()
                 }
+
                 "oldncp" -> {
                     if (!thePlayer.onGround) return@run
 
@@ -159,6 +160,7 @@ class Fly : Module() {
                     thePlayer.jump()
                     thePlayer.swingItem()
                 }
+
                 "bugspartan" -> {
                     for (i in 0..64) {
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.049, z, false))
@@ -171,12 +173,14 @@ class Fly : Module() {
                     thePlayer.motionZ *= 0.1
                     thePlayer.swingItem()
                 }
+
                 "infinitycubecraft" -> ClientUtils.displayChatMessage("§8[§c§lCubeCraft-§a§lFly§8] §aPlace a block before landing.")
                 "infinityvcubecraft" -> {
                     ClientUtils.displayChatMessage("§8[§c§lCubeCraft-§a§lFly§8] §aPlace a block before landing.")
 
                     thePlayer.setPosition(thePlayer.posX, thePlayer.posY + 2, thePlayer.posZ)
                 }
+
                 "boosthypixel" -> {
                     if (!thePlayer.onGround) return@run
 
@@ -229,8 +233,9 @@ class Fly : Module() {
                     lastDistance = 0.0
                     failedStart = false
                 }
+
                 "redesky" -> {
-                    if (mc.thePlayer!!.onGround) {
+                    if ((mc.thePlayer ?: return@run).onGround) {
                         redeskyVClip1(redeskyHeight.get())
                     }
                 }
@@ -261,7 +266,7 @@ class Fly : Module() {
 
         val mode = modeValue.get()
 
-        if (!mode.toUpperCase().startsWith("AAC") && !mode.equals(
+        if (!mode.uppercase(Locale.getDefault()).startsWith("AAC") && !mode.equals(
                 "Hypixel", ignoreCase = true
             ) && !mode.equals("CubeCraft", ignoreCase = true)
         ) {
@@ -279,12 +284,12 @@ class Fly : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
         val vanillaSpeed = vanillaSpeedValue.get()
-        val thePlayer = mc.thePlayer!!
+        val thePlayer = mc.thePlayer ?: return
 
         run {
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase(Locale.getDefault())) {
                 "vanilla" -> {
                     thePlayer.capabilities.isFlying = false
                     thePlayer.motionY = 0.0
@@ -295,25 +300,30 @@ class Fly : Module() {
                     MovementUtils.strafe(vanillaSpeed)
                     handleVanillaKickBypass()
                 }
+
                 "smoothvanilla" -> {
                     thePlayer.capabilities.isFlying = true
                     handleVanillaKickBypass()
                 }
+
                 "cubecraft" -> {
                     mc.timer.timerSpeed = 0.6f
                     cubecraftTeleportTickTimer.update()
                 }
+
                 "ncp" -> {
                     thePlayer.motionY = (-ncpMotionValue.get()).toDouble()
                     if (mc.gameSettings.keyBindSneak.isKeyDown) thePlayer.motionY = -0.5
                     MovementUtils.strafe()
                 }
+
                 "oldncp" -> {
                     if (startY > thePlayer.posY) thePlayer.motionY = -0.000000000000000000000000000000001
                     if (mc.gameSettings.keyBindSneak.isKeyDown) thePlayer.motionY = -0.2
                     if (mc.gameSettings.keyBindJump.isKeyDown && thePlayer.posY < startY - 0.1) thePlayer.motionY = 0.2
                     MovementUtils.strafe()
                 }
+
                 "aac1.9.10" -> {
                     if (mc.gameSettings.keyBindJump.isKeyDown) aacJump += 0.2
                     if (mc.gameSettings.keyBindSneak.isKeyDown) aacJump -= 0.2
@@ -325,6 +335,7 @@ class Fly : Module() {
                     }
                     MovementUtils.strafe()
                 }
+
                 "aac3.0.5" -> {
                     if (aac3delay == 2) thePlayer.motionY = 0.1 else if (aac3delay > 2) aac3delay = 0
                     if (aacFast.get()) {
@@ -333,6 +344,7 @@ class Fly : Module() {
                     }
                     aac3delay++
                 }
+
                 "aac3.1.6-gomme" -> {
                     thePlayer.capabilities.isFlying = true
                     if (aac3delay == 2) {
@@ -349,9 +361,10 @@ class Fly : Module() {
                     )
                     if (thePlayer.posY <= 0.0) noFlag = true
                 }
+
                 "flag" -> {
                     mc.netHandler.addToSendQueue(
-                        C03PacketPlayer.C06PacketPlayerPosLook(
+                        C06PacketPlayerPosLook(
                             thePlayer.posX + thePlayer.motionX * 999,
                             thePlayer.posY + (if (mc.gameSettings.keyBindJump.isKeyDown) 1.5624 else 0.00000001) - if (mc.gameSettings.keyBindSneak.isKeyDown) 0.0624 else 0.00000002,
                             thePlayer.posZ + thePlayer.motionZ * 999,
@@ -361,7 +374,7 @@ class Fly : Module() {
                         )
                     )
                     mc.netHandler.addToSendQueue(
-                        C03PacketPlayer.C06PacketPlayerPosLook(
+                        C06PacketPlayerPosLook(
                             thePlayer.posX + thePlayer.motionX * 999,
                             thePlayer.posY - 6969,
                             thePlayer.posZ + thePlayer.motionZ * 999,
@@ -375,6 +388,7 @@ class Fly : Module() {
                     )
                     thePlayer.motionY = 0.0
                 }
+
                 "keepalive" -> {
                     mc.netHandler.addToSendQueue(C00PacketKeepAlive())
                     thePlayer.capabilities.isFlying = false
@@ -385,6 +399,7 @@ class Fly : Module() {
                     if (mc.gameSettings.keyBindSneak.isKeyDown) thePlayer.motionY -= vanillaSpeed
                     MovementUtils.strafe(vanillaSpeed)
                 }
+
                 "minesecure" -> {
                     thePlayer.capabilities.isFlying = false
                     if (!mc.gameSettings.keyBindSneak.isKeyDown) thePlayer.motionY = -0.01
@@ -411,11 +426,13 @@ class Fly : Module() {
                         mineSecureVClipTimer.reset()
                     }
                 }
+
                 "hac" -> {
                     thePlayer.motionX *= 0.8
                     thePlayer.motionZ *= 0.8
                     thePlayer.motionY = if (thePlayer.motionY <= -0.42) 0.42 else -0.42
                 }
+
                 "hawkeye" -> thePlayer.motionY = if (thePlayer.motionY <= -0.42) 0.42 else -0.42
                 "teleportrewinside" -> {
                     val vectorStart = Vec3(thePlayer.posX, thePlayer.posY, thePlayer.posZ)
@@ -439,6 +456,7 @@ class Fly : Module() {
                     )
                     thePlayer.motionY = 0.0
                 }
+
                 "minesucht" -> {
                     val posX = thePlayer.posX
                     val posY = thePlayer.posY
@@ -448,7 +466,7 @@ class Fly : Module() {
 
                     if (System.currentTimeMillis() - minesuchtTP > 99) {
                         val vec3: Vec3 = thePlayer.getPositionEyes(0.0f)
-                        val vec31: Vec3 = mc.thePlayer!!.getLook(0.0f)
+                        val vec31: Vec3 = (mc.thePlayer ?: return@run).getLook(0.0f)
                         val vec32: Vec3 = vec3.addVector(vec31.xCoord * 7, vec31.yCoord * 7, vec31.zCoord * 7)
                         if (thePlayer.fallDistance > 0.8) {
                             thePlayer.sendQueue.addToSendQueue(
@@ -456,7 +474,7 @@ class Fly : Module() {
                                     posX, posY + 50, posZ, false
                                 )
                             )
-                            mc.thePlayer!!.fall(100.0f, 100.0f)
+                            (mc.thePlayer ?: return@run).fall(100.0f, 100.0f)
                             thePlayer.fallDistance = 0.0f
                             thePlayer.sendQueue.addToSendQueue(
                                 C04PacketPlayerPosition(
@@ -498,27 +516,29 @@ class Fly : Module() {
                         )
                     }
                 }
+
                 "jetpack" -> if (mc.gameSettings.keyBindJump.isKeyDown) {
 //                    mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.FLAME.getParticleID(), thePlayer.posX, thePlayer.posY + 0.2, thePlayer.posZ, -thePlayer.motionX, -0.5, -thePlayer.motionZ)
                     thePlayer.motionY += 0.15
                     thePlayer.motionX *= 1.1
                     thePlayer.motionZ *= 1.1
                 }
+
                 "mineplex" -> if (thePlayer.inventory.getCurrentItem() == null) {
                     if (mc.gameSettings.keyBindJump.isKeyDown && mineplexTimer.hasTimePassed(100)) {
                         thePlayer.setPosition(thePlayer.posX, thePlayer.posY + 0.6, thePlayer.posZ)
                         mineplexTimer.reset()
                     }
-                    if (mc.thePlayer!!.isSneaking && mineplexTimer.hasTimePassed(100)) {
+                    if ((mc.thePlayer ?: return@run).isSneaking && mineplexTimer.hasTimePassed(100)) {
                         thePlayer.setPosition(thePlayer.posX, thePlayer.posY - 0.6, thePlayer.posZ)
                         mineplexTimer.reset()
                     }
-                    val blockPos = BlockPos(thePlayer.posX, mc.thePlayer!!.entityBoundingBox.minY - 1, thePlayer.posZ)
+                    val blockPos = BlockPos(thePlayer.posX, (mc.thePlayer ?: return@run).entityBoundingBox.minY - 1, thePlayer.posZ)
                     val vec: Vec3 = Vec3(blockPos).addVector(0.4, 0.4, 0.4)
                         .add(Vec3(EnumFacing.UP.directionVec))
                     mc.playerController.onPlayerRightClick(
                         thePlayer,
-                        mc.theWorld!!,
+                        mc.theWorld ?: return@run,
                         thePlayer.inventory.getCurrentItem(),
                         blockPos,
                         EnumFacing.UP,
@@ -531,6 +551,7 @@ class Fly : Module() {
                     state = false
                     ClientUtils.displayChatMessage("§8[§c§lMineplex-§a§lFly§8] §aSelect an empty slot to fly.")
                 }
+
                 "aac3.3.12" -> {
                     if (thePlayer.posY < -70) thePlayer.motionY = aacMotion.get().toDouble()
                     mc.timer.timerSpeed = 1f
@@ -539,6 +560,7 @@ class Fly : Module() {
                         mc.rightClickDelayTimer = 0
                     }
                 }
+
                 "aac3.3.12-glide" -> {
                     if (!thePlayer.onGround) aac3glideDelay++
                     if (aac3glideDelay == 2) mc.timer.timerSpeed = 1f
@@ -548,6 +570,7 @@ class Fly : Module() {
                         thePlayer.motionY = .015
                     }
                 }
+
                 "aac3.3.13" -> {
                     if (thePlayer.isDead) wasDead = true
                     if (wasDead || thePlayer.onGround) {
@@ -561,9 +584,10 @@ class Fly : Module() {
                         mc.rightClickDelayTimer = 0
                     }
                 }
+
                 "watchcat" -> {
                     MovementUtils.strafe(0.15f)
-                    mc.thePlayer!!.isSprinting = true
+                    (mc.thePlayer ?: return@run).isSprinting = true
 
                     if (thePlayer.posY < startY + 2) {
                         thePlayer.motionY = Math.random() * 0.5
@@ -572,6 +596,7 @@ class Fly : Module() {
 
                     if (startY > thePlayer.posY) MovementUtils.strafe(0f)
                 }
+
                 "spartan" -> {
                     thePlayer.motionY = 0.0
 
@@ -590,6 +615,7 @@ class Fly : Module() {
                         spartanTimer.reset()
                     }
                 }
+
                 "spartan2" -> {
                     MovementUtils.strafe(0.264f)
                     if (thePlayer.ticksExisted % 8 == 0) thePlayer.sendQueue.addToSendQueue(
@@ -598,6 +624,7 @@ class Fly : Module() {
                         )
                     )
                 }
+
                 "neruxvace" -> {
                     if (!thePlayer.onGround) aac3glideDelay++
                     if (aac3glideDelay >= neruxVaceTicks.get() && !thePlayer.onGround) {
@@ -605,6 +632,7 @@ class Fly : Module() {
                         thePlayer.motionY = .015
                     }
                 }
+
                 "hypixel" -> {
                     val boostDelay = hypixelBoostDelay.get()
                     if (hypixelBoost.get() && !flyTimer.hasTimePassed(boostDelay.toLong())) {
@@ -617,6 +645,7 @@ class Fly : Module() {
                         hypixelTimer.reset()
                     }
                 }
+
                 "freehypixel" -> {
                     if (freeHypixelTimer.hasTimePassed(10)) {
                         thePlayer.capabilities.isFlying = true
@@ -632,6 +661,7 @@ class Fly : Module() {
                             .toDouble()
                     ) freeHypixelTimer.update()
                 }
+
                 "bugspartan" -> {
                     thePlayer.capabilities.isFlying = false
                     thePlayer.motionY = 0.0
@@ -642,14 +672,15 @@ class Fly : Module() {
 
                     MovementUtils.strafe(vanillaSpeed)
                 }
+
                 "redesky" -> {
                     mc.timer.timerSpeed = 0.3f
                     redeskyHClip2(7.0)
-                    redeskyVClip2(10.0)
+                    redeskyVClip2()
                     redeskyVClip1(-0.5f)
-                    redeskyHClip1(2.0)
+                    redeskyHClip1()
                     redeskySpeed(1)
-                    mc.thePlayer!!.motionY = -0.01
+                    (mc.thePlayer ?: return@run).motionY = -0.01
                 }
             }
         }
@@ -662,16 +693,18 @@ class Fly : Module() {
                 EventState.PRE -> {
                     hypixelTimer.update()
                     if (hypixelTimer.hasTimePassed(2)) {
-                        mc.thePlayer!!.setPosition(
-                            mc.thePlayer!!.posX, mc.thePlayer!!.posY + 1.0E-5, mc.thePlayer!!.posZ
+                        (mc.thePlayer ?: return).setPosition(
+                            (mc.thePlayer ?: return).posX, (mc.thePlayer ?: return).posY + 1.0E-5, (mc.thePlayer
+                                ?: return).posZ
                         )
                         hypixelTimer.reset()
                     }
-                    if (!failedStart) mc.thePlayer!!.motionY = 0.0
+                    if (!failedStart) (mc.thePlayer ?: return).motionY = 0.0
                 }
+
                 EventState.POST -> {
-                    val xDist = mc.thePlayer!!.posX - mc.thePlayer!!.prevPosX
-                    val zDist = mc.thePlayer!!.posZ - mc.thePlayer!!.prevPosZ
+                    val xDist = (mc.thePlayer ?: return).posX - (mc.thePlayer ?: return).prevPosX
+                    val zDist = (mc.thePlayer ?: return).posZ - (mc.thePlayer ?: return).prevPosZ
                     lastDistance = sqrt(xDist * xDist + zDist * zDist)
                 }
             }
@@ -679,7 +712,7 @@ class Fly : Module() {
     }
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent?) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent?) {
         val mode = modeValue.get()
         if (!markValue.get() || mode.equals("Vanilla", ignoreCase = true) || mode.equals(
                 "SmoothVanilla", ignoreCase = true
@@ -687,9 +720,9 @@ class Fly : Module() {
         ) return
         val y = startY + 2.0
         RenderUtils.drawPlatform(
-            y, if (mc.thePlayer!!.entityBoundingBox.maxY < y) Color(0, 255, 0, 90) else Color(255, 0, 0, 90), 1.0
+            y, if ((mc.thePlayer ?: return).entityBoundingBox.maxY < y) Color(0, 255, 0, 90) else Color(255, 0, 0, 90), 1.0
         )
-        when (mode.toLowerCase()) {
+        when (mode.lowercase(Locale.getDefault())) {
             "aac1.9.10" -> RenderUtils.drawPlatform(startY + aacJump, Color(0, 0, 255, 90), 1.0)
             "aac3.3.12" -> RenderUtils.drawPlatform(-70.0, Color(0, 0, 255, 90), 1.0)
         }
@@ -708,7 +741,7 @@ class Fly : Module() {
                     "Rewinside", ignoreCase = true
                 ) || mode.equals(
                     "Mineplex", ignoreCase = true
-                ) && mc.thePlayer!!.inventory.getCurrentItem() == null
+                ) && (mc.thePlayer ?: return).inventory.getCurrentItem() == null
             ) packetPlayer.onGround = true
             if (mode.equals("Hypixel", ignoreCase = true) || mode.equals(
                     "BoostHypixel", ignoreCase = true
@@ -726,9 +759,9 @@ class Fly : Module() {
 
     @EventTarget
     fun onMove(event: MoveEvent) {
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "cubecraft" -> {
-                val yaw = Math.toRadians(mc.thePlayer!!.rotationYaw.toDouble())
+                val yaw = Math.toRadians((mc.thePlayer ?: return).rotationYaw.toDouble())
                 if (cubecraftTeleportTickTimer.hasTimePassed(2)) {
                     event.x = -sin(yaw) * 2.4
                     event.z = cos(yaw) * 2.4
@@ -738,6 +771,7 @@ class Fly : Module() {
                     event.z = cos(yaw) * 0.2
                 }
             }
+
             "boosthypixel" -> {
                 if (!MovementUtils.isMoving) {
                     event.x = 0.0
@@ -747,25 +781,30 @@ class Fly : Module() {
                 if (failedStart) return
 
                 val amplifier =
-                    1 + (if (mc.thePlayer!!.isPotionActive(Potion.moveSpeed)) 0.2 * (mc.thePlayer!!.getActivePotionEffect(Potion.moveSpeed)!!.amplifier + 1.0) else 0.0)
+                    1 + (if ((mc.thePlayer ?: return).isPotionActive(Potion.moveSpeed)) 0.2 * (((mc.thePlayer ?: return).getActivePotionEffect(
+                        Potion.moveSpeed
+                    ) ?: return).amplifier + 1.0) else 0.0)
 
                 val baseSpeed = 0.29 * amplifier
 
                 when (boostHypixelState) {
                     1 -> {
                         moveSpeed =
-                            (if (mc.thePlayer!!.isPotionActive(Potion.moveSpeed)) 1.56 else 2.034) * baseSpeed
+                            (if ((mc.thePlayer ?: return).isPotionActive(Potion.moveSpeed)) 1.56 else 2.034) * baseSpeed
                         boostHypixelState = 2
                     }
+
                     2 -> {
                         moveSpeed *= 2.16
                         boostHypixelState = 3
                     }
+
                     3 -> {
                         moveSpeed =
-                            lastDistance - (if (mc.thePlayer!!.ticksExisted % 2 == 0) 0.0103 else 0.0123) * (lastDistance - baseSpeed)
+                            lastDistance - (if ((mc.thePlayer ?: return).ticksExisted % 2 == 0) 0.0103 else 0.0123) * (lastDistance - baseSpeed)
                         boostHypixelState = 4
                     }
+
                     else -> moveSpeed = lastDistance - lastDistance / 159.8
                 }
 
@@ -776,9 +815,10 @@ class Fly : Module() {
                 event.x = -sin(yaw) * moveSpeed
                 event.z = cos(yaw) * moveSpeed
 
-                mc.thePlayer!!.motionX = event.x
-                mc.thePlayer!!.motionZ = event.z
+                (mc.thePlayer ?: return).motionX = event.x
+                (mc.thePlayer ?: return).motionZ = event.z
             }
+
             "freehypixel" -> if (!freeHypixelTimer.hasTimePassed(10)) event.zero()
         }
     }
@@ -793,13 +833,13 @@ class Fly : Module() {
                 "Rewinside", ignoreCase = true
             ) || mode.equals(
                 "Mineplex", ignoreCase = true
-            ) && mc.thePlayer!!.inventory.getCurrentItem() == null) && event.y < mc.thePlayer!!.posY
+            ) && (mc.thePlayer ?: return).inventory.getCurrentItem() == null) && event.y < (mc.thePlayer ?: return).posY
         ) event.boundingBox = AxisAlignedBB.fromBounds(
             event.x.toDouble(),
             event.y.toDouble(),
             event.z.toDouble(),
             event.x + 1.0,
-            mc.thePlayer!!.posY,
+            (mc.thePlayer ?: return).posY,
             event.z + 1.0
         )
     }
@@ -811,7 +851,7 @@ class Fly : Module() {
                 "BoostHypixel", ignoreCase = true
             ) || mode.equals("Rewinside", ignoreCase = true) || mode.equals(
                 "Mineplex", ignoreCase = true
-            ) && mc.thePlayer!!.inventory.getCurrentItem() == null
+            ) && (mc.thePlayer ?: return).inventory.getCurrentItem() == null
         ) e.cancelEvent()
     }
 
@@ -822,7 +862,7 @@ class Fly : Module() {
                 "BoostHypixel", ignoreCase = true
             ) || mode.equals("Rewinside", ignoreCase = true) || mode.equals(
                 "Mineplex", ignoreCase = true
-            ) && mc.thePlayer!!.inventory.getCurrentItem() == null
+            ) && (mc.thePlayer ?: return).inventory.getCurrentItem() == null
         ) e.stepHeight = 0f
     }
 
@@ -830,11 +870,11 @@ class Fly : Module() {
         if (!vanillaKickBypassValue.get() || !groundTimer.hasTimePassed(1000)) return
         val ground = calculateGround()
         run {
-            var posY = mc.thePlayer!!.posY
+            var posY = (mc.thePlayer ?: return@run).posY
             while (posY > ground) {
                 mc.netHandler.addToSendQueue(
                     C04PacketPlayerPosition(
-                        mc.thePlayer!!.posX, posY, mc.thePlayer!!.posZ, true
+                        (mc.thePlayer ?: return@run).posX, posY, (mc.thePlayer ?: return@run).posZ, true
                     )
                 )
                 if (posY - 8.0 < ground) break // Prevent next step
@@ -843,63 +883,64 @@ class Fly : Module() {
         }
         mc.netHandler.addToSendQueue(
             C04PacketPlayerPosition(
-                mc.thePlayer!!.posX, ground, mc.thePlayer!!.posZ, true
+                (mc.thePlayer ?: return).posX, ground, (mc.thePlayer ?: return).posZ, true
             )
         )
         var posY = ground
-        while (posY < mc.thePlayer!!.posY) {
+        while (posY < (mc.thePlayer ?: return).posY) {
             mc.netHandler.addToSendQueue(
                 C04PacketPlayerPosition(
-                    mc.thePlayer!!.posX, posY, mc.thePlayer!!.posZ, true
+                    (mc.thePlayer ?: return).posX, posY, (mc.thePlayer ?: return).posZ, true
                 )
             )
-            if (posY + 8.0 > mc.thePlayer!!.posY) break // Prevent next step
+            if (posY + 8.0 > (mc.thePlayer ?: return).posY) break // Prevent next step
             posY += 8.0
         }
         mc.netHandler.addToSendQueue(
             C04PacketPlayerPosition(
-                mc.thePlayer!!.posX, mc.thePlayer!!.posY, mc.thePlayer!!.posZ, true
+                (mc.thePlayer ?: return).posX, (mc.thePlayer ?: return).posY, (mc.thePlayer ?: return).posZ, true
             )
         )
         groundTimer.reset()
     }
 
     private fun redeskyVClip1(vertical: Float) {
-        mc.thePlayer!!.setPosition(mc.thePlayer!!.posX, mc.thePlayer!!.posY + vertical, mc.thePlayer!!.posZ)
+        (mc.thePlayer ?: return).setPosition((mc.thePlayer ?: return).posX, (mc.thePlayer
+            ?: return).posY + vertical, (mc.thePlayer ?: return).posZ)
     }
 
-    private fun redeskyHClip1(horizontal: Double) {
-        val playerYaw = Math.toRadians(mc.thePlayer!!.rotationYaw.toDouble())
-        mc.thePlayer!!.setPosition(
-            mc.thePlayer!!.posX + horizontal * -sin(playerYaw),
-            mc.thePlayer!!.posY,
-            mc.thePlayer!!.posZ + horizontal * cos(playerYaw)
+    private fun redeskyHClip1() {
+        val playerYaw = Math.toRadians((mc.thePlayer ?: return).rotationYaw.toDouble())
+        (mc.thePlayer ?: return).setPosition(
+            (mc.thePlayer ?: return).posX + 2.0 * -sin(playerYaw),
+            (mc.thePlayer ?: return).posY,
+            (mc.thePlayer ?: return).posZ + 2.0 * cos(playerYaw)
         )
     }
 
     private fun redeskyHClip2(horizontal: Double) {
-        val playerYaw = Math.toRadians(mc.thePlayer!!.rotationYaw.toDouble())
+        val playerYaw = Math.toRadians((mc.thePlayer ?: return).rotationYaw.toDouble())
         mc.netHandler.addToSendQueue(
             C04PacketPlayerPosition(
-                mc.thePlayer!!.posX + horizontal * -sin(
+                (mc.thePlayer ?: return).posX + horizontal * -sin(
                     playerYaw
-                ), mc.thePlayer!!.posY, mc.thePlayer!!.posZ + horizontal * cos(playerYaw), false
+                ), (mc.thePlayer ?: return).posY, (mc.thePlayer ?: return).posZ + horizontal * cos(playerYaw), false
             )
         )
     }
 
-    private fun redeskyVClip2(vertical: Double) {
+    private fun redeskyVClip2() {
         mc.netHandler.addToSendQueue(
             C04PacketPlayerPosition(
-                mc.thePlayer!!.posX, mc.thePlayer!!.posY + vertical, mc.thePlayer!!.posZ, false
+                (mc.thePlayer ?: return).posX, (mc.thePlayer ?: return).posY + 10.0, (mc.thePlayer ?: return).posZ, false
             )
         )
     }
 
     private fun redeskySpeed(speed: Int) {
-        val playerYaw = Math.toRadians(mc.thePlayer!!.rotationYaw.toDouble())
-        mc.thePlayer!!.motionX = speed * -sin(playerYaw)
-        mc.thePlayer!!.motionZ = speed * cos(playerYaw)
+        val playerYaw = Math.toRadians((mc.thePlayer ?: return).rotationYaw.toDouble())
+        (mc.thePlayer ?: return).motionX = speed * -sin(playerYaw)
+        (mc.thePlayer ?: return).motionZ = speed * cos(playerYaw)
     }
 
     // TODO: Make better and faster calculation lol

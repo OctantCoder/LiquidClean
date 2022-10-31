@@ -25,13 +25,17 @@ import net.minecraft.util.BlockPos
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-@ModuleInfo(name = "BlockOverlay", description = "Allows you to change the design of the block overlay.", category = ModuleCategory.RENDER)
+@ModuleInfo(
+    name = "BlockOverlay",
+    description = "Allows you to change the design of the block overlay.",
+    category = ModuleCategory.RENDER
+)
 class BlockOverlay : Module() {
     private val colorRedValue = IntegerValue("R", 68, 0, 255)
     private val colorGreenValue = IntegerValue("G", 117, 0, 255)
     private val colorBlueValue = IntegerValue("B", 255, 0, 255)
     private val colorRainbow = BoolValue("Rainbow", false)
-    val infoValue = BoolValue("Info", false)
+    val infoValue: BoolValue = BoolValue("Info", false)
 
     val currentBlock: BlockPos?
         get() {
@@ -50,8 +54,10 @@ class BlockOverlay : Module() {
         val block = mc.theWorld.getBlockState(blockPos).block
         val partialTicks = event.partialTicks
 
-        val color = if (colorRainbow.get()) rainbow(0.4F) else Color(colorRedValue.get(),
-                colorGreenValue.get(), colorBlueValue.get(), (0.4F * 255).toInt())
+        val color = if (colorRainbow.get()) rainbow(0.4F) else Color(
+            colorRedValue.get(),
+            colorGreenValue.get(), colorBlueValue.get(), (0.4F * 255).toInt()
+        )
 
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
@@ -82,7 +88,7 @@ class BlockOverlay : Module() {
     }
 
     @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    fun onRender2D(@Suppress("UNUSED_PARAMETER") event: Render2DEvent) {
         if (infoValue.get()) {
             val blockPos = currentBlock ?: return
             val block = getBlock(blockPos) ?: return
@@ -91,15 +97,21 @@ class BlockOverlay : Module() {
             val scaledResolution = ScaledResolution(mc)
 
             RenderUtils.drawBorderedRect(
-                    scaledResolution.scaledWidth / 2 - 2F,
-                    scaledResolution.scaledHeight / 2 + 5F,
-                    scaledResolution.scaledWidth / 2 + Fonts.font40.getStringWidth(info) + 2F,
-                    scaledResolution.scaledHeight / 2 + 16F,
-                    3F, Color.BLACK.rgb, Color.BLACK.rgb
+                scaledResolution.scaledWidth / 2 - 2F,
+                scaledResolution.scaledHeight / 2 + 5F,
+                scaledResolution.scaledWidth / 2 + Fonts.font40.getStringWidth(info) + 2F,
+                scaledResolution.scaledHeight / 2 + 16F,
+                3F, Color.BLACK.rgb, Color.BLACK.rgb
             )
 
             GlStateManager.resetColor()
-            Fonts.font40.drawString(info, scaledResolution.scaledWidth / 2f, scaledResolution.scaledHeight / 2f + 7f, Color.WHITE.rgb, false)
+            Fonts.font40.drawString(
+                info,
+                scaledResolution.scaledWidth / 2f,
+                scaledResolution.scaledHeight / 2f + 7f,
+                Color.WHITE.rgb,
+                false
+            )
         }
     }
 }

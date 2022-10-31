@@ -11,11 +11,15 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 
-@ModuleInfo(name = "LadderJump", description = "Boosts you up when touching a ladder.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "LadderJump",
+    description = "Boosts you up when touching a ladder.",
+    category = ModuleCategory.MOVEMENT
+)
 class LadderJump : Module() {
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
         val thePlayer = mc.thePlayer ?: return
 
         if (thePlayer.onGround) {
@@ -28,6 +32,6 @@ class LadderJump : Module() {
 
     companion object {
         @JvmField
-        var jumped = false
+        var jumped: Boolean = false
     }
 }

@@ -6,20 +6,11 @@
 package net.ccbluex.liquidbounce.utils.login
 
 import com.google.gson.JsonParser
-import com.mojang.authlib.Agent
-import com.mojang.authlib.exceptions.AuthenticationException
-import com.mojang.authlib.exceptions.AuthenticationUnavailableException
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService
-import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.SessionEvent
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.login.UserUtils.getUUID
 import net.minecraft.util.Session
-import java.net.Proxy
 import java.util.*
-
-fun me.liuli.elixir.compat.Session.intoMinecraftSession(): Session = Session(username, uuid, token, type)
 
 object LoginUtils : MinecraftInstance() {
 
@@ -33,7 +24,7 @@ object LoginUtils : MinecraftInstance() {
 
         val sessionObject = try {
             JsonParser().parse(decodedSessionData).asJsonObject
-        } catch (e: java.lang.Exception){
+        } catch (e: java.lang.Exception) {
             return LoginResult.FAILED_PARSE_TOKEN
         }
         val uuid = sessionObject.get("spr").asString

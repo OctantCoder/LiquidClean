@@ -29,14 +29,15 @@ public class TeleportHit extends Module {
         if (event.getEventState() != EventState.PRE)
             return;
 
-        final Entity facedEntity = RaycastUtils.raycastEntity(100D, raycastedEntity -> raycastedEntity instanceof EntityLivingBase);
+        final Entity facedEntity = RayCastUtils.rayCastEntity(100D, rayCastedEntity -> rayCastedEntity instanceof EntityLivingBase);
 
         EntityPlayerSP thePlayer = mc.thePlayer;
 
         if (thePlayer == null)
             return;
 
-        if(mc.gameSettings.keyBindAttack.isKeyDown() && EntityUtils.isSelected(facedEntity, true)) {
+        if (mc.gameSettings.keyBindAttack.isKeyDown() && EntityUtils.isSelected(facedEntity, true)) {
+            assert facedEntity != null;
             if (facedEntity.getDistanceSqToEntity(mc.thePlayer) >= 1D) targetEntity = (EntityLivingBase) facedEntity;
         }
 

@@ -77,7 +77,7 @@ public class MixinFontRenderer {
         }
     }
 
-    @ModifyVariable(method = "renderString", at = @At("HEAD"), require = 1, ordinal = 0)
+    @ModifyVariable(method = "renderString", at = @At("HEAD"), require = 1, ordinal = 0, argsOnly = true)
     private String renderString(final String string) {
         if (string == null)
             return null;
@@ -89,7 +89,7 @@ public class MixinFontRenderer {
         return textEvent.getText();
     }
 
-    @ModifyVariable(method = "getStringWidth", at = @At("HEAD"), require = 1, ordinal = 0)
+    @ModifyVariable(method = "getStringWidth", at = @At("HEAD"), require = 1, ordinal = 0, argsOnly = true)
     private String getStringWidth(final String string) {
         if (string == null)
             return null;

@@ -22,30 +22,31 @@ import java.util.List;
 public abstract class MixinEffectRenderer {
 
     @Shadow
-    protected abstract void updateEffectLayer(int layer);
+    private List<EntityParticleEmitter> particleEmitters;
 
     @Shadow
-    private List<EntityParticleEmitter> particleEmitters;
+    protected abstract void updateEffectLayer(int layer);
 
     /**
      * @author Mojang
      * @author Marco
+     * @reason For updating effects
      */
     @Overwrite
     public void updateEffects() {
         try {
-            for(int i = 0; i < 4; ++i)
+            for (int i = 0; i < 4; ++i)
                 this.updateEffectLayer(i);
 
-            for(final Iterator<EntityParticleEmitter> it = this.particleEmitters.iterator(); it.hasNext(); ) {
+            for (final Iterator<EntityParticleEmitter> it = this.particleEmitters.iterator(); it.hasNext(); ) {
                 final EntityParticleEmitter entityParticleEmitter = it.next();
 
                 entityParticleEmitter.onUpdate();
 
-                if(entityParticleEmitter.isDead)
+                if (entityParticleEmitter.isDead)
                     it.remove();
             }
-        }catch(final ConcurrentModificationException ignored) {
+        } catch (final ConcurrentModificationException ignored) {
         }
     }
 }

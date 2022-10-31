@@ -50,10 +50,10 @@ class BlocksTab : CreativeTabs("Special blocks") {
      *
      * @return tab name
      */
-    override fun getTranslatedTabLabel() = "Special blocks"
+    override fun getTranslatedTabLabel(): String = "Special blocks"
 
     /**
      * @return searchbar status
      */
-    override fun hasSearchBar() = true
+    override fun hasSearchBar(): Boolean = true
 }

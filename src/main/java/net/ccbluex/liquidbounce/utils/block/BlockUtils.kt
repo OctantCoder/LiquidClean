@@ -21,13 +21,13 @@ object BlockUtils : MinecraftInstance() {
      * Get block from [blockPos]
      */
     @JvmStatic
-    inline fun getBlock(blockPos: BlockPos): Block? = mc.theWorld?.getBlockState(blockPos)?.block
+    fun getBlock(blockPos: BlockPos): Block? = mc.theWorld?.getBlockState(blockPos)?.block
 
     /**
      * Get material from [blockPos]
      */
     @JvmStatic
-    inline fun getMaterial(blockPos: BlockPos): Material? {
+    fun getMaterial(blockPos: BlockPos): Material? {
         val state = getState(blockPos)
 
         return state?.block?.material
@@ -37,19 +37,19 @@ object BlockUtils : MinecraftInstance() {
      * Check [blockPos] is replaceable
      */
     @JvmStatic
-    inline fun isReplaceable(blockPos: BlockPos) = getMaterial(blockPos)?.isReplaceable ?: false
+    fun isReplaceable(blockPos: BlockPos): Boolean = getMaterial(blockPos)?.isReplaceable ?: false
 
     /**
      * Get state from [blockPos]
      */
     @JvmStatic
-    inline fun getState(blockPos: BlockPos): IBlockState? = mc.theWorld?.getBlockState(blockPos)
+    fun getState(blockPos: BlockPos): IBlockState? = mc.theWorld?.getBlockState(blockPos)
 
     /**
      * Check if [blockPos] is clickable
      */
     @JvmStatic
-    fun canBeClicked(blockPos: BlockPos) = getBlock(blockPos)?.canCollideCheck(getState(blockPos), false) ?: false &&
+    fun canBeClicked(blockPos: BlockPos): Boolean = getBlock(blockPos)?.canCollideCheck(getState(blockPos), false) ?: false &&
             mc.theWorld!!.worldBorder.contains(blockPos)
 
     /**
@@ -63,9 +63,11 @@ object BlockUtils : MinecraftInstance() {
      */
     @JvmStatic
     fun isFullBlock(blockPos: BlockPos): Boolean {
-        val axisAlignedBB = getBlock(blockPos)?.getCollisionBoundingBox(mc.theWorld!!, blockPos, getState(blockPos)
-                ?: return false)
+        val axisAlignedBB = getBlock(blockPos)?.getCollisionBoundingBox(
+            mc.theWorld!!, blockPos, getState(blockPos)
                 ?: return false
+        )
+            ?: return false
         return axisAlignedBB.maxX - axisAlignedBB.minX == 1.0 && axisAlignedBB.maxY - axisAlignedBB.minY == 1.0 && axisAlignedBB.maxZ - axisAlignedBB.minZ == 1.0
     }
 
@@ -73,8 +75,8 @@ object BlockUtils : MinecraftInstance() {
      * Get distance to center of [blockPos]
      */
     @JvmStatic
-    fun getCenterDistance(blockPos: BlockPos) =
-            mc.thePlayer!!.getDistance(blockPos.x + 0.5, blockPos.y + 0.5, blockPos.z + 0.5)
+    fun getCenterDistance(blockPos: BlockPos): Double =
+        mc.thePlayer!!.getDistance(blockPos.x + 0.5, blockPos.y + 0.5, blockPos.z + 0.5)
 
     /**
      * Search blocks around the player in a specific [radius]
@@ -88,8 +90,10 @@ object BlockUtils : MinecraftInstance() {
         for (x in radius downTo -radius + 1) {
             for (y in radius downTo -radius + 1) {
                 for (z in radius downTo -radius + 1) {
-                    val blockPos = BlockPos(thePlayer.posX.toInt() + x, thePlayer.posY.toInt() + y,
-                            thePlayer.posZ.toInt() + z)
+                    val blockPos = BlockPos(
+                        thePlayer.posX.toInt() + x, thePlayer.posY.toInt() + y,
+                        thePlayer.posZ.toInt() + z
+                    )
                     val block = getBlock(blockPos) ?: continue
 
                     blocks[blockPos] = block
@@ -138,7 +142,7 @@ object BlockUtils : MinecraftInstance() {
 
                 if (collide(block)) {
                     val boundingBox = getState(blockPos)?.let { block?.getCollisionBoundingBox(world, blockPos, it) }
-                            ?: continue
+                        ?: continue
 
                     if (thePlayer.entityBoundingBox.intersectsWith(boundingBox))
                         return true

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.render.shader;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import org.apache.commons.io.IOUtils;
@@ -23,24 +24,26 @@ public abstract class Shader extends MinecraftInstance {
         int vertexShaderID, fragmentShaderID;
 
         try {
-            final InputStream vertexStream = getClass().getResourceAsStream("/assets/minecraft/liquidbounce/shader/vertex.vert");
+            final InputStream vertexStream = getClass().getResourceAsStream("/assets/minecraft/" + LiquidBounce.CLIENT_NAME.toLowerCase() + "/shader/vertex.vert");
+            assert vertexStream != null;
             vertexShaderID = createShader(IOUtils.toString(vertexStream), ARBVertexShader.GL_VERTEX_SHADER_ARB);
             IOUtils.closeQuietly(vertexStream);
 
-            final InputStream fragmentStream = getClass().getResourceAsStream("/assets/minecraft/liquidbounce/shader/fragment/" + fragmentShader);
+            final InputStream fragmentStream = getClass().getResourceAsStream("/assets/minecraft/" + LiquidBounce.CLIENT_NAME.toLowerCase() + "/shader/fragment/" + fragmentShader);
+            assert fragmentStream != null;
             fragmentShaderID = createShader(IOUtils.toString(fragmentStream), ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
             IOUtils.closeQuietly(fragmentStream);
-        }catch(final Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return;
         }
 
-        if(vertexShaderID == 0 || fragmentShaderID == 0)
+        if (vertexShaderID == 0 || fragmentShaderID == 0)
             return;
 
         program = ARBShaderObjects.glCreateProgramObjectARB();
 
-        if(program == 0)
+        if (program == 0)
             return;
 
         ARBShaderObjects.glAttachObjectARB(program, vertexShaderID);
@@ -56,7 +59,7 @@ public abstract class Shader extends MinecraftInstance {
         GL11.glPushMatrix();
         GL20.glUseProgram(program);
 
-        if(uniformsMap == null) {
+        if (uniformsMap == null) {
             uniformsMap = new HashMap<>();
             setupUniforms();
         }
@@ -79,17 +82,17 @@ public abstract class Shader extends MinecraftInstance {
         try {
             shader = ARBShaderObjects.glCreateShaderObjectARB(shaderType);
 
-            if(shader == 0)
+            if (shader == 0)
                 return 0;
 
             ARBShaderObjects.glShaderSourceARB(shader, shaderSource);
             ARBShaderObjects.glCompileShaderARB(shader);
 
-            if(ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE)
+            if (ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE)
                 throw new RuntimeException("Error creating shader: " + getLogInfo(shader));
 
             return shader;
-        }catch(final Exception e) {
+        } catch (final Exception e) {
             ARBShaderObjects.glDeleteObjectARB(shader);
             throw e;
 

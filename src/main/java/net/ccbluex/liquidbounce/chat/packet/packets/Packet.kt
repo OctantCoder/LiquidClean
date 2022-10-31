@@ -6,6 +6,6 @@
 package net.ccbluex.liquidbounce.chat.packet.packets
 
 /**
- * A axochat packet
+ * An axoChat packet
  */
 interface Packet

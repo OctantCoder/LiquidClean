@@ -30,12 +30,12 @@ import java.io.IOException
 import kotlin.concurrent.thread
 
 class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: Boolean = false) : GuiScreen() {
-    
+
     private lateinit var addButton: GuiButton
     private lateinit var clipboardButton: GuiButton
     private lateinit var username: GuiTextField
     private lateinit var password: GuiTextField
-    
+
     private var status = "§7Idle..."
 
     override fun initGui() {
@@ -48,9 +48,17 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
         buttonList.add(GuiButton(3, width / 2 - 100, 143, "Login with Microsoft"))
 
         // Add and back button
-        buttonList.add(GuiButton(1, width / 2 - 100, height - 54, 98, 20, if (directLogin) "Login" else "Add").also { addButton = it })
+        buttonList.add(
+            GuiButton(
+                1,
+                width / 2 - 100,
+                height - 54,
+                98,
+                20,
+                if (directLogin) "Login" else "Add"
+            ).also { addButton = it })
         buttonList.add(GuiButton(0, width / 2 + 2, height - 54, 98, 20, "Back"))
-        
+
         username = GuiTextField(2, Fonts.font40, width / 2 - 100, 60, 200, 20)
         username.isFocused = true
         username.maxStringLength = Int.MAX_VALUE
@@ -106,7 +114,8 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
             }
 
             2 -> try {
-                val clipboardData = Toolkit.getDefaultToolkit().systemClipboard.getData(DataFlavor.stringFlavor) as String
+                val clipboardData =
+                    Toolkit.getDefaultToolkit().systemClipboard.getData(DataFlavor.stringFlavor) as String
 
                 val accountData = clipboardData.split(":".toRegex(), limit = 2)
                 if (!clipboardData.contains(":") || accountData.size != 2) {
@@ -165,10 +174,12 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
                 mc.displayGuiScreen(prevGui)
                 return
             }
+
             Keyboard.KEY_TAB -> {
                 TabUtils.tab(username, password)
                 return
             }
+
             Keyboard.KEY_RETURN -> {
                 actionPerformed(addButton)
                 return

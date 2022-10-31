@@ -22,9 +22,9 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
     private var _tag: String? = null
 
     /**
-     * Allows the user to access values by typing module.settings.<valuename>
+     * Allows the user to access values by typing module.settings.<valueName>
      */
-    val settings by lazy { _values }
+    val settings: LinkedHashMap<String, Value<*>> by lazy { _values }
 
     init {
         name = moduleObject.getMember("name") as String
@@ -66,60 +66,60 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
         events[eventName] = handler
     }
 
-    override fun onEnable() = callEvent("enable")
+    override fun onEnable(): Unit = callEvent("enable")
 
-    override fun onDisable() = callEvent("disable")
-
-    @EventTarget
-    fun onUpdate(updateEvent: UpdateEvent) = callEvent("update")
+    override fun onDisable(): Unit = callEvent("disable")
 
     @EventTarget
-    fun onMotion(motionEvent: MotionEvent) = callEvent("motion", motionEvent)
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") updateEvent: UpdateEvent): Unit = callEvent("update")
 
     @EventTarget
-    fun onRender2D(render2DEvent: Render2DEvent) = callEvent("render2D", render2DEvent)
+    fun onMotion(motionEvent: MotionEvent): Unit = callEvent("motion", motionEvent)
 
     @EventTarget
-    fun onRender3D(render3DEvent: Render3DEvent) = callEvent("render3D", render3DEvent)
+    fun onRender2D(render2DEvent: Render2DEvent): Unit = callEvent("render2D", render2DEvent)
 
     @EventTarget
-    fun onPacket(packetEvent: PacketEvent) = callEvent("packet", packetEvent)
+    fun onRender3D(render3DEvent: Render3DEvent): Unit = callEvent("render3D", render3DEvent)
 
     @EventTarget
-    fun onJump(jumpEvent: JumpEvent) = callEvent("jump", jumpEvent)
+    fun onPacket(packetEvent: PacketEvent): Unit = callEvent("packet", packetEvent)
 
     @EventTarget
-    fun onAttack(attackEvent: AttackEvent) = callEvent("attack", attackEvent)
+    fun onJump(jumpEvent: JumpEvent): Unit = callEvent("jump", jumpEvent)
 
     @EventTarget
-    fun onKey(keyEvent: KeyEvent) = callEvent("key", keyEvent)
+    fun onAttack(attackEvent: AttackEvent): Unit = callEvent("attack", attackEvent)
 
     @EventTarget
-    fun onMove(moveEvent: MoveEvent) = callEvent("move", moveEvent)
+    fun onKey(keyEvent: KeyEvent): Unit = callEvent("key", keyEvent)
 
     @EventTarget
-    fun onStep(stepEvent: StepEvent) = callEvent("step", stepEvent)
+    fun onMove(moveEvent: MoveEvent): Unit = callEvent("move", moveEvent)
 
     @EventTarget
-    fun onStepConfirm(stepConfirmEvent: StepConfirmEvent) = callEvent("stepConfirm")
+    fun onStep(stepEvent: StepEvent): Unit = callEvent("step", stepEvent)
 
     @EventTarget
-    fun onWorld(worldEvent: WorldEvent) = callEvent("world", worldEvent)
+    fun onStepConfirm(@Suppress("UNUSED_PARAMETER") stepConfirmEvent: StepConfirmEvent): Unit = callEvent("stepConfirm")
 
     @EventTarget
-    fun onSession(sessionEvent: SessionEvent) = callEvent("session")
+    fun onWorld(worldEvent: WorldEvent): Unit = callEvent("world", worldEvent)
 
     @EventTarget
-    fun onClickBlock(clickBlockEvent: ClickBlockEvent) = callEvent("clickBlock", clickBlockEvent)
+    fun onSession(@Suppress("UNUSED_PARAMETER") sessionEvent: SessionEvent): Unit = callEvent("session")
 
     @EventTarget
-    fun onStrafe(strafeEvent: StrafeEvent) = callEvent("strafe", strafeEvent)
+    fun onClickBlock(clickBlockEvent: ClickBlockEvent): Unit = callEvent("clickBlock", clickBlockEvent)
 
     @EventTarget
-    fun onSlowDown(slowDownEvent: SlowDownEvent) = callEvent("slowDown", slowDownEvent)
+    fun onStrafe(strafeEvent: StrafeEvent): Unit = callEvent("strafe", strafeEvent)
 
     @EventTarget
-    fun onShutdown(shutdownEvent: ClientShutdownEvent) = callEvent("shutdown")
+    fun onSlowDown(slowDownEvent: SlowDownEvent): Unit = callEvent("slowDown", slowDownEvent)
+
+    @EventTarget
+    fun onShutdown(@Suppress("UNUSED_PARAMETER") shutdownEvent: ClientShutdownEvent): Unit = callEvent("shutdown")
 
     /**
      * Calls the handler of a registered event.

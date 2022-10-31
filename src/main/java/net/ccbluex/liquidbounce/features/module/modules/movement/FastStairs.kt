@@ -18,7 +18,11 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockStairs
 import net.minecraft.util.BlockPos
 
-@ModuleInfo(name = "FastStairs", description = "Allows you to climb up stairs faster.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "FastStairs",
+    description = "Allows you to climb up stairs faster.",
+    category = ModuleCategory.MOVEMENT
+)
 class FastStairs : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Step", "NCP", "AAC3.1.0", "AAC3.3.6", "AAC3.3.13"), "NCP")
@@ -29,10 +33,10 @@ class FastStairs : Module() {
     private var walkingDown = false
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val thePlayer = mc.thePlayer ?: return
 
-        if (!MovementUtils.isMoving || LiquidBounce.moduleManager[Speed::class.java]!!.state)
+        if (!MovementUtils.isMoving || LiquidBounce.moduleManager[Speed::class.java].state)
             return
 
         if (thePlayer.fallDistance > 0 && !walkingDown)
@@ -66,6 +70,7 @@ class FastStairs : Module() {
                 when {
                     mode.equals("NCP", ignoreCase = true) ->
                         thePlayer.motionY = -1.0
+
                     mode.equals("AAC3.3.13", ignoreCase = true) ->
                         thePlayer.motionY -= 0.014
                 }

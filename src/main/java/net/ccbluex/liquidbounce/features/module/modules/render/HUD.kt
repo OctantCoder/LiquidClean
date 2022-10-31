@@ -14,16 +14,22 @@ import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.util.ResourceLocation
+import java.util.*
 
-@ModuleInfo(name = "HUD", description = "Toggles visibility of the HUD.", category = ModuleCategory.RENDER, array = false)
+@ModuleInfo(
+    name = "HUD",
+    description = "Toggles visibility of the HUD.",
+    category = ModuleCategory.RENDER,
+    array = false
+)
 class HUD : Module() {
-    val blackHotbarValue = BoolValue("BlackHotbar", true)
-    val inventoryParticle = BoolValue("InventoryParticle", false)
+    val blackHotbarValue: BoolValue = BoolValue("BlackHotbar", true)
+    val inventoryParticle: BoolValue = BoolValue("InventoryParticle", false)
     private val blurValue = BoolValue("Blur", false)
-    val fontChatValue = BoolValue("FontChat", false)
+    val fontChatValue: BoolValue = BoolValue("FontChat", false)
 
     @EventTarget
-    fun onRender2D(event: Render2DEvent?) {
+    fun onRender2D(@Suppress("UNUSED_PARAMETER") event: Render2DEvent?) {
         if (mc.currentScreen is GuiHudDesigner)
             return
 
@@ -31,7 +37,7 @@ class HUD : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
         LiquidBounce.hud.update()
     }
 
@@ -43,11 +49,13 @@ class HUD : Module() {
     @EventTarget(ignoreCondition = true)
     fun onScreen(event: ScreenEvent) {
         if (mc.theWorld == null || mc.thePlayer == null) return
-        if (state && blurValue.get() && !mc.entityRenderer.isShaderActive() && event.guiScreen != null &&
-                !(event.guiScreen is GuiChat || event.guiScreen is GuiHudDesigner)) mc.entityRenderer.loadShader(
-            ResourceLocation(LiquidBounce.CLIENT_NAME.toLowerCase() + "/blur.json")
+        if (state && blurValue.get() && !mc.entityRenderer.isShaderActive && event.guiScreen != null &&
+            !(event.guiScreen is GuiChat || event.guiScreen is GuiHudDesigner)
+        ) mc.entityRenderer.loadShader(
+            ResourceLocation(LiquidBounce.CLIENT_NAME.lowercase(Locale.getDefault()) + "/blur.json")
         ) else if (mc.entityRenderer.shaderGroup != null &&
-                mc.entityRenderer.shaderGroup!!.shaderGroupName.contains("liquidbounce/blur.json")) mc.entityRenderer.stopUseShader()
+            (mc.entityRenderer.shaderGroup ?: return).shaderGroupName.contains("${LiquidBounce.CLIENT_NAME.lowercase()}/blur.json")
+        ) mc.entityRenderer.stopUseShader()
     }
 
     init {

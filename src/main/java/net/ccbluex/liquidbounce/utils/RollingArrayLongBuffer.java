@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils;
 
 /**
- * A buffer which stores it's contents in an array.
+ * A buffer which stores its contents in an array.
  * You can only add contents to it. If you add more elements than it can hold it will overflow and
  * overwrite the first element. Made to improve performance for time measurements.
  *
@@ -18,13 +18,6 @@ public class RollingArrayLongBuffer {
 
     public RollingArrayLongBuffer(int length) {
         this.contents = new long[length];
-    }
-
-    /**
-     * @return The contents of the buffer
-     */
-    public long[] getContents() {
-        return contents;
     }
 
     /**

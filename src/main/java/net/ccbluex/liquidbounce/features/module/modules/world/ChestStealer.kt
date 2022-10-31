@@ -27,7 +27,11 @@ import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.ResourceLocation
 import kotlin.random.Random
 
-@ModuleInfo(name = "ChestStealer", description = "Automatically steals all items from a chest.", category = ModuleCategory.WORLD)
+@ModuleInfo(
+    name = "ChestStealer",
+    description = "Automatically steals all items from a chest.",
+    category = ModuleCategory.WORLD
+)
 class ChestStealer : Module() {
 
     /**
@@ -93,8 +97,8 @@ class ChestStealer : Module() {
     private var contentReceived = 0
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent?) {
-        val thePlayer = mc.thePlayer!!
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent?) {
+        val thePlayer = mc.thePlayer ?: return
 
         val screen = mc.currentScreen ?: return
 
@@ -111,14 +115,15 @@ class ChestStealer : Module() {
         }
 
 
-
         // No Compass
         if (noCompassValue.get() && thePlayer.inventory.getCurrentItem()?.item?.unlocalizedName == "item.compass")
             return
 
         // Chest title
-        if (chestTitleValue.get() && (screen.lowerChestInventory == null || !screen.lowerChestInventory!!.name.contains(
-                ItemStack(Item.itemRegistry.getObject(ResourceLocation("minecraft:chest"))!!).displayName)))
+        if (chestTitleValue.get() && (screen.lowerChestInventory == null || !(screen.lowerChestInventory ?: return).name.contains(
+                ItemStack(Item.itemRegistry.getObject(ResourceLocation("minecraft:chest")) ?: return).displayName
+            ))
+        )
             return
 
         // inventory cleaner
@@ -134,11 +139,15 @@ class ChestStealer : Module() {
                     val items = mutableListOf<Slot>()
 
                     for (slotIndex in 0 until screen.inventoryRows * 9) {
-                        val slot = screen.inventorySlots!!.getSlot(slotIndex)
+                        val slot = (screen.inventorySlots ?: return).getSlot(slotIndex)
 
                         val stack = slot.stack
 
-                        if (stack != null && (!onlyItemsValue.get() || stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(stack, -1)))
+                        if (stack != null && (!onlyItemsValue.get() || stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(
+                                stack,
+                                -1
+                            ))
+                        )
                             items.add(slot)
                     }
 
@@ -152,7 +161,7 @@ class ChestStealer : Module() {
 
             // Non randomized
             for (slotIndex in 0 until screen.inventoryRows * 9) {
-                val slot = screen.inventorySlots!!.getSlot(slotIndex)
+                val slot = (screen.inventorySlots ?: return).getSlot(slotIndex)
 
                 val stack = slot.stack
 
@@ -160,14 +169,17 @@ class ChestStealer : Module() {
                     move(screen, slot)
                 }
             }
-        } else if (autoCloseValue.get() && screen.inventorySlots!!.windowId == contentReceived && autoCloseTimer.hasTimePassed(nextCloseDelay)) {
+        } else if (autoCloseValue.get() && (screen.inventorySlots ?: return).windowId == contentReceived && autoCloseTimer.hasTimePassed(
+                nextCloseDelay
+            )
+        ) {
             thePlayer.closeScreen()
             nextCloseDelay = TimeUtils.randomDelay(autoCloseMinDelayValue.get(), autoCloseMaxDelayValue.get())
         }
     }
 
     @EventTarget
-    private fun onPacket(event: PacketEvent) {
+    fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
         if (packet is S30PacketWindowItems) {
@@ -175,8 +187,11 @@ class ChestStealer : Module() {
         }
     }
 
-    private inline fun shouldTake(stack: ItemStack?, inventoryCleaner: InventoryCleaner): Boolean {
-        return stack != null && !ItemUtils.isStackEmpty(stack) && (!onlyItemsValue.get() || stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(stack, -1))
+    private fun shouldTake(stack: ItemStack?, inventoryCleaner: InventoryCleaner): Boolean {
+        return stack != null && !ItemUtils.isStackEmpty(stack) && (!onlyItemsValue.get() || stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(
+            stack,
+            -1
+        ))
     }
 
     private fun move(screen: GuiChest, slot: Slot) {

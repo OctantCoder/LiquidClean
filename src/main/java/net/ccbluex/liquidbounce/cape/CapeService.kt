@@ -43,9 +43,8 @@ object CapeService : Listenable, MinecraftInstance() {
      * I would prefer to use CLIENT_API but due to Cloudflare causing issues with SSL and their browser integrity check,
      * we have a separate domain.
      */
-    private const val CAPE_API = "http://capes.liquidbounce.net/api/v1/cape"
+    private const val CAPE_API = "https://capes.liquidbounce.net/api/v1/cape"
 
-    private const val CAPE_UUID_DL_BASE_URL: String = "$CAPE_API/uuid/%s"
     private const val CAPE_NAME_DL_BASE_URL: String = "$CAPE_API/name/%s"
 
     private const val REFRESH_DELAY: Long = 60000L // Every minute should update
@@ -80,8 +79,9 @@ object CapeService : Listenable, MinecraftInstance() {
                             // 1. is UUID 2. is name of cape
                             val (uuid, name) = Pair(arrayInArray.get(0).asString, arrayInArray.get(1).asString)
 
-                            val dashedUuid = Regex("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)")
-                                .replace(uuid, "$1-$2-$3-$4-$5")
+                            val dashedUuid =
+                                Regex("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)")
+                                    .replace(uuid, "$1-$2-$3-$4-$5")
                             CapeCarrier(UUID.fromString(dashedUuid), name)
                         }
 
@@ -122,10 +122,11 @@ object CapeService : Listenable, MinecraftInstance() {
      * We want to immediately update the owner of the cape and refresh the cape carriers
      */
     @EventTarget
-    fun handleNewSession(sessionEvent: SessionEvent) {
+    fun handleNewSession(@Suppress("UNUSED_PARAMETER") sessionEvent: SessionEvent) {
         // Check if donator cape is actually enabled and has a transfer code, also make sure the account used is premium.
         if (!GuiDonatorCape.capeEnabled || GuiDonatorCape.transferCode.isEmpty()
-            || !UserUtils.isValidTokenOffline(mc.session.token))
+            || !UserUtils.isValidTokenOffline(mc.session.token)
+        )
             return
 
         thread(name = "CapeUpdate") {
@@ -138,7 +139,7 @@ object CapeService : Listenable, MinecraftInstance() {
                 BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"),
                 BasicHeader(HttpHeaders.AUTHORIZATION, GuiDonatorCape.transferCode)
             )
-            val request = HttpPatch("http://capes.liquidbounce.net/api/v1/cape/self")
+            val request = HttpPatch("https://capes.liquidbounce.net/api/v1/cape/self")
             request.setHeaders(headers)
 
             val body = JSONObject()
@@ -149,7 +150,7 @@ object CapeService : Listenable, MinecraftInstance() {
             val statusCode = response.statusLine.statusCode
 
             ClientUtils.getLogger().info(
-                if(statusCode == HttpStatus.SC_NO_CONTENT) {
+                if (statusCode == HttpStatus.SC_NO_CONTENT) {
                     "[Donator Cape] Successfully transferred cape to $uuid ($username)"
                 } else {
                     "[Donator Cape] Failed to transfer cape ($statusCode)"
@@ -161,7 +162,7 @@ object CapeService : Listenable, MinecraftInstance() {
         }
     }
 
-    override fun handleEvents() = true
+    override fun handleEvents(): Boolean = true
 
 }
 

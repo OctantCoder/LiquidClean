@@ -22,7 +22,7 @@ class Zoot : Module() {
     private val noAirValue = BoolValue("NoAir", false)
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         if (noAirValue.get() && !thePlayer.onGround)
@@ -31,7 +31,7 @@ class Zoot : Module() {
         if (badEffectsValue.get()) {
             val effect = thePlayer.activePotionEffects.maxByOrNull { it.duration }
 
-            if (effect != null) {
+            if (effect != null && hasBadEffect()) {
                 repeat(effect.duration / 20) {
                     mc.netHandler.addToSendQueue(C03PacketPlayer(thePlayer.onGround))
                 }
@@ -47,9 +47,12 @@ class Zoot : Module() {
     }
 
     // TODO: Check current potion
-    private fun hasBadEffect() = mc.thePlayer.isPotionActive(Potion.hunger) || mc.thePlayer.isPotionActive(Potion.moveSlowdown) ||
-            mc.thePlayer.isPotionActive(Potion.digSlowdown) || mc.thePlayer.isPotionActive(Potion.harm) ||
-            mc.thePlayer.isPotionActive(Potion.confusion) || mc.thePlayer.isPotionActive(Potion.blindness) ||
-            mc.thePlayer.isPotionActive(Potion.weakness) || mc.thePlayer.isPotionActive(Potion.wither) || mc.thePlayer.isPotionActive(Potion.poison)
+    private fun hasBadEffect() =
+        mc.thePlayer.isPotionActive(Potion.hunger) || mc.thePlayer.isPotionActive(Potion.moveSlowdown) ||
+                mc.thePlayer.isPotionActive(Potion.digSlowdown) || mc.thePlayer.isPotionActive(Potion.harm) ||
+                mc.thePlayer.isPotionActive(Potion.confusion) || mc.thePlayer.isPotionActive(Potion.blindness) ||
+                mc.thePlayer.isPotionActive(Potion.weakness) || mc.thePlayer.isPotionActive(Potion.wither) || mc.thePlayer.isPotionActive(
+            Potion.poison
+        )
 
 }

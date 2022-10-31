@@ -20,6 +20,7 @@ import net.minecraft.item.ItemBucketMilk
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemPotion
 import net.minecraft.network.play.client.C03PacketPlayer
+import java.util.*
 
 @ModuleInfo(name = "FastUse", description = "Allows you to use items faster.", category = ModuleCategory.PLAYER)
 class FastUse : Module() {
@@ -36,7 +37,7 @@ class FastUse : Module() {
     private var usedTimer = false
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         if (usedTimer) {
@@ -49,10 +50,10 @@ class FastUse : Module() {
             return
         }
 
-        val usingItem = thePlayer.itemInUse!!.item
+        val usingItem = (thePlayer.itemInUse ?: return).item
 
         if (usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion) {
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase(Locale.getDefault())) {
                 "instant" -> {
                     repeat(35) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(thePlayer.onGround))
@@ -73,7 +74,7 @@ class FastUse : Module() {
                     mc.timer.timerSpeed = 1.22F
                     usedTimer = true
                 }
-                
+
                 "custom" -> {
                     mc.timer.timerSpeed = customTimer.get()
                     usedTimer = true
@@ -100,7 +101,7 @@ class FastUse : Module() {
         if (!state || !thePlayer.isUsingItem || !noMoveValue.get())
             return
 
-        val usingItem = thePlayer.itemInUse!!.item
+        val usingItem = (thePlayer.itemInUse ?: return).item
 
         if ((usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion))
             event.zero()
@@ -113,6 +114,6 @@ class FastUse : Module() {
         }
     }
 
-    override val tag: String?
+    override val tag: String
         get() = modeValue.get()
 }

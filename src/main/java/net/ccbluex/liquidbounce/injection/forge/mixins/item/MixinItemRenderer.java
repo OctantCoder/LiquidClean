@@ -43,6 +43,8 @@ public abstract class MixinItemRenderer {
     @Shadow
     @Final
     private Minecraft mc;
+    @Shadow
+    private ItemStack itemToRender;
 
     @Shadow
     protected abstract void rotateArroundXAndY(float angle, float angleY);
@@ -52,9 +54,6 @@ public abstract class MixinItemRenderer {
 
     @Shadow
     protected abstract void rotateWithPlayerRotations(EntityPlayerSP entityplayerspIn, float partialTicks);
-
-    @Shadow
-    private ItemStack itemToRender;
 
     @Shadow
     protected abstract void renderItemMap(AbstractClientPlayer clientPlayer, float pitch, float equipmentProgress, float swingProgress);
@@ -82,6 +81,7 @@ public abstract class MixinItemRenderer {
 
     /**
      * @author CCBlueX
+     * @reason For rendering item in first person
      */
     @Overwrite
     public void renderItemInFirstPerson(float partialTicks) {
@@ -96,15 +96,15 @@ public abstract class MixinItemRenderer {
         GlStateManager.enableRescaleNormal();
         GlStateManager.pushMatrix();
 
-        if(this.itemToRender != null) {
+        if (this.itemToRender != null) {
             final KillAura killAura = (KillAura) LiquidBounce.moduleManager.getModule(KillAura.class);
 
-            if(this.itemToRender.getItem() instanceof net.minecraft.item.ItemMap) {
+            if (this.itemToRender.getItem() instanceof net.minecraft.item.ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
             } else if (abstractclientplayer.getItemInUseCount() > 0 || (itemToRender.getItem() instanceof ItemSword && killAura.getBlockingStatus())) {
                 EnumAction enumaction = killAura.getBlockingStatus() ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
 
-                switch(enumaction) {
+                switch (enumaction) {
                     case NONE:
                         this.transformFirstPersonItem(f, 0.0F);
                         break;
@@ -122,14 +122,14 @@ public abstract class MixinItemRenderer {
                         this.transformFirstPersonItem(f, f1);
                         this.doBowTransformations(partialTicks, abstractclientplayer);
                 }
-            }else{
+            } else {
                 if (!LiquidBounce.moduleManager.getModule(SwingAnimation.class).getState())
                     this.doItemUsedTransformations(f1);
                 this.transformFirstPersonItem(f, f1);
             }
 
             this.renderItem(abstractclientplayer, this.itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);
-        }else if(!abstractclientplayer.isInvisible()) {
+        } else if (!abstractclientplayer.isInvisible()) {
             this.renderPlayerArm(abstractclientplayer, f, f1);
         }
 
@@ -142,7 +142,7 @@ public abstract class MixinItemRenderer {
     private void renderFireInFirstPerson(final CallbackInfo callbackInfo) {
         final AntiBlind antiBlind = (AntiBlind) LiquidBounce.moduleManager.getModule(AntiBlind.class);
 
-        if(antiBlind.getState() && antiBlind.getFireEffect().get()) {
+        if (antiBlind.getState() && antiBlind.getFireEffect().get()) {
             //vanilla's method
             GlStateManager.color(1.0F, 1.0F, 1.0F, 0.9F);
             GlStateManager.depthFunc(519);

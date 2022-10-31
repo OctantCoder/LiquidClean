@@ -53,7 +53,7 @@ public final class PathUtils extends MinecraftInstance {
         final double dY = tpY - mc.thePlayer.posY;
         final double dZ = tpZ - mc.thePlayer.posZ;
 
-        for(double d = 1D; d <= steps; ++d) {
+        for (double d = 1D; d <= steps; ++d) {
             positions.add(new Vector3d(mc.thePlayer.posX + (dX * d) / steps, mc.thePlayer.posY + (dY * d) / steps, mc.thePlayer.posZ + (dZ * d) / steps));
         }
 

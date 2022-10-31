@@ -22,7 +22,7 @@ import kotlin.concurrent.thread
 
 class ClientRichPresence : MinecraftInstance() {
 
-    var showRichPresenceValue = true
+    var showRichPresenceValue: Boolean = true
 
     // IPC Client
     private var ipcClient: IPCClient? = null
@@ -93,14 +93,17 @@ class ClientRichPresence : MinecraftInstance() {
 
         // Check assets contains logo and set logo
         if (assets.containsKey("logo"))
-            builder.setLargeImage(assets["logo"], "MC ${LiquidBounce.MINECRAFT_VERSION} - ${LiquidBounce.CLIENT_NAME} ${LiquidBounce.CLIENT_VERSION}")
+            builder.setLargeImage(
+                assets["logo"],
+                "MC ${LiquidBounce.MINECRAFT_VERSION} - ${LiquidBounce.CLIENT_NAME} ${LiquidBounce.CLIENT_VERSION}"
+            )
 
-        // Check user is ingame
+        // Check user is in game
         if (mc.thePlayer != null) {
             val serverData = mc.currentServerData
 
             // Set display infos
-            builder.setDetails("Server: ${if (mc.isIntegratedServerRunning || serverData == null) "Singleplayer" else serverData.serverIP}")
+            builder.setDetails("Server: ${if (mc.isIntegratedServerRunning || serverData == null) "SinglePlayer" else serverData.serverIP}")
             builder.setState("Enabled ${LiquidBounce.moduleManager.modules.count { it.state }} of ${LiquidBounce.moduleManager.modules.size} modules")
         }
 

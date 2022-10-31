@@ -114,7 +114,7 @@ class Image : Element() {
         return this
     }
 
-    fun setImage(image: File): Image {
+    private fun setImage(image: File): Image {
         try {
             setImage(Base64.getEncoder().encodeToString(Files.readAllBytes(image.toPath())))
         } catch (e: Exception) {

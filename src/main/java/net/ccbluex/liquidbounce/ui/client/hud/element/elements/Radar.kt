@@ -65,7 +65,7 @@ class Radar(x: Double = 5.0, y: Double = 130.0) : Element(x, y) {
     private var fovMarkerVertexBuffer: VertexBuffer? = null
     private var lastFov = 0f
 
-    override fun drawElement(): Border? {
+    override fun drawElement(): Border {
         MiniMapRegister.updateChunks()
 
         val fovAngle = fovAngleValue.get()
@@ -83,8 +83,12 @@ class Radar(x: Double = 5.0, y: Double = 130.0) : Element(x, y) {
         val size = sizeValue.get()
 
         if (!minimapValue.get()) {
-            RenderUtils.drawRect(0F, 0F, size, size, Color(backgroundRedValue.get(), backgroundGreenValue.get(),
-                    backgroundBlueValue.get(), backgroundAlphaValue.get()).rgb)
+            RenderUtils.drawRect(
+                0F, 0F, size, size, Color(
+                    backgroundRedValue.get(), backgroundGreenValue.get(),
+                    backgroundBlueValue.get(), backgroundAlphaValue.get()
+                ).rgb
+            )
         }
 
         val viewDistance = viewDistanceValue.get() * 16.0F
@@ -118,7 +122,8 @@ class Radar(x: Double = 5.0, y: Double = 130.0) : Element(x, y) {
 
             for (x in -chunksToRender..chunksToRender) {
                 for (z in -chunksToRender..chunksToRender) {
-                    val currChunk = MiniMapRegister.getChunkTextureAt(floor(currX).toInt() + x, floor(currZ).toInt() + z)
+                    val currChunk =
+                        MiniMapRegister.getChunkTextureAt(floor(currX).toInt() + x, floor(currZ).toInt() + z)
 
                     if (currChunk != null) {
                         val sc = chunkSizeOnScreen.toDouble()
@@ -176,8 +181,10 @@ class Radar(x: Double = 5.0, y: Double = 130.0) : Element(x, y) {
 
         for (entity in mc.theWorld!!.loadedEntityList) {
             if (entity != mc.thePlayer && EntityUtils.isSelected(entity, false)) {
-                val positionRelativeToPlayer = Vector2f((renderViewEntity.posX - entity.posX).toFloat(),
-                        (renderViewEntity.posZ - entity.posZ).toFloat())
+                val positionRelativeToPlayer = Vector2f(
+                    (renderViewEntity.posX - entity.posX).toFloat(),
+                    (renderViewEntity.posZ - entity.posZ).toFloat()
+                )
 
                 if (maxDisplayableDistanceSquare < positionRelativeToPlayer.lengthSquared())
                     continue
@@ -187,8 +194,10 @@ class Radar(x: Double = 5.0, y: Double = 130.0) : Element(x, y) {
                 if (transform) {
                     glPushMatrix()
 
-                    glTranslatef((positionRelativeToPlayer.x / viewDistance) * size,
-                            (positionRelativeToPlayer.y / viewDistance) * size, 0f)
+                    glTranslatef(
+                        (positionRelativeToPlayer.x / viewDistance) * size,
+                        (positionRelativeToPlayer.y / viewDistance) * size, 0f
+                    )
                     glRotatef(entity.rotationYaw, 0f, 0f, 1f)
                 }
 
@@ -234,9 +243,15 @@ class Radar(x: Double = 5.0, y: Double = 130.0) : Element(x, y) {
                 } else {
                     val color = (LiquidBounce.moduleManager[ESP::class.java] as ESP).getColor(entity)
 
-                    worldRenderer.pos(((positionRelativeToPlayer.x / viewDistance) * size).toDouble(), ((positionRelativeToPlayer.y / viewDistance) * size).toDouble(), 0.0)
-                            .color(color.red / 255.0f, color.green / 255.0f,
-                                    color.blue / 255.0f, 1.0f).endVertex()
+                    worldRenderer.pos(
+                        ((positionRelativeToPlayer.x / viewDistance) * size).toDouble(),
+                        ((positionRelativeToPlayer.y / viewDistance) * size).toDouble(),
+                        0.0
+                    )
+                        .color(
+                            color.red / 255.0f, color.green / 255.0f,
+                            color.blue / 255.0f, 1.0f
+                        ).endVertex()
                 }
 
                 if (transform) {
@@ -263,17 +278,30 @@ class Radar(x: Double = 5.0, y: Double = 130.0) : Element(x, y) {
 
         glPopMatrix()
 
-        RainbowShader.begin(borderRainbowValue.get(), if (rainbowXValue.get() == 0.0F) 0.0F else 1.0F / rainbowXValue.get(),
-                if (rainbowYValue.get() == 0.0F) 0.0F else 1.0F / rainbowYValue.get(), System.currentTimeMillis() % 10000 / 10000F).use {
-            RenderUtils.drawBorder(0F, 0F, size, size, borderStrengthValue.get(), Color(borderRedValue.get(),
-                    borderGreenValue.get(), borderBlueValue.get(), borderAlphaValue.get()).rgb)
+        RainbowShader.begin(
+            borderRainbowValue.get(),
+            if (rainbowXValue.get() == 0.0F) 0.0F else 1.0F / rainbowXValue.get(),
+            if (rainbowYValue.get() == 0.0F) 0.0F else 1.0F / rainbowYValue.get(),
+            System.currentTimeMillis() % 10000 / 10000F
+        ).use {
+            RenderUtils.drawBorder(
+                0F, 0F, size, size, borderStrengthValue.get(), Color(
+                    borderRedValue.get(),
+                    borderGreenValue.get(), borderBlueValue.get(), borderAlphaValue.get()
+                ).rgb
+            )
 
             glEnable(GL_BLEND)
             glDisable(GL_TEXTURE_2D)
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
             glEnable(GL_LINE_SMOOTH)
 
-            RenderUtils.glColor(borderRedValue.get(), borderGreenValue.get(), borderBlueValue.get(), borderAlphaValue.get())
+            RenderUtils.glColor(
+                borderRedValue.get(),
+                borderGreenValue.get(),
+                borderBlueValue.get(),
+                borderAlphaValue.get()
+            )
             glLineWidth(borderStrengthValue.get())
 
             glBegin(GL_LINES)

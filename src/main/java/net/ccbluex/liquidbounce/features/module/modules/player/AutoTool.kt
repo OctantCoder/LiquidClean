@@ -12,7 +12,11 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.util.BlockPos
 
-@ModuleInfo(name = "AutoTool", description = "Automatically selects the best tool in your inventory to mine a block.", category = ModuleCategory.PLAYER)
+@ModuleInfo(
+    name = "AutoTool",
+    description = "Automatically selects the best tool in your inventory to mine a block.",
+    category = ModuleCategory.PLAYER
+)
 class AutoTool : Module() {
 
     @EventTarget
@@ -24,10 +28,10 @@ class AutoTool : Module() {
         var bestSpeed = 1F
         var bestSlot = -1
 
-        val blockState = mc.theWorld!!.getBlockState(blockPos)
+        val blockState = (mc.theWorld ?: return).getBlockState(blockPos)
 
         for (i in 0..8) {
-            val item = mc.thePlayer!!.inventory.getStackInSlot(i) ?: continue
+            val item = (mc.thePlayer ?: return).inventory.getStackInSlot(i) ?: continue
             val speed = item.getStrVsBlock(blockState.block)
 
             if (speed > bestSpeed) {
@@ -37,7 +41,7 @@ class AutoTool : Module() {
         }
 
         if (bestSlot != -1)
-            mc.thePlayer!!.inventory.currentItem = bestSlot
+            (mc.thePlayer ?: return).inventory.currentItem = bestSlot
     }
 
 }

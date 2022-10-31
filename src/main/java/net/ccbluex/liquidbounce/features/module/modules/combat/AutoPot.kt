@@ -29,6 +29,7 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.potion.Potion
+import java.util.*
 
 @ModuleInfo(name = "AutoPot", description = "Automatically throws healing potions.", category = ModuleCategory.COMBAT)
 class AutoPot : Module() {
@@ -59,7 +60,7 @@ class AutoPot : Module() {
 
                 if (thePlayer.health <= healthValue.get() && potionInHotbar != -1) {
                     if (thePlayer.onGround) {
-                        when (modeValue.get().toLowerCase()) {
+                        when (modeValue.get().lowercase(Locale.getDefault())) {
                             "jump" -> thePlayer.jump()
                             "port" -> thePlayer.moveEntity(0.0, 0.42, 0.0)
                         }
@@ -67,15 +68,15 @@ class AutoPot : Module() {
 
                     // Prevent throwing potions into the void
                     val fallingPlayer = FallingPlayer(
-                            thePlayer.posX,
-                            thePlayer.posY,
-                            thePlayer.posZ,
-                            thePlayer.motionX,
-                            thePlayer.motionY,
-                            thePlayer.motionZ,
-                            thePlayer.rotationYaw,
-                            thePlayer.moveStrafing,
-                            thePlayer.moveForward
+                        thePlayer.posX,
+                        thePlayer.posY,
+                        thePlayer.posZ,
+                        thePlayer.motionX,
+                        thePlayer.motionY,
+                        thePlayer.motionZ,
+                        thePlayer.rotationYaw,
+                        thePlayer.moveStrafing,
+                        thePlayer.moveForward
                     )
 
                     val collisionBlock = fallingPlayer.findCollision(20)?.pos
@@ -87,7 +88,12 @@ class AutoPot : Module() {
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(potion - 36))
 
                     if (thePlayer.rotationPitch <= 80F) {
-                        RotationUtils.setTargetRotation(Rotation(thePlayer.rotationYaw, RandomUtils.nextFloat(80F, 90F)))
+                        RotationUtils.setTargetRotation(
+                            Rotation(
+                                thePlayer.rotationYaw,
+                                RandomUtils.nextFloat(80F, 90F)
+                            )
+                        )
                     }
                     return
                 }
@@ -111,6 +117,7 @@ class AutoPot : Module() {
                     msTimer.reset()
                 }
             }
+
             POST -> {
                 if (potion >= 0 && RotationUtils.serverRotation.pitch >= 75F) {
                     val itemStack = thePlayer.inventory.getStackInSlot(potion)
@@ -152,7 +159,7 @@ class AutoPot : Module() {
         return -1
     }
 
-    override val tag: String?
+    override val tag: String
         get() = healthValue.get().toString()
 
 }

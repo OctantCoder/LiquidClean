@@ -24,7 +24,11 @@ import net.minecraft.entity.item.EntityFallingBlock
 import net.minecraft.util.BlockPos
 import java.awt.Color
 
-@ModuleInfo(name = "ProphuntESP", description = "Allows you to see disguised players in PropHunt.", category = ModuleCategory.RENDER)
+@ModuleInfo(
+    name = "ProphuntESP",
+    description = "Allows you to see disguised players in PropHunt.",
+    category = ModuleCategory.RENDER
+)
 class ProphuntESP : Module() {
     val blocks: MutableMap<BlockPos, Long> = HashMap()
 
@@ -41,11 +45,15 @@ class ProphuntESP : Module() {
     }
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent?) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent?) {
         val mode = modeValue.get()
-        val color = if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
-        for (entity in mc.theWorld!!.loadedEntityList) {
-            if(!mode.equals("Box", true) || !mode.equals("OtherBox", true)) break
+        val color = if (colorRainbow.get()) rainbow() else Color(
+            colorRedValue.get(),
+            colorGreenValue.get(),
+            colorBlueValue.get()
+        )
+        for (entity in (mc.theWorld ?: return).loadedEntityList) {
+            if (!mode.equals("Box", true) || !mode.equals("OtherBox", true)) break
             if (entity !is EntityFallingBlock) continue
 
             RenderUtils.drawEntityBox(entity, color, mode.equals("Box", true))
@@ -65,10 +73,11 @@ class ProphuntESP : Module() {
             }
         }
     }
+
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         val mode = modeValue.get()
-        val shader = when(mode) {
+        val shader = when (mode) {
             "ShaderOutline" -> OutlineShader.OUTLINE_SHADER
             "ShaderGlow" -> GlowShader.GLOW_SHADER
             else -> null
@@ -76,7 +85,7 @@ class ProphuntESP : Module() {
 
         shader.startDraw(event.partialTicks)
         try {
-            for (entity in mc.theWorld!!.loadedEntityList) {
+            for (entity in (mc.theWorld ?: return).loadedEntityList) {
                 if (entity !is EntityFallingBlock) continue
                 mc.renderManager.renderEntityStatic(entity, mc.timer.renderPartialTicks, true)
             }
@@ -84,8 +93,20 @@ class ProphuntESP : Module() {
             ClientUtils.getLogger().error("An error occurred while rendering all entities for shader esp", ex)
         }
 
-        val color = if (colorRainbow.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
-        val radius = if (mode.equals("ShaderOutline", ignoreCase = true)) shaderOutlineRadius.get() else if (mode.equals("ShaderGlow", ignoreCase = true)) shaderGlowRadius.get() else 1f
+        val color = if (colorRainbow.get()) rainbow() else Color(
+            colorRedValue.get(),
+            colorGreenValue.get(),
+            colorBlueValue.get()
+        )
+        val radius = if (mode.equals(
+                "ShaderOutline",
+                ignoreCase = true
+            )
+        ) shaderOutlineRadius.get() else if (mode.equals(
+                "ShaderGlow",
+                ignoreCase = true
+            )
+        ) shaderGlowRadius.get() else 1f
         shader.stopDraw(color, radius, 1f)
     }
 }

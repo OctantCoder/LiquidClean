@@ -15,10 +15,14 @@ import net.minecraft.block.BlockLadder
 import net.minecraft.block.BlockVine
 import net.minecraft.util.BlockPos
 
-@ModuleInfo(name = "AirLadder", description = "Allows you to climb up ladders/vines without touching them.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "AirLadder",
+    description = "Allows you to climb up ladders/vines without touching them.",
+    category = ModuleCategory.MOVEMENT
+)
 class AirLadder : Module() {
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         val currBlock = BlockUtils.getBlock(BlockPos(thePlayer.posX, thePlayer.posY, thePlayer.posZ))

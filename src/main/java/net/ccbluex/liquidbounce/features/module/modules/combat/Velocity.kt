@@ -21,10 +21,15 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
+import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
 
-@ModuleInfo(name = "Velocity", description = "Allows you to modify the amount of knockback you take.", category = ModuleCategory.COMBAT)
+@ModuleInfo(
+    name = "Velocity",
+    description = "Allows you to modify the amount of knockBack you take.",
+    category = ModuleCategory.COMBAT
+)
 class Velocity : Module() {
 
     /**
@@ -32,8 +37,12 @@ class Velocity : Module() {
      */
     private val horizontalValue = FloatValue("Horizontal", 0F, 0F, 1F)
     private val verticalValue = FloatValue("Vertical", 0F, 0F, 1F)
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "AAC", "AACPush", "AACZero", "AACv4",
-            "Reverse", "SmoothReverse", "Jump", "Glitch"), "Simple")
+    private val modeValue = ListValue(
+        "Mode", arrayOf(
+            "Simple", "AAC", "AACPush", "AACZero", "AACv4",
+            "Reverse", "SmoothReverse", "Jump", "Glitch"
+        ), "Simple"
+    )
 
     // Reverse
     private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F)
@@ -44,7 +53,7 @@ class Velocity : Module() {
     private val aacPushYReducerValue = BoolValue("AACPushYReducer", true)
 
     // AAc v4
-    private val aacv4MotionReducerValue = FloatValue("AACv4MotionReducer", 0.62F,0F,1F)
+    private val aacV4MotionReducerValue = FloatValue("AACv4MotionReducer", 0.62F, 0F, 1F)
 
     /**
      * VALUES
@@ -66,13 +75,13 @@ class Velocity : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         if (thePlayer.isInWater || thePlayer.isInLava || thePlayer.isInWeb)
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "jump" -> if (thePlayer.hurtTime > 0 && thePlayer.onGround) {
                 thePlayer.motionY = 0.42
 
@@ -127,8 +136,8 @@ class Velocity : Module() {
             }
 
             "aacv4" -> {
-                if (thePlayer.hurtTime>0 && !thePlayer.onGround){
-                    val reduce=aacv4MotionReducerValue.get();
+                if (thePlayer.hurtTime > 0 && !thePlayer.onGround) {
+                    val reduce = aacV4MotionReducerValue.get()
                     thePlayer.motionX *= reduce
                     thePlayer.motionZ *= reduce
                 }
@@ -145,7 +154,8 @@ class Velocity : Module() {
 
                     // Reduce Y
                     if (thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get()
-                            && !LiquidBounce.moduleManager[Speed::class.java]!!.state)
+                        && !LiquidBounce.moduleManager[Speed::class.java].state
+                    )
                         thePlayer.motionY -= 0.014999993
                 }
 
@@ -248,6 +258,7 @@ class Velocity : Module() {
                 if (!thePlayer.isCollidedVertically)
                     event.cancelEvent()
             }
+
             "aaczero" -> if (thePlayer.hurtTime > 0)
                 event.cancelEvent()
         }

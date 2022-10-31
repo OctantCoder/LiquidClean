@@ -15,10 +15,12 @@ import kotlin.math.min
 /**
  * CustomHUD element
  */
-abstract class Element(var x: Double = 2.0, var y: Double = 2.0, scale: Float = 1F,
-                       var side: Side = Side.default()) : MinecraftInstance() {
-    val info = javaClass.getAnnotation(ElementInfo::class.java)
-            ?: throw IllegalArgumentException("Passed element with missing element info")
+abstract class Element(
+    var x: Double = 2.0, var y: Double = 2.0, scale: Float = 1F,
+    var side: Side = Side.default()
+) : MinecraftInstance() {
+    val info: ElementInfo = javaClass.getAnnotation(ElementInfo::class.java)
+        ?: throw IllegalArgumentException("Passed element with missing element info")
 
     var scale: Float = 1F
         set(value) {
@@ -50,6 +52,7 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, scale: Float = 
             Side.Horizontal.LEFT -> {
                 x += value
             }
+
             Side.Horizontal.MIDDLE, Side.Horizontal.RIGHT -> {
                 x -= value
             }
@@ -65,6 +68,7 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, scale: Float = 
             Side.Vertical.UP -> {
                 y += value
             }
+
             Side.Vertical.MIDDLE, Side.Vertical.DOWN -> {
                 y -= value
             }
@@ -72,9 +76,9 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, scale: Float = 
 
     var border: Border? = null
 
-    var drag = false
-    var prevMouseX = 0F
-    var prevMouseY = 0F
+    var drag: Boolean = false
+    var prevMouseX: Float = 0F
+    var prevMouseY: Float = 0F
 
     /**
      * Get all values of element
@@ -88,7 +92,7 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, scale: Float = 
     /**
      * Called when element created
      */
-    open fun createElement() = true
+    open fun createElement(): Boolean = true
 
     /**
      * Called when element destroyed
@@ -135,8 +139,14 @@ abstract class Element(var x: Double = 2.0, var y: Double = 2.0, scale: Float = 
 /**
  * Element info
  */
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-annotation class ElementInfo(val name: String, val single: Boolean = false, val force: Boolean = false, val disableScale: Boolean = false, val priority: Int = 0)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ElementInfo(
+    val name: String,
+    val single: Boolean = false,
+    val force: Boolean = false,
+    val disableScale: Boolean = false,
+    val priority: Int = 0
+)
 
 /**
  * CustomHUD Side
@@ -150,7 +160,7 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
         /**
          * Default element side
          */
-        fun default() = Side(Horizontal.LEFT, Vertical.UP)
+        fun default(): Side = Side(Horizontal.LEFT, Vertical.UP)
 
     }
 
@@ -166,7 +176,7 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
         companion object {
 
             @JvmStatic
-            fun getByName(name: String) = values().find { it.sideName == name }
+            fun getByName(name: String): Horizontal? = values().find { it.sideName == name }
 
         }
 
@@ -184,7 +194,7 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
         companion object {
 
             @JvmStatic
-            fun getByName(name: String) = values().find { it.sideName == name }
+            fun getByName(name: String): Vertical? = values().find { it.sideName == name }
 
         }
 
@@ -197,6 +207,6 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
  */
 data class Border(val x: Float, val y: Float, val x2: Float, val y2: Float) {
 
-    fun draw() = RenderUtils.drawBorderedRect(x, y, x2, y2, 3F, Int.MIN_VALUE, 0)
+    fun draw(): Unit = RenderUtils.drawBorderedRect(x, y, x2, y2, 3F, Int.MIN_VALUE, 0)
 
 }

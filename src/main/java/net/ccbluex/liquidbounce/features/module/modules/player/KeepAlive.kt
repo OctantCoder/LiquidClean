@@ -16,29 +16,36 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
+import java.util.*
 
 @ModuleInfo(name = "KeepAlive", description = "Tries to prevent you from dying.", category = ModuleCategory.PLAYER)
 class KeepAlive : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("/heal", "Soup"), "/heal")
+    val modeValue: ListValue = ListValue("Mode", arrayOf("/heal", "Soup"), "/heal")
 
     private var runOnce = false
 
     @EventTarget
-    fun onMotion(event: MotionEvent) {
+    fun onMotion(@Suppress("UNUSED_PARAMETER") event: MotionEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         if (thePlayer.isDead || thePlayer.health <= 0) {
             if (runOnce) return
 
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase(Locale.getDefault())) {
                 "/heal" -> thePlayer.sendChatMessage("/heal")
                 "soup" -> {
                     val soupInHotbar = InventoryUtils.findItem(36, 45, Items.mushroom_stew)
 
                     if (soupInHotbar != -1) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(soupInHotbar - 36))
-                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(thePlayer.inventory.getStackInSlot(soupInHotbar)))
+                        mc.netHandler.addToSendQueue(
+                            C08PacketPlayerBlockPlacement(
+                                thePlayer.inventory.getStackInSlot(
+                                    soupInHotbar
+                                )
+                            )
+                        )
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(thePlayer.inventory.currentItem))
                     }
                 }

@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(RenderEntityItem.class)
 public class MixinRenderEntityItem {
 
-    @Inject(method = "doRender", at = @At("HEAD"))
+    @Inject(method = "doRender*", at = @At("HEAD"))
     private void injectChamsPre(CallbackInfo callbackInfo) {
         final Chams chams = (Chams) LiquidBounce.moduleManager.getModule(Chams.class);
 
@@ -27,7 +27,7 @@ public class MixinRenderEntityItem {
         }
     }
 
-    @Inject(method = "doRender", at = @At("RETURN"))
+    @Inject(method = "doRender*", at = @At("RETURN"))
     private void injectChamsPost(CallbackInfo callbackInfo) {
         final Chams chams = (Chams) LiquidBounce.moduleManager.getModule(Chams.class);
 

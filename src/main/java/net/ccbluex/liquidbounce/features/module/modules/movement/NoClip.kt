@@ -11,7 +11,11 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 
-@ModuleInfo(name = "NoClip", description = "Allows you to freely move through walls (A sandblock has to fall on your head).", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "NoClip",
+    description = "Allows you to freely move through walls (A sand block has to fall on your head).",
+    category = ModuleCategory.MOVEMENT
+)
 class NoClip : Module() {
 
     override fun onDisable() {
@@ -19,7 +23,7 @@ class NoClip : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         thePlayer.noClip = true

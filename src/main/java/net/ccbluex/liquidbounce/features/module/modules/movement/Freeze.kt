@@ -14,8 +14,8 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 @ModuleInfo(name = "Freeze", description = "Allows you to stay stuck in mid air.", category = ModuleCategory.MOVEMENT)
 class Freeze : Module() {
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val thePlayer = mc.thePlayer!!
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
+        val thePlayer = mc.thePlayer ?: return
 
         thePlayer.isDead = true
         thePlayer.rotationYaw = thePlayer.cameraYaw

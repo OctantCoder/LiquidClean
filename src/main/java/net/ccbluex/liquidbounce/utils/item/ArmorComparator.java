@@ -68,7 +68,7 @@ public class ArmorComparator extends MinecraftInstance implements Comparator<Arm
                     return durabilityCmp;
                 }
 
-                // Last comparision: Enchantability
+                // Last comparison: Enchant ability
                 return Integer.compare(o1a.getArmorMaterial().getEnchantability(), o2a.getArmorMaterial().getEnchantability());
             }
 
@@ -81,11 +81,11 @@ public class ArmorComparator extends MinecraftInstance implements Comparator<Arm
     private float getThresholdedDamageReduction(ItemStack itemStack) {
         ItemArmor item = (ItemArmor) itemStack.getItem();
 
-        return getDamageReduction(item.getArmorMaterial().getDamageReductionAmount(item.armorType), 0) * (1 - getThresholdedEnchantmentDamageReduction(itemStack));
+        return getDamageReduction(item.getArmorMaterial().getDamageReductionAmount(item.armorType)) * (1 - getThresholdedEnchantmentDamageReduction(itemStack));
     }
 
-    private float getDamageReduction(int defensePoints, int toughness) {
-        return 1 - Math.min(20.0f, Math.max(defensePoints / 5.0f, defensePoints - 1 / (2 + toughness / 4.0f))) / 25.0f;
+    private float getDamageReduction(int defensePoints) {
+        return 1 - Math.min(20.0f, Math.max(defensePoints / 5.0f, defensePoints - 1 / (2 / 4.0f))) / 25.0f;
     }
 
     private float getThresholdedEnchantmentDamageReduction(ItemStack itemStack) {

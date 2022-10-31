@@ -21,6 +21,8 @@ public final class MSTimer {
         time = System.currentTimeMillis();
     }
 
-    public void zero() { time = -1L; }
+    public void zero() {
+        time = -1L;
+    }
 
 }

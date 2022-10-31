@@ -28,8 +28,10 @@ object HttpUtils {
         HttpURLConnection.setFollowRedirects(true)
     }
 
-    private fun make(url: String, method: String,
-                     agent: String = DEFAULT_AGENT): HttpURLConnection {
+    private fun make(
+        url: String, method: String,
+        agent: String = DEFAULT_AGENT
+    ): HttpURLConnection {
         val httpConnection = URL(url).openConnection() as HttpURLConnection
 
         httpConnection.requestMethod = method
@@ -45,16 +47,20 @@ object HttpUtils {
     }
 
     @Throws(IOException::class)
-    fun request(url: String, method: String,
-                agent: String = DEFAULT_AGENT): String {
+    fun request(
+        url: String, method: String,
+        agent: String = DEFAULT_AGENT
+    ): String {
         val connection = make(url, method, agent)
 
         return connection.inputStream.reader().readText()
     }
 
     @Throws(IOException::class)
-    fun requestStream(url: String, method: String,
-                      agent: String = DEFAULT_AGENT): InputStream? {
+    fun requestStream(
+        url: String, method: String,
+        agent: String = DEFAULT_AGENT
+    ): InputStream? {
         val connection = make(url, method, agent)
 
         return connection.inputStream
@@ -62,10 +68,10 @@ object HttpUtils {
 
     @Throws(IOException::class)
     @JvmStatic
-    fun get(url: String) = request(url, "GET")
+    fun get(url: String): String = request(url, "GET")
 
     @Throws(IOException::class)
     @JvmStatic
-    fun download(url: String, file: File) = FileUtils.copyInputStreamToFile(make(url, "GET").inputStream, file)
+    fun download(url: String, file: File): Unit = FileUtils.copyInputStreamToFile(make(url, "GET").inputStream, file)
 
 }

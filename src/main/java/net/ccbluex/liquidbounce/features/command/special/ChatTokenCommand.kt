@@ -7,6 +7,7 @@ import net.ccbluex.liquidbounce.features.module.modules.misc.LiquidChat
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
+import java.util.*
 
 class ChatTokenCommand : Command("chattoken") {
 
@@ -61,9 +62,10 @@ class ChatTokenCommand : Command("chattoken") {
         return when (args.size) {
             1 -> {
                 arrayOf("set", "generate", "copy")
-                        .map { it.toLowerCase() }
-                        .filter { it.startsWith(args[0], true) }
+                    .map { it.lowercase(Locale.getDefault()) }
+                    .filter { it.startsWith(args[0], true) }
             }
+
             else -> emptyList()
         }
     }

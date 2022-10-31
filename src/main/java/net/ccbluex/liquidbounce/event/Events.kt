@@ -29,9 +29,9 @@ class AttackEvent(val targetEntity: Entity?) : Event()
  * @param boundingBox vanilla bounding box
  */
 class BlockBBEvent(blockPos: BlockPos, val block: Block, var boundingBox: AxisAlignedBB?) : Event() {
-    val x = blockPos.x
-    val y = blockPos.y
-    val z = blockPos.z
+    val x: Int = blockPos.x
+    val y: Int = blockPos.y
+    val z: Int = blockPos.z
 }
 
 /**
@@ -45,7 +45,7 @@ class ClickBlockEvent(val clickedBlock: BlockPos?, val WEnumFacing: EnumFacing?)
 class ClientShutdownEvent : Event()
 
 /**
- * Called when an other entity moves
+ * Called when another entity moves
  */
 data class EntityMovementEvent(val movedEntity: Entity) : Event()
 
@@ -91,7 +91,7 @@ class StrafeEvent(val strafe: Float, val forward: Float, val friction: Float) : 
  * @param z motion
  */
 class MoveEvent(var x: Double, var y: Double, var z: Double) : CancellableEvent() {
-    var isSafeWalk = false
+    var isSafeWalk: Boolean = false
 
     fun zero() {
         x = 0.0
@@ -128,8 +128,10 @@ class Render3DEvent(val partialTicks: Float) : Event()
 /**
  * Called when entity is going to be rendered
  */
-class RenderEntityEvent(val entity: Entity, val x: Double, val y: Double, val z: Double, val entityYaw: Float,
-                        val partialTicks: Float) : Event()
+class RenderEntityEvent(
+    val entity: Entity, val x: Double, val y: Double, val z: Double, val entityYaw: Float,
+    val partialTicks: Float
+) : Event()
 
 /**
  * Called when the screen changes
@@ -174,4 +176,5 @@ class WorldEvent(val worldClient: WorldClient?) : Event()
 /**
  * Called when window clicked
  */
-class ClickWindowEvent(val windowId: Int, val slotId: Int, val mouseButtonClicked: Int, val mode: Int) : CancellableEvent()
+class ClickWindowEvent(val windowId: Int, val slotId: Int, val mouseButtonClicked: Int, val mode: Int) :
+    CancellableEvent()

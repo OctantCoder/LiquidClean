@@ -36,7 +36,7 @@ public class RenderUtils {
         glPushMatrix();
         glLineWidth(1F);
         glBegin(GL_POLYGON);
-        for(int i = 0; i <= 360; i++)
+        for (int i = 0; i <= 360; i++)
             glVertex2d(x + Math.sin(i * Math.PI / 180.0D) * radius, y + Math.cos(i * Math.PI / 180.0D) * radius);
         glEnd();
         glPopMatrix();

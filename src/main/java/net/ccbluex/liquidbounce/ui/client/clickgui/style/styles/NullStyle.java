@@ -28,6 +28,7 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
@@ -39,7 +40,7 @@ public class NullStyle extends Style {
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
         RenderUtils.drawRect((float) panel.getX() - 3, (float) panel.getY(), (float) panel.getX() + panel.getWidth() + 3, (float) panel.getY() + 19, ClickGUI.generateColor().getRGB());
-        if(panel.getFade() > 0)
+        if (panel.getFade() > 0)
             RenderUtils.drawBorderedRect((float) panel.getX(), (float) panel.getY() + 19, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), 1, Integer.MIN_VALUE, Integer.MIN_VALUE);
         GlStateManager.resetColor();
         float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(panel.getName()));
@@ -69,12 +70,12 @@ public class NullStyle extends Style {
 
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
 
-        if(!moduleValues.isEmpty()) {
+        if (!moduleValues.isEmpty()) {
             Fonts.font35.drawString("+", moduleElement.getX() + moduleElement.getWidth() - 8, moduleElement.getY() + (moduleElement.getHeight() / 2), Color.WHITE.getRGB());
 
-            if(moduleElement.isShowSettings()) {
+            if (moduleElement.isShowSettings()) {
                 int yPos = moduleElement.getY() + 4;
-                for(final Value value : moduleValues) {
+                for (final Value value : moduleValues) {
                     boolean isNumber = value.get() instanceof Number;
 
                     if (isNumber) {
@@ -102,13 +103,13 @@ public class NullStyle extends Style {
                         GlStateManager.resetColor();
                         Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, ((BoolValue) value).get() ? guiColor : Integer.MAX_VALUE);
                         yPos += 12;
-                    }else if(value instanceof ListValue) {
+                    } else if (value instanceof ListValue) {
                         ListValue listValue = (ListValue) value;
 
                         String text = value.getName();
                         float textWidth = Fonts.font35.getStringWidth(text);
 
-                        if(moduleElement.getSettingsWidth() < textWidth + 16)
+                        if (moduleElement.getSettingsWidth() < textWidth + 16)
                             moduleElement.setSettingsWidth(textWidth + 16);
 
                         RenderUtils.drawRect(moduleElement.getX() + moduleElement.getWidth() + 4, yPos + 2, moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth(), yPos + 14, Integer.MIN_VALUE);
@@ -116,8 +117,8 @@ public class NullStyle extends Style {
                         Fonts.font35.drawString("§c" + text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
                         Fonts.font35.drawString(listValue.openList ? "-" : "+", (int) (moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() - (listValue.openList ? 5 : 6)), yPos + 4, 0xffffff);
 
-                        if(mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() && mouseY >= yPos + 2 && mouseY <= yPos + 14) {
-                            if(Mouse.isButtonDown(0) && moduleElement.isntPressed()) {
+                        if (mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() && mouseY >= yPos + 2 && mouseY <= yPos + 14) {
+                            if (Mouse.isButtonDown(0) && moduleElement.isntPressed()) {
                                 listValue.openList = !listValue.openList;
                                 mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
                             }
@@ -125,17 +126,17 @@ public class NullStyle extends Style {
 
                         yPos += 12;
 
-                        for(final String valueOfList : listValue.getValues()) {
+                        for (final String valueOfList : listValue.getValues()) {
                             final float textWidth2 = Fonts.font35.getStringWidth(">" + valueOfList);
 
-                            if(moduleElement.getSettingsWidth() < textWidth2 + 12)
+                            if (moduleElement.getSettingsWidth() < textWidth2 + 12)
                                 moduleElement.setSettingsWidth(textWidth2 + 12);
 
                             if (listValue.openList) {
                                 RenderUtils.drawRect(moduleElement.getX() + moduleElement.getWidth() + 4, yPos + 2, moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth(), yPos + 14, Integer.MIN_VALUE);
 
-                                if(mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() && mouseY >= yPos + 2 && mouseY <= yPos + 14) {
-                                    if(Mouse.isButtonDown(0) && moduleElement.isntPressed()) {
+                                if (mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() && mouseY >= yPos + 2 && mouseY <= yPos + 14) {
+                                    if (Mouse.isButtonDown(0) && moduleElement.isntPressed()) {
                                         listValue.set(valueOfList);
                                         mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
                                     }
@@ -147,12 +148,12 @@ public class NullStyle extends Style {
                                 yPos += 12;
                             }
                         }
-                    }else if(value instanceof FloatValue) {
+                    } else if (value instanceof FloatValue) {
                         FloatValue floatValue = (FloatValue) value;
                         String text = value.getName() + "§f: §c" + round(floatValue.get());
                         float textWidth = Fonts.font35.getStringWidth(text);
 
-                        if(moduleElement.getSettingsWidth() < textWidth + 8)
+                        if (moduleElement.getSettingsWidth() < textWidth + 8)
                             moduleElement.setSettingsWidth(textWidth + 8);
 
                         RenderUtils.drawRect(moduleElement.getX() + moduleElement.getWidth() + 4, yPos + 2, moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth(), yPos + 24, Integer.MIN_VALUE);
@@ -160,8 +161,8 @@ public class NullStyle extends Style {
                         float sliderValue = moduleElement.getX() + moduleElement.getWidth() + ((moduleElement.getSettingsWidth() - 12) * (floatValue.get() - floatValue.getMinimum()) / (floatValue.getMaximum() - floatValue.getMinimum()));
                         RenderUtils.drawRect(8 + sliderValue, yPos + 15, sliderValue + 11, yPos + 21, guiColor);
 
-                        if(mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() - 4 && mouseY >= yPos + 15 && mouseY <= yPos + 21) {
-                            if(Mouse.isButtonDown(0)) {
+                        if (mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() - 4 && mouseY >= yPos + 15 && mouseY <= yPos + 21) {
+                            if (Mouse.isButtonDown(0)) {
                                 double i = MathHelper.clamp_double((mouseX - moduleElement.getX() - moduleElement.getWidth() - 8) / (moduleElement.getSettingsWidth() - 12), 0, 1);
                                 floatValue.set(round((float) (floatValue.getMinimum() + (floatValue.getMaximum() - floatValue.getMinimum()) * i)).floatValue());
                             }
@@ -170,12 +171,12 @@ public class NullStyle extends Style {
                         GlStateManager.resetColor();
                         Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
                         yPos += 22;
-                    }else if(value instanceof IntegerValue) {
+                    } else if (value instanceof IntegerValue) {
                         IntegerValue integerValue = (IntegerValue) value;
                         String text = value.getName() + "§f: §c" + (value instanceof BlockValue ? BlockUtils.getBlockName(integerValue.get()) + " (" + integerValue.get() + ")" : integerValue.get());
                         float textWidth = Fonts.font35.getStringWidth(text);
 
-                        if(moduleElement.getSettingsWidth() < textWidth + 8)
+                        if (moduleElement.getSettingsWidth() < textWidth + 8)
                             moduleElement.setSettingsWidth(textWidth + 8);
 
                         RenderUtils.drawRect(moduleElement.getX() + moduleElement.getWidth() + 4, yPos + 2, moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth(), yPos + 24, Integer.MIN_VALUE);
@@ -183,8 +184,8 @@ public class NullStyle extends Style {
                         float sliderValue = moduleElement.getX() + moduleElement.getWidth() + ((moduleElement.getSettingsWidth() - 12) * (integerValue.get() - integerValue.getMinimum()) / (integerValue.getMaximum() - integerValue.getMinimum()));
                         RenderUtils.drawRect(8 + sliderValue, yPos + 15, sliderValue + 11, yPos + 21, guiColor);
 
-                        if(mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() && mouseY >= yPos + 15 && mouseY <= yPos + 21) {
-                            if(Mouse.isButtonDown(0)) {
+                        if (mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() && mouseY >= yPos + 15 && mouseY <= yPos + 21) {
+                            if (Mouse.isButtonDown(0)) {
                                 double i = MathHelper.clamp_double((mouseX - moduleElement.getX() - moduleElement.getWidth() - 8) / (moduleElement.getSettingsWidth() - 12), 0, 1);
                                 integerValue.set((int) (integerValue.getMinimum() + (integerValue.getMaximum() - integerValue.getMinimum()) * i));
                             }
@@ -193,7 +194,7 @@ public class NullStyle extends Style {
                         GlStateManager.resetColor();
                         Fonts.font35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
                         yPos += 22;
-                    }else if(value instanceof FontValue) {
+                    } else if (value instanceof FontValue) {
                         final FontValue fontValue = (FontValue) value;
                         final FontRenderer fontRenderer = fontValue.get();
 
@@ -205,12 +206,12 @@ public class NullStyle extends Style {
                             final GameFontRenderer liquidFontRenderer = (GameFontRenderer) fontRenderer;
 
                             displayString = "Font: " + liquidFontRenderer.getDefaultFont().getFont().getName() + " - " + liquidFontRenderer.getDefaultFont().getFont().getSize();
-                        }else if(fontRenderer == Fonts.minecraftFont)
+                        } else if (fontRenderer == Fonts.minecraftFont)
                             displayString = "Font: Minecraft";
-                        else{
+                        else {
                             final Fonts.FontInfo objects = Fonts.getFontDetails(fontRenderer);
 
-                            if(objects != null) {
+                            if (objects != null) {
                                 displayString = objects.getName() + (objects.getFontSize() != -1 ? " - " + objects.getFontSize() : "");
                             }
                         }
@@ -218,37 +219,37 @@ public class NullStyle extends Style {
                         Fonts.font35.drawString(displayString, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, Color.WHITE.getRGB());
                         int stringWidth = Fonts.font35.getStringWidth(displayString);
 
-                        if(moduleElement.getSettingsWidth() < stringWidth + 8)
+                        if (moduleElement.getSettingsWidth() < stringWidth + 8)
                             moduleElement.setSettingsWidth(stringWidth + 8);
 
-                        if((Mouse.isButtonDown(0) && !mouseDown || Mouse.isButtonDown(1) && !rightMouseDown) && mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() && mouseY >= yPos + 4 && mouseY <= yPos + 12) {
+                        if ((Mouse.isButtonDown(0) && !mouseDown || Mouse.isButtonDown(1) && !rightMouseDown) && mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() && mouseY >= yPos + 4 && mouseY <= yPos + 12) {
                             final List<FontRenderer> fonts = Fonts.getFonts();
 
-                            if(Mouse.isButtonDown(0)) {
-                                for(int i = 0; i < fonts.size(); i++) {
+                            if (Mouse.isButtonDown(0)) {
+                                for (int i = 0; i < fonts.size(); i++) {
                                     final FontRenderer font = fonts.get(i);
 
-                                    if(font.equals(fontRenderer)) {
+                                    if (font.equals(fontRenderer)) {
                                         i++;
 
-                                        if(i >= fonts.size())
+                                        if (i >= fonts.size())
                                             i = 0;
 
                                         fontValue.set(fonts.get(i));
                                         break;
                                     }
                                 }
-                            }else{
-                                for(int i = fonts.size() - 1; i >= 0; i--) {
+                            } else {
+                                for (int i = fonts.size() - 1; i >= 0; i--) {
                                     final FontRenderer font = fonts.get(i);
 
-                                    if(font.equals(fontRenderer)) {
+                                    if (font.equals(fontRenderer)) {
                                         i--;
 
-                                        if(i >= fonts.size())
+                                        if (i >= fonts.size())
                                             i = 0;
 
-                                        if(i < 0)
+                                        if (i < 0)
                                             i = fonts.size() - 1;
 
                                         fontValue.set(fonts.get(i));
@@ -259,7 +260,7 @@ public class NullStyle extends Style {
                         }
 
                         yPos += 11;
-                    }else{
+                    } else {
                         String text = value.getName() + "§f: §c" + value.get();
                         float textWidth = Fonts.font35.getStringWidth(text);
 
@@ -282,7 +283,7 @@ public class NullStyle extends Style {
                 mouseDown = Mouse.isButtonDown(0);
                 rightMouseDown = Mouse.isButtonDown(1);
 
-                if(moduleElement.getSettingsWidth() > 0F && yPos > moduleElement.getY() + 4)
+                if (moduleElement.getSettingsWidth() > 0F && yPos > moduleElement.getY() + 4)
                     RenderUtils.drawBorderedRect(moduleElement.getX() + moduleElement.getWidth() + 4, moduleElement.getY() + 6, moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth(), yPos + 2, 1F, Integer.MIN_VALUE, 0);
             }
         }
@@ -290,7 +291,7 @@ public class NullStyle extends Style {
 
     private BigDecimal round(final float f) {
         BigDecimal bd = new BigDecimal(Float.toString(f));
-        bd = bd.setScale(2, 4);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
         return bd;
     }
 }

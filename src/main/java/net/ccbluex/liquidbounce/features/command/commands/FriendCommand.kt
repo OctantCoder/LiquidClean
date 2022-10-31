@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
+import java.util.*
 
 class FriendCommand : Command("friend", "friends") {
     /**
@@ -27,7 +28,11 @@ class FriendCommand : Command("friend", "friends") {
                             return
                         }
 
-                        if (if (args.size > 3) friendsConfig.addFriend(name, StringUtils.toCompleteString(args, 3)) else friendsConfig.addFriend(name)) {
+                        if (if (args.size > 3) friendsConfig.addFriend(
+                                name,
+                                StringUtils.toCompleteString(args, 3)
+                            ) else friendsConfig.addFriend(name)
+                        ) {
                             LiquidBounce.fileManager.saveConfig(friendsConfig)
                             chat("§a§l$name§3 was added to your friend list.")
                             playEdit()
@@ -84,20 +89,22 @@ class FriendCommand : Command("friend", "friends") {
         return when (args.size) {
             1 -> listOf("add", "remove", "list", "clear").filter { it.startsWith(args[0], true) }
             2 -> {
-                when (args[0].toLowerCase()) {
+                when (args[0].lowercase(Locale.getDefault())) {
                     "add" -> {
                         return mc.theWorld!!.playerEntities
-                                .filter { (it.name?.startsWith(args[1], true) ?: false) }
-                                .map { it.name!! }
+                            .filter { (it.name?.startsWith(args[1], true) ?: false) }
+                            .map { it.name!! }
                     }
+
                     "remove" -> {
                         return LiquidBounce.fileManager.friendsConfig.friends
-                                .map { it.playerName }
-                                .filter { it.startsWith(args[1], true) }
+                            .map { it.playerName }
+                            .filter { it.startsWith(args[1], true) }
                     }
                 }
                 return emptyList()
             }
+
             else -> emptyList()
         }
     }

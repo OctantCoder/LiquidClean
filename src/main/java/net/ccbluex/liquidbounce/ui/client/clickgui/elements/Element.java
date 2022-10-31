@@ -27,7 +27,7 @@ public class Element extends MinecraftInstance {
         return false;
     }
 
-    public boolean mouseReleased(int mouseX, int mouseY, int state) {
+    public boolean mouseReleased() {
         return false;
     }
 

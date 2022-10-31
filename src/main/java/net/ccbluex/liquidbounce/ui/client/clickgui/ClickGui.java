@@ -271,7 +271,7 @@ public class ClickGui extends GuiScreen {
         mouseY /= scale;
 
         for (int i = panels.size() - 1; i >= 0; i--) {
-            if (panels.get(i).mouseClicked(mouseX, mouseY, mouseButton)){
+            if (panels.get(i).mouseClicked(mouseX, mouseY, mouseButton)) {
                 break;
             }
         }
@@ -307,7 +307,7 @@ public class ClickGui extends GuiScreen {
         mouseY /= scale;
 
         for (Panel panel : panels) {
-            panel.mouseReleased(mouseX, mouseY, state);
+            panel.mouseReleased();
         }
     }
 

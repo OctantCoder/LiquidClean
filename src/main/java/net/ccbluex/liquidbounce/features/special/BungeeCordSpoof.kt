@@ -34,6 +34,6 @@ class BungeeCordSpoof : MinecraftInstance(), Listenable {
         private val RANDOM = Random()
 
         @JvmField
-        var enabled = false
+        var enabled: Boolean = false
     }
 }

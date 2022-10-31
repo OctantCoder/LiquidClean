@@ -25,6 +25,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 
 @ModuleInfo(name = "Tracers", description = "Draws a line to targets around you.", category = ModuleCategory.RENDER)
 class Tracers : Module() {
@@ -40,7 +41,7 @@ class Tracers : Module() {
     private val botValue = BoolValue("Bots", true)
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
@@ -53,17 +54,23 @@ class Tracers : Module() {
 
         GL11.glBegin(GL11.GL_LINES)
 
-        for (entity in mc.theWorld!!.loadedEntityList) {
+        for (entity in (mc.theWorld ?: return).loadedEntityList) {
             if (entity !is EntityLivingBase || !botValue.get() && AntiBot.isBot(entity)) continue
             if (entity != thePlayer && EntityUtils.isSelected(entity, false)) {
                 var dist = (thePlayer.getDistanceToEntity(entity) * 2).toInt()
 
                 if (dist > 255) dist = 255
 
-                val colorMode = colorMode.get().toLowerCase()
+                val colorMode = colorMode.get().lowercase(Locale.getDefault())
                 val color = when {
                     entity is EntityPlayer && entity.isClientFriend() -> Color(0, 0, 255, 150)
-                    colorMode == "custom" -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 150)
+                    colorMode == "custom" -> Color(
+                        colorRedValue.get(),
+                        colorGreenValue.get(),
+                        colorBlueValue.get(),
+                        150
+                    )
+
                     colorMode == "distancecolor" -> Color(255 - dist, dist, 0, 150)
                     colorMode == "rainbow" -> ColorUtils.rainbow()
                     else -> Color(255, 255, 255, 150)
@@ -94,8 +101,8 @@ class Tracers : Module() {
                 - mc.renderManager.renderPosZ)
 
         val eyeVector = Vec3(0.0, 0.0, 1.0)
-                .rotatePitch((-Math.toRadians(thePlayer.rotationPitch.toDouble())).toFloat())
-                .rotateYaw((-Math.toRadians(thePlayer.rotationYaw.toDouble())).toFloat())
+            .rotatePitch((-Math.toRadians(thePlayer.rotationPitch.toDouble())).toFloat())
+            .rotateYaw((-Math.toRadians(thePlayer.rotationYaw.toDouble())).toFloat())
 
         RenderUtils.glColor(color)
 

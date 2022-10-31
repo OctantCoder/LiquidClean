@@ -20,15 +20,15 @@ object Remapper {
     private const val srgName = "stable_22"
     private val srgFile = File(LiquidBounce.fileManager.dir, "mcp-$srgName.srg")
 
-    private val fields : HashMap<String, HashMap<String, String>> = hashMapOf()
-    private val methods : HashMap<String, HashMap<String, String>> = hashMapOf()
+    private val fields: HashMap<String, HashMap<String, String>> = hashMapOf()
+    private val methods: HashMap<String, HashMap<String, String>> = hashMapOf()
 
     /**
      * Load srg
      */
     fun loadSrg() {
         // Check if srg file is already downloaded
-        if(!srgFile.exists()) {
+        if (!srgFile.exists()) {
             // Download srg file
             srgFile.createNewFile()
 
@@ -56,10 +56,10 @@ object Remapper {
                     val fieldName = name.substring(name.lastIndexOf('/') + 1)
                     val fieldSrg = srg.substring(srg.lastIndexOf('/') + 1)
 
-                    if(!fields.contains(className))
+                    if (!fields.contains(className))
                         fields[className] = hashMapOf()
 
-                    fields[className]!![fieldSrg] = fieldName
+                    (fields[className] ?: return@forEach)[fieldSrg] = fieldName
                 }
 
                 it.startsWith("MD:") -> {
@@ -71,10 +71,10 @@ object Remapper {
                     val methodName = name.substring(name.lastIndexOf('/') + 1)
                     val methodSrg = srg.substring(srg.lastIndexOf('/') + 1)
 
-                    if(!methods.contains(className))
+                    if (!methods.contains(className))
                         methods[className] = hashMapOf()
 
-                    methods[className]!![methodSrg + desc] = methodName
+                    (methods[className] ?: return@forEach)[methodSrg + desc] = methodName
                 }
             }
         }
@@ -83,8 +83,8 @@ object Remapper {
     /**
      * Remap field
      */
-    fun remapField(clazz : Class<*>, name : String) : String {
-        if(!fields.containsKey(clazz.name))
+    fun remapField(clazz: Class<*>, name: String): String {
+        if (!fields.containsKey(clazz.name))
             return name
 
         return fields[clazz.name]!!.getOrDefault(name, name)
@@ -93,8 +93,8 @@ object Remapper {
     /**
      * Remap method
      */
-    fun remapMethod(clazz : Class<*>, name : String, desc : String) : String {
-        if(!methods.containsKey(clazz.name))
+    fun remapMethod(clazz: Class<*>, name: String, desc: String): String {
+        if (!methods.containsKey(clazz.name))
             return name
 
         return methods[clazz.name]!!.getOrDefault(name + desc, name)

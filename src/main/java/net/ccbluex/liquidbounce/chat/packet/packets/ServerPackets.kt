@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 import java.util.*
 
 /**
- * AXOCHAT PROTOCOL
+ * AxoChat PROTOCOL
  *
  * https://gitlab.com/frozo/axochat/blob/master/PROTOCOL.md
  *
@@ -34,14 +34,14 @@ class ServerRequestMojangInfoPacket : Packet
  */
 data class ServerLoginMojangPacket(
 
-        @SerializedName("name")
-        val name: String,
+    @SerializedName("name")
+    val name: String,
 
-        @SerializedName("uuid")
-        val uuid: UUID,
+    @SerializedName("uuid")
+    val uuid: UUID,
 
-        @SerializedName("allow_messages")
-        val allowMessages: Boolean
+    @SerializedName("allow_messages")
+    val allowMessages: Boolean
 
 ) : Packet
 
@@ -55,11 +55,11 @@ data class ServerLoginMojangPacket(
  */
 data class ServerLoginJWTPacket(
 
-        @SerializedName("token")
-        val token: String,
+    @SerializedName("token")
+    val token: String,
 
-        @SerializedName("allow_messages")
-        val allowMessages: Boolean
+    @SerializedName("allow_messages")
+    val allowMessages: Boolean
 
 ) : Packet
 
@@ -70,48 +70,48 @@ data class ServerLoginJWTPacket(
  */
 data class ServerMessagePacket(
 
-        @SerializedName("content")
-        val content: String
+    @SerializedName("content")
+    val content: String
 
 ) : Packet
 
 /**
  * The content of this packet will be sent to the specified client as PrivateMessage if it fits the validation scheme.
  *
- * @param receiver receiver is an Id.
+ * @param receiver receiver is an ID.
  * @param content content of message.
  */
 data class ServerPrivateMessagePacket(
 
-        @SerializedName("receiver")
-        val receiver: String,
+    @SerializedName("receiver")
+    val receiver: String,
 
-        @SerializedName("content")
-        val content: String
+    @SerializedName("content")
+    val content: String
 
 ) : Packet
 
 /**
  * A client can send this packet to ban other users from using this chat.
  *
- * @param user user is an Id.
+ * @param user user is an ID.
  */
 data class ServerBanUserPacket(
 
-        @SerializedName("user")
-        val user: String
+    @SerializedName("user")
+    val user: String
 
 ) : Packet
 
 /**
  * A client can send this packet to unban other users.
  *
- * @param user user is an Id.
+ * @param user user is an ID.
  */
 data class ServerUnbanUserPacket(
 
-        @SerializedName("user")
-        val user: String
+    @SerializedName("user")
+    val user: String
 
 ) : Packet
 

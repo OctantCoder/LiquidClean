@@ -44,8 +44,20 @@ class CivBreak : Module() {
         enumFacing = event.WEnumFacing ?: return
 
         // Break
-        mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK, blockPos!!, enumFacing!!))
-        mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, blockPos!!, enumFacing!!))
+        mc.netHandler.addToSendQueue(
+            C07PacketPlayerDigging(
+                C07PacketPlayerDigging.Action.START_DESTROY_BLOCK,
+                blockPos ?: return,
+                enumFacing ?: return
+            )
+        )
+        mc.netHandler.addToSendQueue(
+            C07PacketPlayerDigging(
+                C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
+                blockPos ?: return,
+                enumFacing ?: return
+            )
+        )
     }
 
     @EventTarget
@@ -53,7 +65,8 @@ class CivBreak : Module() {
         val pos = blockPos ?: return
 
         if (airResetValue.get() && BlockUtils.getBlock(pos) == Blocks.air ||
-                rangeResetValue.get() && BlockUtils.getCenterDistance(pos) > range.get()) {
+            rangeResetValue.get() && BlockUtils.getCenterDistance(pos) > range.get()
+        ) {
             blockPos = null
             return
         }
@@ -67,22 +80,30 @@ class CivBreak : Module() {
 
             EventState.POST -> {
                 if (visualSwingValue.get())
-                    mc.thePlayer!!.swingItem()
+                    (mc.thePlayer ?: return).swingItem()
                 else
                     mc.netHandler.addToSendQueue(C0APacketAnimation())
 
                 // Break
-                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK,
-                        blockPos!!, enumFacing!!))
-                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
-                        blockPos!!, enumFacing!!))
-                mc.playerController.clickBlock(blockPos!!, enumFacing!!)
+                mc.netHandler.addToSendQueue(
+                    C07PacketPlayerDigging(
+                        C07PacketPlayerDigging.Action.START_DESTROY_BLOCK,
+                        blockPos ?: return, enumFacing ?: return
+                    )
+                )
+                mc.netHandler.addToSendQueue(
+                    C07PacketPlayerDigging(
+                        C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
+                        blockPos ?: return, enumFacing ?: return
+                    )
+                )
+                mc.playerController.clickBlock(blockPos ?: return, enumFacing ?: return)
             }
         }
     }
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    fun onRender3D(@Suppress("UNUSED_PARAMETER") event: Render3DEvent) {
         RenderUtils.drawBlockBox(blockPos ?: return, Color.RED, true)
     }
 }

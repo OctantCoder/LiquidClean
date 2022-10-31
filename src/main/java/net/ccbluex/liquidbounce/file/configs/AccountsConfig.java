@@ -32,7 +32,6 @@ public class AccountsConfig extends FileConfig {
     /**
      * Load config from file
      *
-     * @throws IOException
      */
     @Override
     protected void loadConfig() throws IOException {
@@ -46,7 +45,7 @@ public class AccountsConfig extends FileConfig {
         for (final JsonElement accountElement : jsonElement.getAsJsonArray()) {
             final JsonObject accountObject = accountElement.getAsJsonObject();
 
-            try{
+            try {
                 // Import Elixir account format
 
                 accounts.add(AccountSerializer.INSTANCE.fromJson(accountElement.getAsJsonObject()));
@@ -79,7 +78,6 @@ public class AccountsConfig extends FileConfig {
     /**
      * Save config to file
      *
-     * @throws IOException
      */
     @Override
     protected void saveConfig() throws IOException {
@@ -131,15 +129,6 @@ public class AccountsConfig extends FileConfig {
      */
     public void addAccount(final MinecraftAccount account) {
         accounts.add(account);
-    }
-
-    /**
-     * Remove account from config
-     *
-     * @param selectedSlot of the account
-     */
-    public void removeAccount(final int selectedSlot) {
-        accounts.remove(selectedSlot);
     }
 
 

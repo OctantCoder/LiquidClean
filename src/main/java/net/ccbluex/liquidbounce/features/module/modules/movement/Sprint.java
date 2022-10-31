@@ -27,7 +27,7 @@ public class Sprint extends Module {
     public final BoolValue checkServerSideGround = new BoolValue("CheckServerSideOnlyGround", false);
 
     @EventTarget
-    public void onUpdate(final UpdateEvent event) {
+    public void onUpdate(@SuppressWarnings("unused") final UpdateEvent event) {
         if (!MovementUtils.isMoving() || mc.thePlayer.isSneaking() ||
                 (blindnessValue.get() && mc.thePlayer.isPotionActive(Potion.blindness)) ||
                 (foodValue.get() && !(mc.thePlayer.getFoodStats().getFoodLevel() > 6.0F || mc.thePlayer.capabilities.allowFlying))

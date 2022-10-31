@@ -20,7 +20,14 @@ class GuiModsMenu(private val prevGui: GuiScreen) : GuiScreen() {
     override fun initGui() {
         buttonList.add(GuiButton(0, width / 2 - 100, height / 4 + 48, "Forge Mods"))
         buttonList.add(GuiButton(1, width / 2 - 100, height / 4 + 48 + 25, "Scripts"))
-        buttonList.add(GuiButton(2, width / 2 - 100, height / 4 + 48 + 50, "Rich Presence: ${if (LiquidBounce.clientRichPresence.showRichPresenceValue) "§aON" else "§cOFF"}"))
+        buttonList.add(
+            GuiButton(
+                2,
+                width / 2 - 100,
+                height / 4 + 48 + 50,
+                "Rich Presence: ${if (LiquidBounce.clientRichPresence.showRichPresenceValue) "§aON" else "§cOFF"}"
+            )
+        )
         buttonList.add(GuiButton(3, width / 2 - 100, height / 4 + 48 + 75, "Back"))
     }
 
@@ -30,12 +37,13 @@ class GuiModsMenu(private val prevGui: GuiScreen) : GuiScreen() {
             1 -> mc.displayGuiScreen(GuiScripts(this))
             2 -> {
                 val rpc = LiquidBounce.clientRichPresence
-                rpc.showRichPresenceValue = when (val state = !rpc.showRichPresenceValue) {
+                rpc.showRichPresenceValue = when (!rpc.showRichPresenceValue) {
                     false -> {
                         rpc.shutdown()
-                        changeDisplayState(id, state)
+                        changeDisplayState(id, false)
                         false
                     }
+
                     true -> {
                         var value = true
                         thread {
@@ -52,6 +60,7 @@ class GuiModsMenu(private val prevGui: GuiScreen) : GuiScreen() {
                     }
                 }
             }
+
             3 -> mc.displayGuiScreen(prevGui)
         }
     }

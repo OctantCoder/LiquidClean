@@ -69,7 +69,7 @@ public class MixinGuiEditSign extends GuiScreen {
                 if (!signCommand3.getText().isEmpty())
                     tileSign.signText[2].setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, signCommand3.getText())));
 
-                if(!signCommand4.getText().isEmpty())
+                if (!signCommand4.getText().isEmpty())
                     tileSign.signText[3].setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, signCommand4.getText())));
                 break;
             case 1:
@@ -101,6 +101,7 @@ public class MixinGuiEditSign extends GuiScreen {
 
     /**
      * @author CCBlueX
+     * @reason For typed keys
      */
     @Overwrite
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
@@ -109,28 +110,28 @@ public class MixinGuiEditSign extends GuiScreen {
         this.signCommand3.textboxKeyTyped(typedChar, keyCode);
         this.signCommand4.textboxKeyTyped(typedChar, keyCode);
 
-        if(signCommand1.isFocused() || signCommand2.isFocused() || signCommand3.isFocused() || signCommand4.isFocused())
+        if (signCommand1.isFocused() || signCommand2.isFocused() || signCommand3.isFocused() || signCommand4.isFocused())
             return;
 
-        if(keyCode == 200) {
+        if (keyCode == 200) {
             this.editLine = this.editLine - 1 & 3;
         }
 
-        if(keyCode == 208 || keyCode == 28 || keyCode == 156) {
+        if (keyCode == 208 || keyCode == 28 || keyCode == 156) {
             this.editLine = this.editLine + 1 & 3;
         }
 
         String s = this.tileSign.signText[this.editLine].getUnformattedText();
-        if(keyCode == 14 && s.length() > 0) {
+        if (keyCode == 14 && s.length() > 0) {
             s = s.substring(0, s.length() - 1);
         }
 
-        if((ChatAllowedCharacters.isAllowedCharacter(typedChar) || (enabled && typedChar == '§')) && this.fontRendererObj.getStringWidth(s + typedChar) <= 90) {
+        if ((ChatAllowedCharacters.isAllowedCharacter(typedChar) || (enabled && typedChar == '§')) && this.fontRendererObj.getStringWidth(s + typedChar) <= 90) {
             s = s + typedChar;
         }
 
         this.tileSign.signText[this.editLine] = new ChatComponentText(s);
-        if(keyCode == 1) {
+        if (keyCode == 1) {
             this.actionPerformed(this.doneBtn);
         }
     }

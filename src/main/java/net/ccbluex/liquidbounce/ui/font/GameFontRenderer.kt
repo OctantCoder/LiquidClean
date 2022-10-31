@@ -19,10 +19,15 @@ import org.lwjgl.opengl.GL20.glUseProgram
 import java.awt.Color
 import java.awt.Font
 
-class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameSettings, ResourceLocation("textures/font/ascii.png"), Minecraft.getMinecraft().textureManager, false) {
+class GameFontRenderer(font: Font) : FontRenderer(
+    Minecraft.getMinecraft().gameSettings,
+    ResourceLocation("textures/font/ascii.png"),
+    Minecraft.getMinecraft().textureManager,
+    false
+) {
 
     val fontHeight: Int
-    var defaultFont = AWTFontRenderer(font)
+    var defaultFont: AWTFontRenderer = AWTFontRenderer(font)
     private var boldFont = AWTFontRenderer(font.deriveFont(Font.BOLD))
     private var italicFont = AWTFontRenderer(font.deriveFont(Font.ITALIC))
     private var boldItalicFont = AWTFontRenderer(font.deriveFont(Font.BOLD or Font.ITALIC))
@@ -37,14 +42,16 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         fontHeight = height
     }
 
-    fun drawString(s: String?, x: Float, y: Float, color: Int) = drawString(s, x, y, color, false)
+    fun drawString(s: String?, x: Float, y: Float, color: Int): Int = drawString(s, x, y, color, false)
 
-    override fun drawStringWithShadow(text: String?, x: Float, y: Float, color: Int) = drawString(text, x, y, color, true)
+    override fun drawStringWithShadow(text: String?, x: Float, y: Float, color: Int): Int =
+        drawString(text, x, y, color, true)
 
-    fun drawCenteredString(s: String, x: Float, y: Float, color: Int, shadow: Boolean) = drawString(s, x - getStringWidth(s) / 2F, y, color, shadow)
+    fun drawCenteredString(s: String, x: Float, y: Float, color: Int, shadow: Boolean): Int =
+        drawString(s, x - getStringWidth(s) / 2F, y, color, shadow)
 
-    fun drawCenteredString(s: String, x: Float, y: Float, color: Int) =
-            drawStringWithShadow(s, x - getStringWidth(s) / 2F, y, color)
+    fun drawCenteredString(s: String, x: Float, y: Float, color: Int): Int =
+        drawStringWithShadow(s, x - getStringWidth(s) / 2F, y, color)
 
     override fun drawString(text: String?, x: Float, y: Float, color: Int, shadow: Boolean): Int {
         var currentText = text
@@ -66,7 +73,14 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         return drawText(currentText, x, currY, color, false, rainbow)
     }
 
-    private fun drawText(text: String?, x: Float, y: Float, color: Int, ignoreColor: Boolean, rainbow: Boolean = false): Int {
+    private fun drawText(
+        text: String?,
+        x: Float,
+        y: Float,
+        color: Int,
+        ignoreColor: Boolean,
+        rainbow: Boolean = false
+    ): Int {
         if (text == null)
             return 0
         if (text.isEmpty())
@@ -87,8 +101,6 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
 
         if (currentColor and -0x4000000 == 0)
             currentColor = currentColor or -16777216
-
-        val defaultColor = currentColor
 
         val alpha: Int = (currentColor shr 24 and 0xff)
 
@@ -132,6 +144,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
                             underline = false
                             strikeThrough = false
                         }
+
                         16 -> randomCase = true
                         17 -> bold = true
                         18 -> strikeThrough = true
@@ -163,17 +176,26 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
                     else
                         defaultFont
 
-                    currentFont.drawString(if (randomCase) ColorUtils.randomMagicText(words) else words, width, 0.0, currentColor)
+                    currentFont.drawString(
+                        if (randomCase) ColorUtils.randomMagicText(words) else words,
+                        width,
+                        0.0,
+                        currentColor
+                    )
 
                     if (strikeThrough)
-                        RenderUtils.drawLine(width / 2.0 + 1, currentFont.height / 3.0,
-                                (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 3.0,
-                                fontHeight / 16F)
+                        RenderUtils.drawLine(
+                            width / 2.0 + 1, currentFont.height / 3.0,
+                            (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 3.0,
+                            fontHeight / 16F
+                        )
 
                     if (underline)
-                        RenderUtils.drawLine(width / 2.0 + 1, currentFont.height / 2.0,
-                                (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 2.0,
-                                fontHeight / 16F)
+                        RenderUtils.drawLine(
+                            width / 2.0 + 1, currentFont.height / 2.0,
+                            (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 2.0,
+                            fontHeight / 16F
+                        )
 
                     width += currentFont.getStringWidth(words)
                 }
@@ -190,8 +212,8 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         return (x + getStringWidth(text)).toInt()
     }
 
-    override fun getColorCode(charCode: Char) =
-            ColorUtils.hexColors[getColorIndex(charCode)]
+    override fun getColorCode(charCode: Char): Int =
+        ColorUtils.hexColors[getColorIndex(charCode)]
 
     override fun getStringWidth(text: String?): Int {
         var currentText = text
@@ -223,6 +245,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
                             bold = false
                             italic = false
                         }
+
                         colorIndex == 17 -> bold = true
                         colorIndex == 20 -> italic = true
                         colorIndex == 21 -> {
@@ -249,7 +272,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
             defaultFont.getStringWidth(currentText) / 2
     }
 
-    override fun getCharWidth(character: Char) = getStringWidth(character.toString())
+    override fun getCharWidth(character: Char): Int = getStringWidth(character.toString())
 
     companion object {
         @JvmStatic

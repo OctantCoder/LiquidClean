@@ -29,8 +29,8 @@ class Timer : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        if(MovementUtils.isMoving || !onMoveValue.get()) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
+        if (MovementUtils.isMoving || !onMoveValue.get()) {
             mc.timer.timerSpeed = speedValue.get()
             return
         }

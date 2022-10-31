@@ -5,10 +5,8 @@
  */
 package net.ccbluex.liquidbounce.injection.transformers;
 
-import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.script.remapper.injection.utils.ClassUtils;
 import net.ccbluex.liquidbounce.script.remapper.injection.utils.NodeUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.tree.*;
 
@@ -29,7 +27,7 @@ public class ForgeNetworkTransformer implements IClassTransformer {
      */
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        if(name.equals("net.minecraftforge.fml.common.network.handshake.NetworkDispatcher")) {
+        if (name.equals("net.minecraftforge.fml.common.network.handshake.NetworkDispatcher")) {
             try {
                 final ClassNode classNode = ClassUtils.INSTANCE.toClassNode(basicClass);
 
@@ -46,12 +44,12 @@ public class ForgeNetworkTransformer implements IClassTransformer {
                 });
 
                 return ClassUtils.INSTANCE.toBytes(classNode);
-            }catch(final Throwable throwable) {
+            } catch (final Throwable throwable) {
                 throwable.printStackTrace();
             }
         }
 
-        if(name.equals("net.minecraftforge.fml.common.network.handshake.HandshakeMessageHandler")) {
+        if (name.equals("net.minecraftforge.fml.common.network.handshake.HandshakeMessageHandler")) {
             try {
                 final ClassNode classNode = ClassUtils.INSTANCE.toClassNode(basicClass);
 
@@ -70,15 +68,11 @@ public class ForgeNetworkTransformer implements IClassTransformer {
                 });
 
                 return ClassUtils.INSTANCE.toBytes(classNode);
-            }catch(final Throwable throwable) {
+            } catch (final Throwable throwable) {
                 throwable.printStackTrace();
             }
         }
 
         return basicClass;
-    }
-
-    public static boolean returnMethod() {
-        return AntiForge.enabled && AntiForge.blockFML && !Minecraft.getMinecraft().isIntegratedServerRunning();
     }
 }

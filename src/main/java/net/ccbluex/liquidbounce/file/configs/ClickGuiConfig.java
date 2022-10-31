@@ -33,19 +33,18 @@ public class ClickGuiConfig extends FileConfig {
     /**
      * Load config from file
      *
-     * @throws IOException
      */
     @Override
     protected void loadConfig() throws IOException {
         final JsonElement jsonElement = new JsonParser().parse(new BufferedReader(new FileReader(getFile())));
 
-        if(jsonElement instanceof JsonNull)
+        if (jsonElement instanceof JsonNull)
             return;
 
         final JsonObject jsonObject = (JsonObject) jsonElement;
 
         for (final Panel panel : LiquidBounce.clickGui.panels) {
-            if(!jsonObject.has(panel.getName()))
+            if (!jsonObject.has(panel.getName()))
                 continue;
 
             try {
@@ -56,24 +55,24 @@ public class ClickGuiConfig extends FileConfig {
                 panel.setX(panelObject.get("posX").getAsInt());
                 panel.setY(panelObject.get("posY").getAsInt());
 
-                for(final Element element : panel.getElements()) {
-                    if(!(element instanceof ModuleElement))
+                for (final Element element : panel.getElements()) {
+                    if (!(element instanceof ModuleElement))
                         continue;
 
                     final ModuleElement moduleElement = (ModuleElement) element;
 
-                    if(!panelObject.has(moduleElement.getModule().getName()))
+                    if (!panelObject.has(moduleElement.getModule().getName()))
                         continue;
 
                     try {
                         final JsonObject elementObject = panelObject.getAsJsonObject(moduleElement.getModule().getName());
 
                         moduleElement.setShowSettings(elementObject.get("Settings").getAsBoolean());
-                    }catch(final Exception e) {
+                    } catch (final Exception e) {
                         ClientUtils.getLogger().error("Error while loading clickgui module element with the name '" + moduleElement.getModule().getName() + "' (Panel Name: " + panel.getName() + ").", e);
                     }
                 }
-            }catch(final Exception e) {
+            } catch (final Exception e) {
                 ClientUtils.getLogger().error("Error while loading clickgui panel with the name '" + panel.getName() + "'.", e);
             }
         }
@@ -82,7 +81,6 @@ public class ClickGuiConfig extends FileConfig {
     /**
      * Save config to file
      *
-     * @throws IOException
      */
     @Override
     protected void saveConfig() throws IOException {
@@ -96,8 +94,8 @@ public class ClickGuiConfig extends FileConfig {
             panelObject.addProperty("posX", panel.getX());
             panelObject.addProperty("posY", panel.getY());
 
-            for(final Element element : panel.getElements()) {
-                if(!(element instanceof ModuleElement))
+            for (final Element element : panel.getElements()) {
+                if (!(element instanceof ModuleElement))
                     continue;
 
                 final ModuleElement moduleElement = (ModuleElement) element;

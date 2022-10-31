@@ -27,17 +27,32 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(GuiSlot.class)
 @SideOnly(Side.CLIENT)
 public abstract class MixinGuiSlot implements IMixinGuiSlot {
-    private int listWidth = 220;
-    private boolean enableScissor = false;
-
+    @Shadow
+    public int left;
+    @Shadow
+    public int top;
+    @Shadow
+    public int width;
+    @Shadow
+    public int right;
+    @Shadow
+    public int bottom;
+    @Shadow
+    public int height;
     @Shadow
     protected boolean field_178041_q;
-
     @Shadow
     protected int mouseX;
-
     @Shadow
     protected int mouseY;
+    @Shadow
+    protected float amountScrolled;
+    @Shadow
+    protected boolean hasListHeader;
+    @Shadow
+    @Final
+    protected Minecraft mc;
+    private int listWidth = 220;
 
     @Shadow
     protected abstract void drawBackground();
@@ -46,38 +61,10 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
     protected abstract void bindAmountScrolled();
 
     @Shadow
-    public int left;
-
-    @Shadow
-    public int top;
-
-    @Shadow
-    public int width;
-
-    @Shadow
-    protected float amountScrolled;
-
-    @Shadow
-    protected boolean hasListHeader;
-
-    @Shadow
     protected abstract void drawListHeader(int p_148129_1_, int p_148129_2_, Tessellator p_148129_3_);
 
     @Shadow
     protected abstract void drawSelectionBox(int p_148120_1_, int p_148120_2_, int mouseXIn, int mouseYIn);
-
-    @Shadow
-    public int right;
-
-    @Shadow
-    public int bottom;
-
-    @Shadow
-    @Final
-    protected Minecraft mc;
-
-    @Shadow
-    public int height;
 
     @Shadow
     protected abstract int getContentHeight();
@@ -90,10 +77,11 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
 
     /**
      * @author CCBlueX
+     * @reason For drawing screen
      */
     @Overwrite
     public void drawScreen(int mouseXIn, int mouseYIn, float p_148128_3_) {
-        if(this.field_178041_q) {
+        if (this.field_178041_q) {
             this.mouseX = mouseXIn;
             this.mouseY = mouseYIn;
             this.drawBackground();
@@ -182,6 +170,7 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
 
     /**
      * @author CCBlueX
+     * @reason To get scroll bar x
      */
     @Overwrite
     protected int getScrollBarX() {
@@ -190,11 +179,11 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
 
     @Override
     public void setEnableScissor(boolean enableScissor) {
-        this.enableScissor = enableScissor;
     }
 
     /**
      * @author CCBlueX (superblaubeere27)
+     * @reason To get list width
      */
     @Overwrite
     public int getListWidth() {

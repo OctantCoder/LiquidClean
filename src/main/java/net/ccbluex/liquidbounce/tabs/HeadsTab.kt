@@ -60,7 +60,15 @@ class HeadsTab : CreativeTabs("Heads") {
                 for ((_, value) in headsObject.entrySet()) {
                     val headElement = value.asJsonObject
 
-                    heads.add(ItemUtils.createItem("skull 1 3 {display:{Name:\"${headElement.get("name").asString}\"},SkullOwner:{Id:\"${headElement.get("uuid").asString}\",Properties:{textures:[{Value:\"${headElement.get("value").asString}\"}]}}}"))
+                    heads.add(
+                        ItemUtils.createItem(
+                            "skull 1 3 {display:{Name:\"${headElement.get("name").asString}\"},SkullOwner:{Id:\"${
+                                headElement.get(
+                                    "uuid"
+                                ).asString
+                            }\",Properties:{textures:[{Value:\"${headElement.get("value").asString}\"}]}}}"
+                        )
+                    )
                 }
 
                 ClientUtils.getLogger().info("Loaded " + heads.size + " heads from HeadDB.")
@@ -92,10 +100,10 @@ class HeadsTab : CreativeTabs("Heads") {
      *
      * @return tab name
      */
-    override fun getTranslatedTabLabel() = "Heads"
+    override fun getTranslatedTabLabel(): String = "Heads"
 
     /**
      * @return searchbar status
      */
-    override fun hasSearchBar() = true
+    override fun hasSearchBar(): Boolean = true
 }

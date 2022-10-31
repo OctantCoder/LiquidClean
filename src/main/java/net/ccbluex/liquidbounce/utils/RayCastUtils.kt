@@ -12,12 +12,13 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 
-object RaycastUtils : MinecraftInstance() {
+object RayCastUtils : MinecraftInstance() {
 
     @JvmStatic
-    fun raycastEntity(range: Double, entityFilter: EntityFilter) = raycastEntity(range, RotationUtils.serverRotation.yaw, RotationUtils.serverRotation.pitch, entityFilter)
+    fun rayCastEntity(range: Double, entityFilter: EntityFilter): Entity? =
+        rayCastEntity(range, RotationUtils.serverRotation.yaw, RotationUtils.serverRotation.pitch, entityFilter)
 
-    private fun raycastEntity(range: Double, yaw: Float, pitch: Float, entityFilter: EntityFilter): Entity? {
+    private fun rayCastEntity(range: Double, yaw: Float, pitch: Float, entityFilter: EntityFilter): Entity? {
         val renderViewEntity = mc.renderViewEntity
 
         if (renderViewEntity != null && mc.theWorld != null) {
@@ -30,19 +31,31 @@ object RaycastUtils : MinecraftInstance() {
             val pitchSin = sin(-pitch * 0.017453292f.toDouble()).toFloat()
 
             val entityLook = Vec3((yawSin * pitchCos).toDouble(), pitchSin.toDouble(), (yawCos * pitchCos).toDouble())
-            val vector = eyePosition.addVector(entityLook.xCoord * blockReachDistance, entityLook.yCoord * blockReachDistance, entityLook.zCoord * blockReachDistance)
-            val entityList = mc.theWorld!!.getEntitiesInAABBexcluding(renderViewEntity, renderViewEntity.entityBoundingBox.addCoord(entityLook.xCoord * blockReachDistance, entityLook.yCoord * blockReachDistance, entityLook.zCoord * blockReachDistance).expand(1.0, 1.0, 1.0)) {
+            val vector = eyePosition.addVector(
+                entityLook.xCoord * blockReachDistance,
+                entityLook.yCoord * blockReachDistance,
+                entityLook.zCoord * blockReachDistance
+            )
+            val entityList = (mc.theWorld ?: return null).getEntitiesInAABBexcluding(
+                renderViewEntity,
+                renderViewEntity.entityBoundingBox.addCoord(
+                    entityLook.xCoord * blockReachDistance,
+                    entityLook.yCoord * blockReachDistance,
+                    entityLook.zCoord * blockReachDistance
+                ).expand(1.0, 1.0, 1.0)
+            ) {
                 it != null && (it !is EntityPlayer || !it.isSpectator) && it.canBeCollidedWith()
             }
 
             var pointedEntity: Entity? = null
 
             for (entity in entityList) {
-                if (!entityFilter.canRaycast(entity))
+                if (!entityFilter.canRayCast(entity))
                     continue
 
                 val collisionBorderSize = entity.collisionBorderSize.toDouble()
-                val axisAlignedBB = entity.entityBoundingBox.expand(collisionBorderSize, collisionBorderSize, collisionBorderSize)
+                val axisAlignedBB =
+                    entity.entityBoundingBox.expand(collisionBorderSize, collisionBorderSize, collisionBorderSize)
 
                 val movingObjectPosition = axisAlignedBB.calculateIntercept(eyePosition, vector)
 
@@ -73,6 +86,6 @@ object RaycastUtils : MinecraftInstance() {
     }
 
     interface EntityFilter {
-        fun canRaycast(entity: Entity?): Boolean
+        fun canRayCast(entity: Entity?): Boolean
     }
 }

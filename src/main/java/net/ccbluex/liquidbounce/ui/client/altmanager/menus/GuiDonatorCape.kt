@@ -68,7 +68,7 @@ class GuiDonatorCape(private val prevGui: GuiAltManager) : GuiScreen() {
     /**
      * Draw screen
      */
-    override fun drawScreen(mouseX : Int, mouseY : Int, partialTicks : Float) {
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         // Draw background to screen
         drawBackground(0)
         RenderUtils.drawRect(30.0f, 30.0f, width - 30.0f, height - 30.0f, Integer.MIN_VALUE)
@@ -106,13 +106,13 @@ class GuiDonatorCape(private val prevGui: GuiAltManager) : GuiScreen() {
                 thread {
                     val httpClient = HttpClients.createDefault()
                     val headers = arrayOf(
-                            BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"),
-                            BasicHeader(HttpHeaders.AUTHORIZATION, transferCodeField.text)
+                        BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"),
+                        BasicHeader(HttpHeaders.AUTHORIZATION, transferCodeField.text)
                     )
                     val request = if (capeEnabled) {
-                        HttpDelete("http://capes.liquidbounce.net/api/v1/cape/self")
+                        HttpDelete("https://capes.liquidbounce.net/api/v1/cape/self")
                     } else {
-                        HttpPut("http://capes.liquidbounce.net/api/v1/cape/self")
+                        HttpPut("https://capes.liquidbounce.net/api/v1/cape/self")
                     }
                     request.setHeaders(headers)
                     val response = httpClient.execute(request)
@@ -132,6 +132,7 @@ class GuiDonatorCape(private val prevGui: GuiAltManager) : GuiScreen() {
                     stateButton.enabled = true
                 }
             }
+
             2 -> {
                 MiscUtils.showURL("https://donate.liquidbounce.net")
             }
@@ -143,9 +144,9 @@ class GuiDonatorCape(private val prevGui: GuiAltManager) : GuiScreen() {
     /**
      * Handle key typed
      */
-    override fun keyTyped(typedChar : Char, keyCode : Int) {
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
         // Check if user want to escape from screen
-        if(Keyboard.KEY_ESCAPE == keyCode) {
+        if (Keyboard.KEY_ESCAPE == keyCode) {
             // Send back to prev screen
             mc.displayGuiScreen(prevGui)
 
@@ -154,7 +155,7 @@ class GuiDonatorCape(private val prevGui: GuiAltManager) : GuiScreen() {
         }
 
         // Check if field is focused, then call key typed
-        if(transferCodeField.isFocused) transferCodeField.textboxKeyTyped(typedChar, keyCode)
+        if (transferCodeField.isFocused) transferCodeField.textboxKeyTyped(typedChar, keyCode)
 
         // Call sub method
         super.keyTyped(typedChar, keyCode)
@@ -163,7 +164,7 @@ class GuiDonatorCape(private val prevGui: GuiAltManager) : GuiScreen() {
     /**
      * Handle mouse clicked
      */
-    override fun mouseClicked(mouseX : Int, mouseY : Int, mouseButton : Int) {
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         // Call mouse clicked to field
         transferCodeField.mouseClicked(mouseX, mouseY, mouseButton)
 

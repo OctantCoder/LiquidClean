@@ -56,13 +56,13 @@ fun EntityPlayer.getPing(): Int {
 fun Entity.isAnimal(): Boolean {
     return this is EntityAnimal ||
             this is EntitySquid ||
-            this is EntityGolem||
+            this is EntityGolem ||
             this is EntityBat
 }
 
 fun Entity.isMob(): Boolean {
     return this is EntityMob ||
-            this is EntityVillager||
+            this is EntityVillager ||
             this is EntitySlime
             || this is EntityGhast ||
             this is EntityDragon

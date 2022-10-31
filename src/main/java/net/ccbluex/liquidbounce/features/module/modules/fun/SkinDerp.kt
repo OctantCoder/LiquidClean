@@ -16,7 +16,11 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.entity.player.EnumPlayerModelParts
 import kotlin.random.Random
 
-@ModuleInfo(name = "SkinDerp", description = "Makes your skin blink (Requires multi-layer skin).", category = ModuleCategory.FUN)
+@ModuleInfo(
+    name = "SkinDerp",
+    description = "Makes your skin blink (Requires multi-layer skin).",
+    category = ModuleCategory.FUN
+)
 class SkinDerp : Module() {
 
     private val delayValue = IntegerValue("Delay", 0, 0, 1000)
@@ -51,7 +55,7 @@ class SkinDerp : Module() {
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         if (timer.hasTimePassed(delayValue.get().toLong())) {
             if (hatValue.get())
                 mc.gameSettings.setModelPartEnabled(EnumPlayerModelParts.HAT, Random.nextBoolean())

@@ -20,11 +20,17 @@ import net.minecraft.block.BlockVine
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "FastClimb", description = "Allows you to climb up ladders and vines faster.", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(
+    name = "FastClimb",
+    description = "Allows you to climb up ladders and vines faster.",
+    category = ModuleCategory.MOVEMENT
+)
 class FastClimb : Module() {
 
-    val modeValue = ListValue("Mode",
-            arrayOf("Vanilla", "Clip", "AAC3.0.0", "AAC3.0.5", "SAAC3.1.2", "AAC3.1.2"), "Vanilla")
+    val modeValue: ListValue = ListValue(
+        "Mode",
+        arrayOf("Vanilla", "Clip", "AAC3.0.0", "AAC3.0.5", "SAAC3.1.2", "AAC3.1.2"), "Vanilla"
+    )
     private val speedValue = FloatValue("Speed", 0.2872F, 0.01F, 5F)
 
     @EventTarget
@@ -44,14 +50,12 @@ class FastClimb : Module() {
                 var x = 0.0
                 var z = 0.0
 
-                val horizontalFacing = thePlayer.horizontalFacing
-
-                when(horizontalFacing) {
+                when (thePlayer.horizontalFacing) {
                     EnumFacing.NORTH -> z = -0.99
                     EnumFacing.EAST -> x = +0.99
                     EnumFacing.SOUTH -> z = +0.99
                     EnumFacing.WEST -> x = -0.99
-                    else -> { }
+                    else -> {}
                 }
 
                 val block = getBlock(BlockPos(thePlayer.posX + x, thePlayer.posY, thePlayer.posZ + z))
@@ -87,21 +91,23 @@ class FastClimb : Module() {
                 thePlayer.motionY = 0.0
             }
 
-            mode.equals("Clip", ignoreCase = true) && thePlayer.isOnLadder && mc.gameSettings.keyBindForward.isKeyDown -> {
+            mode.equals(
+                "Clip",
+                ignoreCase = true
+            ) && thePlayer.isOnLadder && mc.gameSettings.keyBindForward.isKeyDown -> {
                 for (i in thePlayer.posY.toInt()..thePlayer.posY.toInt() + 8) {
                     val block = getBlock(BlockPos(thePlayer.posX, i.toDouble(), thePlayer.posZ))
 
                     if (block !is BlockLadder) {
                         var x = 0.0
                         var z = 0.0
-                        val horizontalFacing = thePlayer.horizontalFacing
 
-                        when(horizontalFacing) {
+                        when (thePlayer.horizontalFacing) {
                             EnumFacing.NORTH -> z = -1.0
                             EnumFacing.EAST -> x = +1.0
                             EnumFacing.SOUTH -> z = +1.0
                             EnumFacing.WEST -> x = -1.0
-                            else -> { }
+                            else -> {}
                         }
 
                         thePlayer.setPosition(thePlayer.posX + x, i.toDouble(), thePlayer.posZ + z)
@@ -116,8 +122,9 @@ class FastClimb : Module() {
 
     @EventTarget
     fun onBlockBB(event: BlockBBEvent) {
-        if (mc.thePlayer != null && (event.block is BlockLadder|| event.block is BlockVine) &&
-                modeValue.get().equals("AAC3.0.5", ignoreCase = true) && mc.thePlayer!!.isOnLadder)
+        if (mc.thePlayer != null && (event.block is BlockLadder || event.block is BlockVine) &&
+            modeValue.get().equals("AAC3.0.5", ignoreCase = true) && (mc.thePlayer ?: return).isOnLadder
+        )
             event.boundingBox = null
     }
 

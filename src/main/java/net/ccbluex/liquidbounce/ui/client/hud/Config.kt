@@ -67,8 +67,8 @@ class Config {
                             element.y = jsonObject["Y"].asInt.toDouble()
                             element.scale = jsonObject["Scale"].asFloat
                             element.side = Side(
-                                    Side.Horizontal.getByName(jsonObject["HorizontalFacing"].asString)!!,
-                                    Side.Vertical.getByName(jsonObject["VerticalFacing"].asString)!!
+                                Side.Horizontal.getByName(jsonObject["HorizontalFacing"].asString)!!,
+                                Side.Vertical.getByName(jsonObject["VerticalFacing"].asString)!!
                             )
 
                             for (value in element.values) {
@@ -92,7 +92,8 @@ class Config {
             // Add forced elements when missing
             for (elementClass in elements) {
                 if (elementClass.getAnnotation(ElementInfo::class.java).force
-                        && hud.elements.none { it.javaClass == elementClass }) {
+                    && hud.elements.none { it.javaClass == elementClass }
+                ) {
                     hud.addElement(elementClass.newInstance())
                 }
             }

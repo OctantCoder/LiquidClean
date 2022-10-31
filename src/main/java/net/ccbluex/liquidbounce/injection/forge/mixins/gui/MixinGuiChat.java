@@ -78,7 +78,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     }
 
     /**
-     * Adds client command auto completion and cancels sending an auto completion request packet
+     * Adds client command auto-completion and cancels sending an auto-completion request packet
      * to the server if the message contains a client command.
      *
      * @author NurMarvin
@@ -100,7 +100,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     }
 
     /**
-     * Add this callback, to check if the User complete a Playername or a Liquidbounce command.
+     * Add this callback, to check if the User complete a Player name or a LiquidBounce command.
      * To fix this bug: https://github.com/CCBlueX/LiquidBounce1.8-Issues/issues/3795
      *
      * @author derech1e
@@ -112,6 +112,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
 
     /**
      * @author CCBlueX
+     * @reason For drawing screen
      */
     @Overwrite
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {

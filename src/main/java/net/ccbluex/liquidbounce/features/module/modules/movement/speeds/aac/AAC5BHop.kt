@@ -31,10 +31,12 @@ class AAC5BHop : SpeedMode("AAC5BHop") {
                     thePlayer.onGround = false
                     MovementUtils.strafe(0.374f)
                 }
+
                 thePlayer.motionY < 0.0 -> {
                     thePlayer.speedInAir = 0.0201f
                     mc.timer.timerSpeed = 1.02f
                 }
+
                 else -> mc.timer.timerSpeed = 1.01f
             }
         } else {
@@ -48,7 +50,7 @@ class AAC5BHop : SpeedMode("AAC5BHop") {
     override fun onUpdate() {}
     override fun onMove(event: MoveEvent) {}
     override fun onDisable() {
-        mc.thePlayer!!.speedInAir = 0.02f
+        (mc.thePlayer ?: return).speedInAir = 0.02f
         mc.timer.timerSpeed = 1f
     }
 }

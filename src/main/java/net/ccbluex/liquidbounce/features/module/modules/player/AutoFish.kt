@@ -13,13 +13,17 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.item.ItemFishingRod
 
-@ModuleInfo(name = "AutoFish", description = "Automatically catches fish when using a rod.", category = ModuleCategory.PLAYER)
+@ModuleInfo(
+    name = "AutoFish",
+    description = "Automatically catches fish when using a rod.",
+    category = ModuleCategory.PLAYER
+)
 class AutoFish : Module() {
 
     private val rodOutTimer = MSTimer()
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
         val thePlayer = mc.thePlayer
 
         if (thePlayer?.heldItem == null || mc.thePlayer.heldItem.item !is ItemFishingRod)
