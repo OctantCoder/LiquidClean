@@ -45,12 +45,11 @@ on [Gradle's website](https://gradle.org/install/).
 1. Make sure you use java 8 (1.8), you can check it by `java -version`.
 2. Clone the repository using `git clone https://github.com/CCBlueX/LiquidBounce/`.
 3. CD into the local repository folder `cd LiquidBounce`.
-4. Switch to the legacy branch using `git checkout legacy`
-5. Depending on which IDE you are using execute either of the following commands:
+4. Depending on which IDE you are using execute either of the following commands:
     - For IntelliJ: `gradlew --debug setupDevWorkspace idea genIntellijRuns build`
     - For Eclipse: `gradlew --debug setupDevWorkspace eclipse build`
-6. Open the folder as a Gradle project in your IDE.
-7. Select either the Forge or Vanilla run configuration.
+5. Open the folder as a Gradle project in your IDE.
+8. Select either the Forge or Vanilla run configuration.
 
 ## Additional libraries
 
